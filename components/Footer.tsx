@@ -1,0 +1,124 @@
+import Link from "next/link";
+import { BRAND_LINE } from "@/lib/site";
+import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
+import { InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
+
+const COLUMNS: {
+  heading: string;
+  links: { label: string; href: string }[];
+}[] = [
+  {
+    heading: "Explore",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "About", href: "/about" },
+      { label: "The Method", href: "/method" },
+      { label: "Transformations", href: "/results" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    heading: "Programs",
+    links: [
+      { label: "Discovery Consultation ₹2,000", href: "/book" },
+      { label: "Monthly Coaching", href: "/programs" },
+      { label: "Online Plan", href: "/programs" },
+      { label: "Book Now", href: "/book" },
+    ],
+  },
+  {
+    heading: "Resources",
+    links: [
+      { label: "Free Lifestyle Blueprint", href: "/tools" },
+      { label: "Fat Loss Training Split", href: "/tools" },
+      { label: "Calorie Calculator", href: "/tools" },
+      { label: "Articles", href: "/blog" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Refund Policy", href: "/refund" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+];
+
+export default function Footer() {
+  return (
+    <footer className="bg-void grain border-t border-hairline-soft">
+      <div className="container-site pt-16 pb-10 md:pt-20">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
+          {COLUMNS.map((col) => (
+            <nav key={col.heading} aria-label={col.heading}>
+              <h2 className="type-step text-muted mb-5">{col.heading}</h2>
+              <ul className="flex flex-col gap-3">
+                {col.links.map((l, i) => (
+                  <li key={`${l.label}-${i}`}>
+                    <Link
+                      href={l.href}
+                      className="type-small text-secondary hover:text-primary transition-colors inline-block py-1"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+
+        <div className="mt-14 flex flex-col gap-6 border-t border-hairline-soft pt-8 md:flex-row md:items-center md:justify-between">
+          <p className="type-body text-primary font-display max-w-md">
+            {BRAND_LINE}
+          </p>
+          <div className="flex items-center gap-5">
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+            >
+              <InstagramIcon width={20} height={20} />
+            </a>
+            <a
+              href={YOUTUBE_URL || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+            >
+              <YouTubeIcon width={22} height={22} />
+            </a>
+            <a
+              href={waLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+            >
+              <WhatsAppIcon width={20} height={20} />
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-4 border-t border-hairline-soft pt-6">
+          <p className="type-small text-muted">
+            © {new Date().getFullYear()} Aditya Kumar Upadhyay. Based in
+            Kolkata, coaching worldwide online.
+          </p>
+          <p className="type-caption text-muted max-w-3xl">
+            Aditya is a lifestyle coach, not a doctor or registered dietitian.
+            All content, tools and coaching are for general guidance only, are
+            not medical advice, and individual results vary. Consult a
+            qualified physician before making health, diet or exercise changes.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
