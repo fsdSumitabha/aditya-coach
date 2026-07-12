@@ -348,6 +348,11 @@ export default function BookingFlow() {
   }
 
   const stateA = state === "A";
+  // Heading-tree integrity: STATE A's hero owns the page h1; once the B/C
+  // wrapper becomes the visible content its banner heading must take over as
+  // the single exposed h1 (the A wrapper is hidden + aria-hidden). Prerendered
+  // HTML (STATE A) still contains exactly one h1.
+  const BannerHeading = stateA ? "h2" : ("h1" as const);
 
   return (
     /* min-height reserved so state swaps cause no layout shift (CLS < 0.1) */
@@ -850,14 +855,14 @@ export default function BookingFlow() {
                     <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-300">
                       <CheckIcon width={20} height={20} aria-hidden="true" />
                     </span>
-                    <h2
+                    <BannerHeading
                       ref={bannerHeadingRef}
                       tabIndex={-1}
                       className="type-h3 scroll-mt-24 text-primary outline-none"
                     >
                       Payment received. Your consultation is booked — Aditya
                       will contact you on WhatsApp within 24 hours.
-                    </h2>
+                    </BannerHeading>
                   </div>
                   {/* [review] */}
                   <p className="type-body mt-4 text-secondary">

@@ -176,6 +176,12 @@ export default function HowMuchToEat() {
           label="Try the Calorie Calculator"
           href="/tools#calculator"
         />
+        <p className="type-small text-muted">
+          {/* [review] — secondary link per B1.5: calculator posts also offer the Blueprint */}
+          Want the lifestyle layer too?{" "}
+          <Link href="/tools#blueprint">Get the free Blueprint</Link> — 10
+          changes that rebuild a man completely. Start tonight.
+        </p>
       </Reveal>
 
       <Reveal as="section" className="space-y-[1.1em]">

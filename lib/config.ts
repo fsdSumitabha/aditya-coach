@@ -10,7 +10,8 @@ export const COACH_WHATSAPP =
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || ""; // TODO
 export const IG_URL =
   process.env.NEXT_PUBLIC_IG_URL || "https://instagram.com/adityakumarupadhyay"; // TODO confirm
-export const YOUTUBE_URL = process.env.NEXT_PUBLIC_YOUTUBE_URL || ""; // TODO
+export const YOUTUBE_URL =
+  process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://youtube.com/@__REPLACE__"; // TODO [review] real handle — single placeholder shared by footer/header/about/schema
 export const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY || ""; // TODO Phase 2
 export const EMAIL_API_KEY = process.env.NEXT_PUBLIC_EMAIL_API_KEY || ""; // TODO Phase 2
 export const LEAD_ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT || ""; // empty => skip network, just show success

@@ -81,16 +81,16 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+              className="inline-flex h-12 w-12 items-center justify-center -m-3 text-secondary hover:text-primary transition-colors"
             >
               <InstagramIcon width={20} height={20} />
             </a>
             <a
-              href={YOUTUBE_URL || "#"}
+              href={YOUTUBE_URL}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
-              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+              className="inline-flex h-12 w-12 items-center justify-center -m-3 text-secondary hover:text-primary transition-colors"
             >
               <YouTubeIcon width={22} height={22} />
             </a>
@@ -99,7 +99,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
-              className="text-secondary hover:text-primary transition-colors p-2 -m-2"
+              className="inline-flex h-12 w-12 items-center justify-center -m-3 text-secondary hover:text-primary transition-colors"
             >
               <WhatsAppIcon width={20} height={20} />
             </a>

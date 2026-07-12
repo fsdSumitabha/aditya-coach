@@ -50,7 +50,7 @@ const toolsSchema = [
 ];
 
 const chipClass =
-  "inline-flex min-h-[44px] items-center justify-center rounded-full border border-hairline px-5 type-small text-secondary transition-colors hover:border-hairline-gold hover:text-primary";
+  "inline-flex min-h-[48px] items-center justify-center rounded-full border border-hairline px-5 type-small text-secondary transition-colors hover:border-hairline-gold hover:text-primary";
 
 export default function ToolsPage() {
   return (
