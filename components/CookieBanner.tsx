@@ -14,11 +14,16 @@ export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem(KEY)) setVisible(true);
-    } catch {
-      // storage unavailable → stay hidden
-    }
+    // deferred a frame: avoids sync-setState-in-effect cascades and lets the
+    // first paint happen before the banner appears
+    const raf = requestAnimationFrame(() => {
+      try {
+        if (!localStorage.getItem(KEY)) setVisible(true);
+      } catch {
+        // storage unavailable → stay hidden
+      }
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   if (!visible) return null;

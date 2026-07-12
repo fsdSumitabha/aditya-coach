@@ -67,10 +67,13 @@ export default function Header() {
     };
   }, [open, close]);
 
-  // Close on route change
-  useEffect(() => {
+  // Close on route change — "adjust state during render" pattern (react.dev),
+  // avoids a sync setState inside an effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

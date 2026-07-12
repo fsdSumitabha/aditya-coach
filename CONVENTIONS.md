@@ -109,6 +109,17 @@ import FinalCta from "@/components/FinalCta";
 // unless your spec's band differs materially — then build it in-page.
 
 import { WhatsAppIcon, InstagramIcon, YouTubeIcon, PinIcon, CheckIcon, ArrowRightIcon } from "@/components/icons";
+
+// Legal pages ONLY (/privacy /terms /refund):
+import LegalShell from "@/components/legal/LegalShell";
+// <LegalShell title lastUpdated effectiveDate toc={[{id,label}]}>{prose}</LegalShell>
+// 720px dark single-column frame + back-link + stamp + TOC + lawyer-review
+// template comment. Body renders inside .article-prose — write semantic
+// h2 (with id for TOC anchors), p, ul/ol.
+import { LEGAL } from "@/lib/legal";
+// Swappable legal facts: OWNER_NAME, BUSINESS_NAME, CONTACT_EMAIL,
+// GRIEVANCE_*, JURISDICTION_*, CONSULT_PRICE, LAST_UPDATED, EFFECTIVE_DATE …
+// Reference these in prose — never hardcode emails/addresses/dates.
 ```
 
 ## CSS system (globals.css — use these, no ad-hoc styles for covered cases)

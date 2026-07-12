@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  createElement,
   useEffect,
   useRef,
   type CSSProperties,
@@ -69,9 +68,17 @@ export default function Reveal({
       ? ({ ...style, "--reveal-delay": `${delay}ms` } as CSSProperties)
       : style;
 
-  return createElement(
-    as,
-    { ref, className, id, style: mergedStyle },
-    children,
+  const Tag = as as ElementType<{
+    ref?: React.Ref<HTMLElement>;
+    className?: string;
+    id?: string;
+    style?: CSSProperties;
+    children?: ReactNode;
+  }>;
+
+  return (
+    <Tag ref={ref} className={className} id={id} style={mergedStyle}>
+      {children}
+    </Tag>
   );
 }

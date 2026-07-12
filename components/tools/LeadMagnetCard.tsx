@@ -1,0 +1,88 @@
+import Link from "next/link";
+import PlaceholderImage from "@/components/PlaceholderImage";
+import LeadMagnetForm from "@/components/LeadMagnetForm";
+
+/**
+ * /tools lead-magnet card (spec §2 + §3) — one parametrised card rendered
+ * twice (Lifestyle Blueprint + Fat Loss Training Split). Server Component;
+ * the form/success swap lives in the shared <LeadMagnetForm> client island.
+ */
+export default function LeadMagnetCard({
+  title,
+  description,
+  imageLabel,
+  imageAlt,
+  source,
+  pdfHref,
+  pdfLabel,
+  buttonLabel,
+  successBody,
+}: {
+  title: string;
+  /** verbatim COPY BANK description — do not edit */
+  description: string;
+  imageLabel: string;
+  imageAlt: string;
+  source: string;
+  pdfHref: string;
+  pdfLabel: string;
+  buttonLabel: string;
+  successBody: string;
+}) {
+  return (
+    <div className="card">
+      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_240px] md:items-center">
+        {/* IMG placeholder — swap for a real <img loading="lazy" width={480}
+            height={600}> of the PDF cover when the asset exists. Above text on
+            mobile (first in DOM), right-aligned on desktop (md:order-2). */}
+        <div className="w-full max-w-[280px] mx-auto md:order-2 md:max-w-none">
+          <PlaceholderImage
+            label={imageLabel}
+            w={480}
+            h={600}
+            alt={imageAlt}
+            variant="cover"
+          />
+        </div>
+
+        <div className="md:order-1">
+          <h2 className="eyebrow">FREE DOWNLOAD</h2>
+          {/* [review] eyebrow label */}
+          <h3 className="type-h2 text-primary mt-3">{title}</h3>
+          <p className="type-lead text-secondary mt-4">{description}</p>
+
+          <LeadMagnetForm
+            className="mt-7 min-h-[220px]"
+            source={source}
+            buttonLabel={buttonLabel}
+            pdfHref={pdfHref}
+            pdfLabel={pdfLabel}
+            successTitle={"Check your inbox. It's on the way." /* [review] */}
+            successBody={successBody}
+          >
+            <p className="type-small text-secondary">
+              Read it tonight. When you&apos;re ready to build the full system
+              around your life —{/* [review] */}
+            </p>
+            <Link href="/book" className="btn-gold w-full sm:w-auto sm:self-start">
+              Book My ₹2,000 Consultation
+            </Link>
+          </LeadMagnetForm>
+
+          {/* [review] DPDP-2023 consent line (compliance checklist) — complements
+              the shared form's consent copy */}
+          <p className="type-caption text-muted mt-3">
+            Your data is handled under India&apos;s{" "}
+            <Link
+              href="/privacy"
+              className="underline underline-offset-2 hover:text-secondary"
+            >
+              DPDP Act 2023
+            </Link>
+            . Unsubscribe anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

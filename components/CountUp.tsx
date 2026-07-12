@@ -28,15 +28,14 @@ export default function CountUp({
     const el = ref.current;
     if (!el) return;
 
+    let raf = 0;
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (reduced) {
-      setDisplay(format(value));
-      return;
+      raf = requestAnimationFrame(() => setDisplay(format(value)));
+      return () => cancelAnimationFrame(raf);
     }
-
-    let raf = 0;
     const run = () => {
       if (animated.current) {
         setDisplay(format(value));
