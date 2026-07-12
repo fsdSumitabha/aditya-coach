@@ -180,15 +180,19 @@ export default function Home() {
             </Reveal>
           </div>
 
-          {/* Portrait — ~600ms fade via the shared 0.6s reveal transition */}
-          <Reveal
-            delayMs={300}
-            className="relative mx-auto w-full max-w-[420px] nav:max-w-none"
-          >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-8 -z-10 bg-[radial-gradient(55%_45%_at_50%_38%,rgba(201,162,75,0.16),transparent_70%)]"
-            />
+          {/* Portrait — the page's real LCP element, so it paints statically
+              (A2 hard rule beats the fade); the entrance is the spec's
+              alternative gold-glow fade-in, animated on the glow only. */}
+          <div className="relative mx-auto w-full max-w-[420px] nav:max-w-none">
+            <Reveal
+              delayMs={300}
+              className="pointer-events-none absolute -inset-y-8 inset-x-0 -z-10"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-[radial-gradient(55%_45%_at_50%_38%,rgba(201,162,75,0.16),transparent_70%)]"
+              />
+            </Reveal>
             {/* Swap for real <img src={HERO_PORTRAIT} width={720} height={900}
                 loading="eager" fetchPriority="high" decoding="async" /> */}
             <PlaceholderImage
@@ -198,7 +202,7 @@ export default function Home() {
               variant="portrait"
               alt={IMAGES.heroPortrait.alt}
             />
-          </Reveal>
+          </div>
         </div>
       </section>
 

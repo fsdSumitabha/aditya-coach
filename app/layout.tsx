@@ -13,7 +13,10 @@ import { SITE_NAME, SITE_ORIGIN } from "@/lib/site";
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
-  display: "swap",
+  // "optional": headlines are the LCP on most pages — never re-paint them on
+  // font swap (A2 LCP < 2.5s). Slow first visits get the metric-matched
+  // serif fallback; cached/fast visits render Fraunces.
+  display: "optional",
   axes: ["opsz"],
 });
 

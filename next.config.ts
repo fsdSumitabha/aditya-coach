@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
     // All Phase-1 images are inline SVG placeholders; no optimizer needed for export.
     unoptimized: true,
   },
+  experimental: {
+    // Inline the (small) global stylesheet — removes a render-blocking
+    // round-trip on 4G, protecting the LCP < 2.5s target (A2).
+    inlineCss: true,
+  },
 };
 
 export default nextConfig;

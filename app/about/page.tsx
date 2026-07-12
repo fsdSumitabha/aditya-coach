@@ -117,15 +117,20 @@ export default function AboutPage() {
               {/* No hero buttons — the persistent header [Book ₹2,000] covers instant conversion. */}
             </div>
 
-            {/* Portrait — mobile: leads (face builds trust fastest); desktop: right column */}
-            <FadeIn
-              className="order-1 mx-auto w-full max-w-[320px] nav:order-2 nav:mx-0 nav:max-w-[420px] nav:justify-self-end"
-              durationMs={900}
-              scaleFrom={1.02}
-              y={0}
-            >
+            {/* Portrait — mobile: leads (face builds trust fastest); desktop: right column.
+                The portrait is this page's LCP element, so it paints statically
+                (A2 LCP < 2.5s beats the 900ms fade); the "slow fade" entrance
+                survives on the gold hairline frame only. */}
+            <div className="order-1 relative mx-auto w-full max-w-[320px] nav:order-2 nav:mx-0 nav:max-w-[420px] nav:justify-self-end">
+              <FadeIn
+                className="pointer-events-none absolute inset-0 rounded-[18px] border border-hairline-gold"
+                durationMs={900}
+                y={0}
+              >
+                <span aria-hidden="true" />
+              </FadeIn>
               {/* One restrained gold moment: 1px gold hairline frame */}
-              <div className="rounded-[18px] border border-hairline-gold p-1.5">
+              <div className="p-1.5">
                 <PlaceholderImage
                   label={IMG_ABOUT_HERO.label}
                   w={IMG_ABOUT_HERO.w}
@@ -134,7 +139,7 @@ export default function AboutPage() {
                   variant="portrait"
                 />
               </div>
-            </FadeIn>
+            </div>
           </div>
         </div>
       </section>
