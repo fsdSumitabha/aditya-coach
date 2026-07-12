@@ -19,6 +19,8 @@ export default function LeadMagnetForm({
   pdfLabel = "Download the PDF",
   successTitle = "You're in." /* [review] */,
   successBody = "Check your inbox — we've also emailed it to you." /* [review] */,
+  label = "Email",
+  consent,
   children,
   className,
 }: {
@@ -30,6 +32,10 @@ export default function LeadMagnetForm({
   pdfLabel?: string;
   successTitle?: string;
   successBody?: string;
+  /** visible field label (tools spec: "Your email") */
+  label?: string;
+  /** consent line override — defaults to the Home #blueprint verbatim line */
+  consent?: ReactNode;
   /** cross-sell links rendered inside the success state */
   children?: ReactNode;
   className?: string;
@@ -79,6 +85,8 @@ export default function LeadMagnetForm({
             href={pdfHref}
             className="btn-outline mt-5"
             download
+            target="_blank"
+            rel="noopener"
           >
             {pdfLabel}
           </a>
@@ -93,12 +101,13 @@ export default function LeadMagnetForm({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label htmlFor={id} className="field-label">
-            Email
+            {label}
           </label>
           <input
             id={id}
             type="email"
             name="email"
+            inputMode="email"
             autoComplete="email"
             required
             placeholder="Your best email"
@@ -120,17 +129,19 @@ export default function LeadMagnetForm({
           </p>
         )}
       </div>
-      <p className="type-caption text-muted mt-3">
-        By entering your email you agree to receive the free blueprint and
-        occasional coaching emails. No spam. Unsubscribe anytime. See our{" "}
-        <Link
-          href="/privacy"
-          className="underline underline-offset-2 hover:text-secondary"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
+      {consent ?? (
+        <p className="type-caption text-muted mt-3">
+          By entering your email you agree to receive the free blueprint and
+          occasional coaching emails. No spam. Unsubscribe anytime. See our{" "}
+          <Link
+            href="/privacy"
+            className="underline underline-offset-2 hover:text-secondary"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      )}
     </form>
   );
 }

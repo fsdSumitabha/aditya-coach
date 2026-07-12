@@ -59,6 +59,22 @@ export default function LeadMagnetCard({
             pdfLabel={pdfLabel}
             successTitle={"Check your inbox. It's on the way." /* [review] */}
             successBody={successBody}
+            label="Your email"
+            consent={
+              /* [review] tools-spec DPDP consent — asset-neutral wording */
+              <p className="type-caption text-muted mt-3">
+                By entering your email you agree to receive this guide and
+                occasional emails from Aditya Kumar Upadhyay. Your data is
+                handled under India&apos;s{" "}
+                <Link
+                  href="/privacy"
+                  className="underline underline-offset-2 hover:text-secondary"
+                >
+                  DPDP Act 2023
+                </Link>
+                . Unsubscribe anytime.
+              </p>
+            }
           >
             <p className="type-small text-secondary">
               Read it tonight. When you&apos;re ready to build the full system
@@ -68,19 +84,6 @@ export default function LeadMagnetCard({
               Book My ₹2,000 Consultation
             </Link>
           </LeadMagnetForm>
-
-          {/* [review] DPDP-2023 consent line (compliance checklist) — complements
-              the shared form's consent copy */}
-          <p className="type-caption text-muted mt-3">
-            Your data is handled under India&apos;s{" "}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-2 hover:text-secondary"
-            >
-              DPDP Act 2023
-            </Link>
-            . Unsubscribe anytime.
-          </p>
         </div>
       </div>
     </div>

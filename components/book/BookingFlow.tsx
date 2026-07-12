@@ -62,7 +62,7 @@ const BOOKING = {
   DURATION_MIN: 45,
   COACH_WHATSAPP, // [review] Aditya's WhatsApp (same number as global FAB — set once in lib/config)
   RAZORPAY_KEY: RAZORPAY_KEY || "rzp_test_PLACEHOLDER", // Phase 2
-  REDIRECT_ON_FINISH: false, // Phase-1: redirect stays a comment (see finishIntake) — STATE C stands alone
+  REDIRECT_ON_FINISH: false, // Phase-1 toggle for the /thank-you redirect (wired in finishIntake) — false ⇒ STATE C stands alone
   THANKYOU_URL: "/thank-you?type=booking",
 };
 
@@ -335,10 +335,11 @@ export default function BookingFlow() {
     notifyCoach({ type: "booking_intake", ...intake });
     setState("C");
     setLiveMsg("You're all set. See you on WhatsApp."); /* [review] */
-    // OPTIONAL REDIRECT — intentionally left as a comment in Phase 1
-    // (STATE C stands alone as the final confirmation). PHASE 2: enable via
-    // BOOKING.REDIRECT_ON_FINISH — keep the ?type=booking param:
-    // if (BOOKING.REDIRECT_ON_FINISH) window.location.assign(BOOKING.THANKYOU_URL);
+    // OPTIONAL REDIRECT — functional toggle per spec STATE C. Disabled in
+    // Phase 1 (STATE C stands alone as the final confirmation); flip
+    // BOOKING.REDIRECT_ON_FINISH to true to send users to
+    // /thank-you?type=booking instead.
+    if (BOOKING.REDIRECT_ON_FINISH) window.location.assign(BOOKING.THANKYOU_URL);
   }
 
   function handleIntakeSubmit(e: FormEvent<HTMLFormElement>) {
