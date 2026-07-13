@@ -224,10 +224,18 @@ export default function ProgramsPage() {
 
       {/* ============ 1. HERO — "Work With Me." ============ */}
       <section className="bg-void aurora grain relative overflow-hidden">
-        <div className="container-site section-lg">
-          <div className="max-w-[760px] mx-auto text-center">
+        {/* Full-viewport opener — a short H1 earns a commanding scale */}
+        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16">
+          <div className="max-w-[820px] mx-auto text-center">
+            <div className="mb-6 flex items-center justify-center gap-4">
+              <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+              <p className="eyebrow">THE PROGRAMS{/* [review] */}</p>
+              <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+            </div>
             {/* Hero H1 — never animated (LCP paints at final state frame 1) */}
-            <h1 className="type-h1 text-primary">Work With Me.</h1>
+            <h1 className="font-display text-[clamp(3rem,7vw,5.4rem)] font-medium leading-[1.02] tracking-[-0.03em] text-primary">
+              Work With Me.
+            </h1>
             <Reveal delayMs={80}>
               {/* [review] */}
               <p className="type-lead text-secondary mt-6">
@@ -255,9 +263,9 @@ export default function ProgramsPage() {
                 </CtaLink>
                 <a
                   href="#compare"
-                  className="type-small text-secondary underline underline-offset-4 decoration-[var(--hairline-gold)] hover:text-primary transition-colors min-h-[48px] inline-flex items-center"
+                  className="link-draw type-small text-secondary hover:text-primary transition-colors min-h-[48px] inline-flex items-center"
                 >
-                  Compare the three ways in
+                  Compare the three ways in ↓
                 </a>
               </div>
             </Reveal>
@@ -305,7 +313,10 @@ export default function ProgramsPage() {
                 <div className="spot flex flex-col h-full">
                 <OfferIcon src={IMG_OFFER_ICON_DISCOVERY} alt="Discovery Consultation" />
                 <h2 className="type-h3 text-primary mt-5">Discovery Consultation</h2>
-                <p className="type-price text-gold-grad mt-3">{PRICE_CONSULT}</p>
+                {/* the number the whole page exists to sell — let it carry weight */}
+                <p className="font-display text-gold-grad mt-3 text-[clamp(2.1rem,3.2vw,2.8rem)] leading-none">
+                  {PRICE_CONSULT}
+                </p>
                 <p className="type-small text-muted mt-1">
                   45 minutes · Online via WhatsApp
                 </p>
@@ -646,9 +657,9 @@ export default function ProgramsPage() {
         <div className="container-site py-12 md:py-16">
           {/* Gold-thread stitches bracket the reassurance line, drawing in on scroll */}
           <div className="thread-h sd-draw w-24 mx-auto mb-10" aria-hidden="true" />
-          <Reveal className="text-center">
+          <Reveal className="reveal-blur text-center">
             {/* [review] */}
-            <p className="font-display text-[1.375rem] md:text-[1.75rem] leading-snug tracking-[-0.01em] text-primary max-w-[34ch] mx-auto">
+            <p className="font-display text-[clamp(1.5rem,2.6vw,2.1rem)] leading-snug tracking-[-0.01em] text-primary max-w-[34ch] mx-auto">
               The {PRICE_CONSULT} consultation is the only price you decide on
               today.
             </p>
