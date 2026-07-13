@@ -71,11 +71,12 @@ export default function BlogIndexPage() {
              overflow-hidden contains the aurora bleed (no horizontal scroll). */}
       <section className="aurora grain relative overflow-hidden">
         <div className="container-site pt-16 pb-10 md:pt-24 md:pb-14">
-          <Reveal as="p" className="eyebrow">
-            THE BLOG {/* [review] */}
+          <Reveal className="flex items-center gap-4">
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-10" />
+            <p className="eyebrow">THE BLOG {/* [review] */}</p>
           </Reveal>
           {/* Hero H1 — LCP: never animated, paints at final state frame 1 */}
-          <h1 className="type-h1 mt-4 max-w-[18ch] text-primary">
+          <h1 className="font-display mt-5 max-w-[16ch] text-[clamp(2.4rem,5vw,4rem)] font-medium leading-[1.05] tracking-[-0.025em] text-primary">
             Articles for Men Who Want More.
           </h1>
           <Reveal
@@ -88,7 +89,7 @@ export default function BlogIndexPage() {
             }{" "}
             {/* [review] */}
           </Reveal>
-          <div className="gold-line mt-10" aria-hidden="true" />
+          <div className="thread-h sd-draw mt-10 h-px" aria-hidden="true" />
         </div>
       </section>
 

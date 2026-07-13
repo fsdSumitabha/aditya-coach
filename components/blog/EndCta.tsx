@@ -48,7 +48,7 @@ export default function EndCta({
         — start now.
       </p>
       <div className="cta-stack mt-8 md:justify-center">
-        <Link href={cta.primaryHref} className="btn-gold">
+        <Link href={cta.primaryHref} className="btn-gold shine-loop">
           {cta.primaryLabel}
         </Link>
         <Link href={cta.secondaryHref} className="btn-outline">
