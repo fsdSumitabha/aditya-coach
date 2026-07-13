@@ -16,8 +16,8 @@ export default function GoldenThread() {
   const { geometry, indexCount } = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3(
       [
-        [0, 0.25, 4.5],
-        [1.6, 0.5, -3],
+        [2.3, 0.25, 4.5],
+        [2.0, 0.5, -3],
         [-1.4, 0.35, -10],
         [1.8, 0.8, -16],
         [-2.2, 0.5, -23],

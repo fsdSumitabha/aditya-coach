@@ -107,6 +107,31 @@ const coachingServiceJsonLd = {
   url: `${SITE_ORIGIN}/about`,
 };
 
+/* Chapter marker — the page reads as a numbered narrative (a real sequence:
+   story → journey → belief → who → proof), so the numbering encodes order.
+   Plain markup: wrap in <Reveal> where it stands alone. [review] framing. */
+function Chapter({
+  num,
+  label,
+  center,
+}: {
+  num: string;
+  label: string;
+  center?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-4 ${center ? "justify-center" : ""}`}
+    >
+      <span className="font-display text-[1.5rem] leading-none text-gold-500">
+        {num}
+      </span>
+      <span aria-hidden="true" className="h-px w-10 bg-hairline-gold" />
+      <span className="eyebrow">{label}</span>
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
     <>
@@ -125,15 +150,17 @@ export default function AboutPage() {
           REBUILT
         </span>
 
-        <div className="container-site section-lg relative z-10">
+        {/* Full-viewport cinematic open — the page breathes before it speaks */}
+        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 nav:py-20">
           <div className="grid items-center gap-10 nav:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] nav:gap-16">
             {/* Text block — mobile: after the portrait; desktop: left column */}
             <div className="order-2 nav:order-1">
-              <FadeIn as="p" className="eyebrow" delayMs={120}>
-                MY STORY
+              <FadeIn className="flex items-center gap-4" delayMs={120}>
+                <span aria-hidden="true" className="h-px w-10 bg-hairline-gold" />
+                <p className="eyebrow">MY STORY</p>
               </FadeIn>
               {/* Hero H1 — LCP text, paints at final state frame 1. Never animated. */}
-              <h1 className="type-h1 text-primary mt-4 max-w-[16ch]">
+              <h1 className="font-display mt-5 max-w-[15ch] text-[clamp(2.5rem,5.2vw,4.4rem)] font-medium leading-[1.05] tracking-[-0.025em] text-primary">
                 I rebuilt myself from the ground up. Now I do it for other men.
               </h1>
               <FadeIn as="p" className="type-lead text-secondary mt-6 max-w-[46ch]" delayMs={200}>
@@ -176,6 +203,23 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
+
+          {/* quiet scroll cue, pinned to the hero's base */}
+          <FadeIn
+            delayMs={700}
+            className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2"
+          >
+            <div
+              aria-hidden="true"
+              className="flex flex-col items-center gap-2 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
+            >
+              <span className="type-caption tracking-[0.24em] text-muted">
+                THE STORY BEGINS BELOW
+                {/* [review] */}
+              </span>
+              <span className="block h-9 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -188,7 +232,9 @@ export default function AboutPage() {
               magazine opening. Copy VERBATIM — paragraph breaks pace it, words
               unchanged; each body line blurs up on its own beat. */}
           <div className="mx-auto max-w-[60ch]">
-            <div aria-hidden="true" className="gold-line w-16" />
+            <Reveal>
+              <Chapter num="01" label="THE STORY" />
+            </Reveal>
 
             <Reveal
               as="p"
@@ -210,9 +256,9 @@ export default function AboutPage() {
               That missing thing is always the same.
             </Reveal>
 
-            {/* The four-noun punch — lands a beat after the block above */}
-            <Reveal delayMs={450} className="mt-8">
-              <p className="font-display text-2xl leading-snug text-gold-300 md:text-[2rem]">
+            {/* The four-noun punch — the page's loudest typographic moment */}
+            <Reveal delayMs={450} className="mt-10">
+              <p className="font-display border-l-2 border-gold-500 pl-6 text-[clamp(1.75rem,3.6vw,2.9rem)] leading-[1.25] text-gold-300">
                 Their health. Their drive. Their confidence. Their discipline.
               </p>
             </Reveal>
@@ -250,6 +296,9 @@ export default function AboutPage() {
       <section className="bg-base cv-auto overflow-hidden">
         <div className="container-site section">
           <div className="max-w-2xl">
+            <Reveal className="mb-5">
+              <Chapter num="02" label="THE JOURNEY" />
+            </Reveal>
             <SplitHeading
               as="h2"
               text="The Long Way Back."
@@ -369,8 +418,8 @@ export default function AboutPage() {
           <div aria-hidden="true" className="thread-h sd-draw mb-8 w-24" />
 
           <Reveal className="max-w-2xl">
-            <p className="eyebrow">WHAT I BELIEVE</p>
-            <h2 className="type-h2 text-primary mt-3">
+            <Chapter num="03" label="WHAT I BELIEVE" />
+            <h2 className="type-h2 text-primary mt-5">
               Change has a right order. Most men do it backwards.{/* [review] */}
             </h2>
             <p className="type-body text-secondary mt-5 max-w-[62ch]">
@@ -416,6 +465,9 @@ export default function AboutPage() {
       {/* ============ Section 5 — WHO I HELP ("Two Men") ============ */}
       <section className="bg-base cv-auto">
         <div className="container-site section">
+          <Reveal className="mb-5">
+            <Chapter num="04" label="WHO THIS IS FOR" center />
+          </Reveal>
           <SplitHeading
             as="h2"
             text="Who This Is For."
@@ -465,6 +517,9 @@ export default function AboutPage() {
       <section className="bg-alt border-y border-hairline-soft cv-auto">
         <div className="container-site section">
           <div className="text-center">
+            <Reveal className="mb-5">
+              <Chapter num="05" label="THE PROOF" center />
+            </Reveal>
             <SplitHeading
               as="h2"
               text="Proof. On my own body."

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Float, Text } from "@react-three/drei";
 import * as THREE from "three";
 import Hotspot from "./Hotspot";
@@ -58,6 +58,12 @@ export function Arrival() {
   const outer = useRef<THREE.Mesh>(null);
   const mid = useRef<THREE.Mesh>(null);
   const inner = useRef<THREE.Mesh>(null);
+  // landscape: seal lives right-of-frame so the headline owns the left;
+  // portrait: seal centered high above the bottom text block
+  const { size } = useThree();
+  const landscape = size.width > size.height;
+  const sealX = landscape ? 2.35 : 0;
+  const sealY = landscape ? 1.55 : 2.15;
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
@@ -75,7 +81,7 @@ export function Arrival() {
   });
 
   return (
-    <group position={[0, 1.55, 0]}>
+    <group position={[sealX, sealY, 0]}>
       <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.5}>
         <mesh ref={outer}>
           <torusGeometry args={[1.15, 0.028, 12, 96]} />

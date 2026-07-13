@@ -55,7 +55,13 @@ export default function Overlay() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -18 }}
             transition={{ duration: 0.7, ease: easeExpo }}
-            className="absolute inset-x-0 bottom-[16dvh] flex flex-col items-center px-5 text-center sm:bottom-[12dvh]"
+            className={
+              chapter.id === "arrival"
+                ? // arrival: left-composed against the seal on the right (landscape);
+                  // centered above the fold on portrait
+                  "absolute inset-x-0 bottom-[14dvh] flex flex-col items-center px-5 text-center sm:inset-x-auto sm:left-[7vw] sm:bottom-[16dvh] sm:max-w-[620px] sm:items-start sm:text-left"
+                : "absolute inset-x-0 bottom-[16dvh] flex flex-col items-center px-5 text-center sm:bottom-[12dvh]"
+            }
           >
             <p className={EYEBROW}>{chapter.eyebrow}</p>
             {chapter.id === "arrival" ? (
