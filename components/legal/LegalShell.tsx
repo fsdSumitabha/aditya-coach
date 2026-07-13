@@ -1,11 +1,17 @@
 import Link from "next/link";
-import Reveal from "@/components/Reveal";
 import type { ReactNode } from "react";
 
 /**
  * Shared frame for /privacy, /terms, /refund (spec §0):
  * dark single column, 720px measure, back-link above H1, updated/effective
- * stamp, optional "On this page" TOC, quiet single reveal on the intro.
+ * stamp, optional "On this page" TOC.
+ *
+ * Elevation (Design Kit 2.0), kept sober: a `thread-h` gold stitch draws in
+ * under the stamp on scroll, and the TOC card is a `spot` (cursor-tracked
+ * glow) with `link-draw` anchors. Aurora is deliberately skipped here — it is
+ * built for section-height bands, not a full-page scroll wrapper, and the kit
+ * marks it optional for legal ("otherwise skip"). The H1 (LCP) is
+ * intentionally NOT wrapped in Reveal — it paints frame 1.
  */
 export default function LegalShell({
   title,
@@ -34,18 +40,19 @@ export default function LegalShell({
             ← Back to home
           </Link>
 
-          <Reveal>
-            <h1 className="type-h1 text-primary mt-6">{title}</h1>
-            <p className="type-caption text-muted mt-3">
-              Last updated: {lastUpdated}
-              {effectiveDate ? ` · Effective: ${effectiveDate}` : null}
-            </p>
-          </Reveal>
+          <h1 className="type-h1 text-primary mt-6">{title}</h1>
+          <p className="type-caption text-muted mt-3">
+            Last updated: {lastUpdated}
+            {effectiveDate ? ` · Effective: ${effectiveDate}` : null}
+          </p>
+
+          {/* Gold-thread stitch: draws itself in under the stamp on scroll. */}
+          <div aria-hidden="true" className="thread-h sd-draw mt-6" />
 
           {toc && toc.length > 0 && (
             <nav
               aria-label="On this page"
-              className="card mt-8"
+              className="card spot mt-8"
               style={{ padding: 20 }}
             >
               <p className="type-step text-muted mb-3">On this page</p>
@@ -54,7 +61,7 @@ export default function LegalShell({
                   <li key={t.id}>
                     <a
                       href={`#${t.id}`}
-                      className="type-small text-secondary hover:text-primary transition-colors"
+                      className="link-draw type-small text-secondary hover:text-primary transition-colors"
                     >
                       {t.label}
                     </a>

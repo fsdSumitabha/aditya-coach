@@ -39,7 +39,7 @@ function MiniCard({
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className={`card flex h-full flex-col gap-3 ${
+      className={`card group flex h-full flex-col gap-3 ${
         isNext
           ? "items-end text-right min-[600px]:col-start-2"
           : "items-start text-left min-[600px]:col-start-1"
@@ -49,7 +49,10 @@ function MiniCard({
         {isNext ? "Next →" : "← Previous"}
       </span>
       <CategoryChip label={post.category} />
-      <span className="type-h3 font-display text-primary">{post.title}</span>
+      {/* Title underline draws in on card hover (link-draw base = hidden) */}
+      <span className="type-h3 font-display text-primary link-draw group-hover:[&::after]:[transform:scaleX(1)]">
+        {post.title}
+      </span>
     </Link>
   );
 }

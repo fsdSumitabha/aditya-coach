@@ -35,7 +35,7 @@ export default function FinalCta({
   ) : null;
 
   return (
-    <section className="bg-surface-warm glow-top grain border-t border-hairline-soft">
+    <section className="bg-surface-warm glow-top grain aurora relative overflow-hidden border-t border-hairline-soft">
       <div
         className="container-site section flex flex-col items-center text-center"
         style={{ paddingBottom: 112 }}

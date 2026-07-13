@@ -102,9 +102,23 @@ export default function Calculator() {
   // staggered target → current → gap → protein via increasing durations.
   const startOn = runs === 0 ? ("visible" as const) : ("mount" as const);
   const gapAbs = Math.abs(result.gapKcal);
+  // Gap-bar fill: the gold "body you want" as a fraction of the muted "body
+  // you have" track. Clamped to [0,1] so the bar never overflows the track.
+  const barScale =
+    result.currentKcal > 0
+      ? Math.max(0, Math.min(1, result.targetKcal / result.currentKcal))
+      : 0;
 
   return (
-    <div className="card-dark-gold">
+    <>
+      {/* gap-bar fill keyframe — motion-safe only; reduced motion holds the
+          final scaleX (the inline transform) with no animation. */}
+      <style>{`@media (prefers-reduced-motion: no-preference){.gap-bar-fill{animation:gap-fill .9s var(--ease-out-expo) both}}
+@keyframes gap-fill{from{transform:scaleX(0)}}`}</style>
+      <div
+        className="card-dark-gold spot"
+        style={{ borderTopColor: "var(--gold-500)" }}
+      >
       <form onSubmit={onSubmit} noValidate>
         <div className="grid gap-5 md:grid-cols-3">
           <div>
@@ -215,36 +229,74 @@ export default function Calculator() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 mt-3">
-          {/* Left — TARGET (hero number, gold) */}
-          <div className="rounded-xl border border-hairline-gold bg-[rgba(201,162,75,0.07)] p-5 text-center min-h-[150px] flex flex-col justify-center">
-            <p className="type-caption text-secondary uppercase tracking-[0.08em]">
-              Your target — eat for the body you want{/* [review] */}
-            </p>
-            <p className="type-numeral mt-3">
-              <CountUp
-                key={`target-${runs}`}
-                value={result.targetKcal}
-                durationMs={800}
-                startOn={startOn}
-              />
-            </p>
-            <p className="type-small text-muted mt-1">kcal/day</p>
-          </div>
+          {/* Left — TARGET (hero number, metallic gold gradient) */}
+          <Reveal className="reveal-scale">
+            <div className="rounded-xl border border-hairline-gold bg-[rgba(201,162,75,0.07)] p-5 text-center min-h-[150px] h-full flex flex-col justify-center">
+              <p className="type-caption text-secondary uppercase tracking-[0.08em]">
+                Your target — eat for the body you want{/* [review] */}
+              </p>
+              <p className="type-numeral mt-3">
+                <CountUp
+                  className="text-gold-grad"
+                  key={`target-${runs}`}
+                  value={result.targetKcal}
+                  durationMs={800}
+                  startOn={startOn}
+                />
+              </p>
+              <p className="type-small text-muted mt-1">kcal/day</p>
+            </div>
+          </Reveal>
 
           {/* Right — CURRENT (contrast number, muted) */}
-          <div className="rounded-xl border border-hairline-soft p-5 text-center min-h-[150px] flex flex-col justify-center">
-            <p className="type-caption text-muted uppercase tracking-[0.08em]">
-              What maintains the body you have now{/* [review] */}
-            </p>
-            <p className="font-display text-[2.5rem] md:text-[3.5rem] leading-none text-secondary mt-3">
-              <CountUp
-                key={`current-${runs}`}
-                value={result.currentKcal}
-                durationMs={950}
-                startOn={startOn}
-              />
-            </p>
-            <p className="type-small text-muted mt-1">kcal/day</p>
+          <Reveal className="reveal-scale" index={1}>
+            <div className="rounded-xl border border-hairline-soft p-5 text-center min-h-[150px] h-full flex flex-col justify-center">
+              <p className="type-caption text-muted uppercase tracking-[0.08em]">
+                What maintains the body you have now{/* [review] */}
+              </p>
+              <p className="font-display text-[2.5rem] md:text-[3.5rem] leading-none text-secondary mt-3">
+                <CountUp
+                  key={`current-${runs}`}
+                  value={result.currentKcal}
+                  durationMs={950}
+                  startOn={startOn}
+                />
+              </p>
+              <p className="type-small text-muted mt-1">kcal/day</p>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* ---- GAP BAR — decorative viz: gold "want" fills to target/current
+            of the muted "have" track. transform:scaleX only, grows from the
+            left; labelled with the already-rendered target/current numbers. */}
+        <div className="mt-7" aria-hidden="true">
+          <div className="flex items-end justify-between gap-4">
+            <span className="font-display text-[1.5rem] md:text-[1.75rem] leading-none text-gold-grad">
+              {result.targetKcal.toLocaleString("en-IN")}
+            </span>
+            <span className="font-display text-[1.5rem] md:text-[1.75rem] leading-none text-secondary">
+              {result.currentKcal.toLocaleString("en-IN")}
+            </span>
+          </div>
+          <div className="relative mt-2 h-2.5 rounded-full overflow-hidden bg-[rgba(244,241,234,0.08)]">
+            <div
+              key={`gapbar-${runs}`}
+              className="gap-bar-fill absolute inset-y-0 left-0 w-full"
+              style={{
+                transform: `scaleX(${barScale})`,
+                transformOrigin: "left center",
+                background: "var(--grad-gold)",
+              }}
+            />
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-4 type-caption uppercase tracking-[0.08em]">
+            <span className="text-secondary">
+              Body you want{/* [review] gap-bar axis label */}
+            </span>
+            <span className="text-muted">
+              Body you have{/* [review] gap-bar axis label */}
+            </span>
           </div>
         </div>
 
@@ -332,6 +384,7 @@ export default function Calculator() {
           </Link>
         </p>
       </Reveal>
-    </div>
+      </div>
+    </>
   );
 }

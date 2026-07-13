@@ -38,7 +38,7 @@ export default function EndCta({
   return (
     <aside
       aria-label="Take the next step"
-      className="card card-featured mt-14 text-center"
+      className="card card-featured aurora overflow-hidden mt-14 text-center"
     >
       <h2 className="type-h2 mx-auto max-w-[20ch] text-primary">
         The man you want to become is waiting for one decision.

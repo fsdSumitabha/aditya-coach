@@ -3,11 +3,13 @@ import type { ComponentType, ReactNode, SVGProps } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import JsonLd from "@/components/JsonLd";
+import SplitHeading from "@/components/SplitHeading";
+import Marquee from "@/components/Marquee";
 import { WhatsAppIcon } from "@/components/icons";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { waLink } from "@/lib/config";
-import ConnectorRail from "@/components/method/ConnectorRail";
 import SmoothScrollLink from "@/components/method/SmoothScrollLink";
+import FoundationStack from "@/components/method/FoundationStack";
 import {
   OG_METHOD_IMG,
   ICON_STEP1,
@@ -86,47 +88,6 @@ const STEPS: Step[] = [
       { lead: "Why it's last:", text: "Because most of what men think is a medical problem disappears once the first three layers are fixed. You only escalate here when the foundation is already solid." } /* [review] */,
       { lead: "Skip to here first and:", text: "you medicalise a lifestyle problem — treating a symptom while the real cause is still running the show." } /* [review] */,
     ],
-  },
-];
-
-// ---- Foundation stack tiers (DOM top→bottom = Medical→Lifestyle; step
-// numbers inverted so the base tier is 01). Reveal delays run bottom-up. ----
-const TIERS = [
-  {
-    num: "04",
-    name: "MEDICAL",
-    label: "Last, if needed" /* [review] */,
-    width: "44%",
-    bg: "var(--surface-1)",
-    edge: "rgba(201, 162, 75, 0.25)",
-    delay: 360,
-  },
-  {
-    num: "03",
-    name: "SUPPLEMENTS",
-    label: "Fills the gaps" /* [review] */,
-    width: "62%",
-    bg: "var(--surface-1)",
-    edge: "rgba(201, 162, 75, 0.45)",
-    delay: 240,
-  },
-  {
-    num: "02",
-    name: "NUTRITION",
-    label: "Built on top" /* [review] */,
-    width: "81%",
-    bg: "var(--surface-2)",
-    edge: "rgba(201, 162, 75, 0.7)",
-    delay: 120,
-  },
-  {
-    num: "01",
-    name: "LIFESTYLE",
-    label: "The Foundation" /* [review] */,
-    width: "100%",
-    bg: "var(--surface-warm)",
-    edge: "var(--gold-500)",
-    delay: 0,
   },
 ];
 
@@ -211,8 +172,15 @@ export default function MethodPage() {
       <JsonLd data={[howToSchema, serviceSchema, breadcrumbSchema]} />
 
       {/* ============ 2. HERO — DOCTRINE OPENER ============ */}
-      <section className="bg-void glow-top grain">
-        <div className="container-site section-lg">
+      <section className="aurora grain relative overflow-hidden bg-void">
+        {/* ONE ghost watermark behind the doctrine block — decorative, drifts */}
+        <span
+          aria-hidden="true"
+          className="ghost-word sd-ghost-drift left-[2%] top-[30%] md:left-[6%]"
+        >
+          ORDER
+        </span>
+        <div className="container-site section-lg relative z-10">
           <div className="mx-auto flex max-w-[720px] flex-col items-center text-center md:mx-0 md:items-start md:text-left">
             <div aria-hidden="true" className="mb-6 h-px w-14 bg-gold-500/70" />
             <p className="eyebrow">THE METHOD</p>{/* [review] */}
@@ -223,7 +191,7 @@ export default function MethodPage() {
                 Most coaches get this wrong.
               </span>
             </h1>
-            <Reveal delayMs={100} className="mt-8 max-w-[62ch] space-y-4">
+            <Reveal delayMs={100} className="reveal-blur mt-8 max-w-[62ch] space-y-4">
               <p className="type-lead text-secondary">
                 Most coaches hand you a diet. A supplement stack. A quick fix.
               </p>{/* [review] */}
@@ -261,56 +229,34 @@ export default function MethodPage() {
       {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle base → Medical top) ============ */}
       <section
         id="foundation-stack"
-        className="cv-auto border-y border-hairline-soft bg-alt"
+        className="border-y border-hairline-soft bg-alt"
       >
-        <div className="container-site section">
-          {/* Real-text equivalent for assistive tech — the stack below is decorative */}
-          <p className="sr-only">
-            Foundation stack: Lifestyle at the base, then Nutrition, then
-            Supplements, Medical at the top.
-          </p>
-          <div aria-hidden="true" className="mx-auto max-w-[560px]">
-            <Reveal delayMs={0} className="mb-4 text-center">
-              <p className="type-caption tracking-[0.16em] text-gold-500">
-                EVERYTHING SITS ON THIS ↓
-              </p>{/* [review] */}
-            </Reveal>
-            <div className="flex flex-col items-center gap-2">
-              {TIERS.map((t) => (
-                <Reveal
-                  key={t.num}
-                  delayMs={t.delay}
-                  style={{ width: t.width, minWidth: "10.5rem" }}
-                >
-                  <div
-                    className="flex flex-col items-center gap-0.5 rounded-md border border-hairline-soft px-4 py-3 text-center md:py-4"
-                    style={{ background: t.bg, borderLeft: `3px solid ${t.edge}` }}
-                  >
-                    <span className="type-caption text-gold-500">{t.num}</span>
-                    <span className="font-display text-[0.9375rem] tracking-[0.08em] text-primary md:text-lg">
-                      {t.name}
-                    </span>
-                    <span className="type-caption text-muted">{t.label}</span>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-          <Reveal delayMs={480}>
-            <p className="type-body mx-auto mt-8 max-w-[48ch] text-center text-secondary">
-              Everyone wants to live at the top. But the top only holds if the
-              bottom is built first.
-            </p>{/* [review] */}
-          </Reveal>
-        </div>
+        {/* Real-text equivalent for assistive tech — the stack below is decorative */}
+        <p className="sr-only">
+          Foundation stack: Lifestyle at the base, then Nutrition, then
+          Supplements, Medical at the top.
+        </p>
+        {/* Showpiece: sticky-pinned scene, tiers assemble bottom-up on scroll */}
+        <FoundationStack />
       </section>
+
+      {/* Decorative ticker — verbatim layer labels bridging into the four steps */}
+      <div className="border-b border-hairline-soft bg-void py-6 md:py-8">
+        <Marquee
+          items={["Lifestyle", "Nutrition", "Supplements", "Medical"]}
+          speedS={34}
+        />
+      </div>
 
       {/* ============ 4. FOUR EXPANDED STEP SECTIONS (01 → 04) ============ */}
       <section className="cv-auto bg-base">
         <div className="container-site section">
           <div className="relative">
-            {/* connector line — fills with gold as the user scrolls (decorative) */}
-            <ConnectorRail className="absolute bottom-6 left-[27px] top-4 w-[2px] md:left-[47px]" />
+            {/* the gold thread — draws itself down the steps as you scroll */}
+            <div
+              aria-hidden="true"
+              className="thread-v sd-draw absolute bottom-6 left-[30px] top-4 z-0 md:left-[52px]"
+            />
             <ol className="relative flex list-none flex-col gap-10 md:gap-14">
               {STEPS.map((step, i) => {
                 const Icon = step.Icon;
@@ -318,15 +264,28 @@ export default function MethodPage() {
                   <li
                     key={step.id}
                     id={step.id}
-                    className="grid grid-cols-[56px_minmax(0,1fr)] gap-x-3 md:grid-cols-[96px_minmax(0,1fr)] md:gap-x-8"
+                    className="grid grid-cols-[60px_minmax(0,1fr)] gap-x-3 md:grid-cols-[104px_minmax(0,1fr)] md:gap-x-8"
                   >
-                    {/* ornamental oversized numeral — sits on the line as a node */}
-                    <div aria-hidden="true" className="self-start justify-self-center">
-                      <Reveal className="bg-base py-2">
-                        <span className="type-numeral">{step.num}</span>
-                      </Reveal>
+                    {/* ornamental oversized numeral — a gold bead on the thread.
+                        Outer span = solid base mask (hides the line behind the
+                        glyph); inner span = metallic gradient text. */}
+                    <div
+                      aria-hidden="true"
+                      className="relative z-10 self-start justify-self-center"
+                    >
+                      <span className="block bg-base px-1 py-2">
+                        <span
+                          className="type-numeral text-gold-grad block text-center"
+                          style={{ fontSize: "clamp(48px, 8vw, 92px)", lineHeight: 1 }}
+                        >
+                          {step.num}
+                        </span>
+                      </span>
                     </div>
-                    <Reveal delayMs={100} className="min-w-0">
+                    <Reveal
+                      delayMs={100}
+                      className={`min-w-0 ${i % 2 === 0 ? "reveal-left" : "reveal-right"}`}
+                    >
                       <article
                         className="card"
                         style={
@@ -401,9 +360,13 @@ export default function MethodPage() {
       {/* ============ 5. "WHY THE ORDER MATTERS" + MYTH vs TRUTH ============ */}
       <section className="cv-auto border-y border-hairline-soft bg-alt">
         <div className="container-site section">
-          <Reveal className="max-w-[720px]">
-            <h2 className="type-h2 text-primary">Why the order matters.</h2>
-            <div className="mt-6 space-y-4">
+          <div className="max-w-[720px]">
+            <SplitHeading
+              as="h2"
+              text="Why the order matters."
+              className="type-h2 text-primary"
+            />
+            <Reveal delayMs={100} className="reveal-blur mt-6 space-y-4">
               <p className="type-lead text-secondary">
                 Anyone can hand you a diet. Anyone can sell you a pill.
               </p>{/* [review] */}
@@ -423,8 +386,8 @@ export default function MethodPage() {
               <p className="type-lead text-primary">
                 Same ingredients. Different order. Completely different life.
               </p>{/* [review] */}
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
 
           <dl className="mt-12 flex flex-col md:mt-16">
             {MYTH_TRUTH.map((row, i) => (
@@ -432,7 +395,11 @@ export default function MethodPage() {
                 key={i}
                 className="grid gap-y-3 border-b border-hairline-soft py-6 first:border-t md:grid-cols-2 md:gap-x-10"
               >
-                <Reveal as="dt" index={i} className="type-body text-muted">
+                <Reveal
+                  as="dt"
+                  index={i}
+                  className="reveal-left type-body text-muted"
+                >
                   <span className="type-step mb-1 block text-muted">
                     Myth
                   </span>{/* [review] */}
@@ -441,7 +408,7 @@ export default function MethodPage() {
                 <Reveal
                   as="dd"
                   delayMs={i * 100 + 150}
-                  className="type-body border-l-2 border-[var(--gold-500)] pl-4 text-primary"
+                  className="reveal-right type-body border-l-2 border-[var(--gold-500)] pl-4 text-primary"
                 >
                   <span className="type-step mb-1 block text-gold-500">
                     Truth
@@ -457,6 +424,11 @@ export default function MethodPage() {
       {/* ============ 6. MEDICAL / RESULTS DISCLAIMER STRIP (compliance) ============ */}
       <section className="bg-void">
         <div className="container-site py-8 md:py-10">
+          {/* gold thread stitch above the compliance strip */}
+          <div
+            aria-hidden="true"
+            className="thread-h sd-draw mx-auto mb-8 w-full max-w-[88ch]"
+          />
           <p className="type-small mx-auto max-w-[88ch] text-center text-muted">
             Aditya is a lifestyle coach, not a doctor or registered dietitian.
             This method is general guidance, not medical advice, and individual
@@ -468,9 +440,9 @@ export default function MethodPage() {
       </section>
 
       {/* ============ 7. FINAL CTA BLOCK → /book (primary) + /tools (secondary) ============ */}
-      <section className="grain glow-top border-t border-hairline-gold bg-surface-warm">
+      <section className="aurora grain relative overflow-hidden border-t border-hairline-gold bg-surface-warm">
         <div
-          className="container-site section flex flex-col items-center text-center"
+          className="container-site section relative z-10 flex flex-col items-center text-center"
           style={{ paddingBottom: 112 }}
         >
           <Reveal>

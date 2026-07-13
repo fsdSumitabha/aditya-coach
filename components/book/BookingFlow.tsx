@@ -43,8 +43,8 @@ import {
   type SVGProps,
 } from "react";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
 import PlaceholderImage from "@/components/PlaceholderImage";
-import { CheckIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
   RAZORPAY_KEY,
@@ -364,8 +364,12 @@ export default function BookingFlow() {
 
       {/* ================= STATE A — PRE-PAYMENT ================= */}
       <div hidden={!stateA} aria-hidden={!stateA}>
-        {/* ---------- §1 HERO (tight, single-column, conversion-first) ---------- */}
-        <section className="section glow-top">
+        {/* The steps of the flow (hero → what happens → intake → payment) are
+            wrapped so a single gold thread can stitch them down the left gutter
+            as one continuous line to the signature. */}
+        <div className="relative">
+          {/* ---------- §1 HERO (tight, single-column, conversion-first) ---------- */}
+          <section className="section aurora grain relative overflow-hidden">
           <div className="container-site">
             <div className="mx-auto max-w-[62ch] text-center">
               {/* IMG_BOOK_HERO intentionally omitted — hero is pure type on
@@ -423,11 +427,11 @@ export default function BookingFlow() {
         <section className="section cv-auto">
           <div className="container-site">
             <div className="mx-auto max-w-[860px]">
-              <Reveal index={0}>
-                <h2 className="type-h2 text-primary">
-                  What happens on the call
-                </h2>
-              </Reveal>
+              <SplitHeading
+                as="h2"
+                text="What happens on the call"
+                className="type-h2 text-primary"
+              />
               <Reveal index={1}>
                 {/* [review] */}
                 <p className="type-lead mt-4 text-secondary">
@@ -435,11 +439,37 @@ export default function BookingFlow() {
                   exact order things need to change.
                 </p>
               </Reveal>
+              {/* metallic gold gradient for the ordered step glyphs (decorative) */}
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                width="0"
+                height="0"
+                className="absolute h-0 w-0"
+              >
+                <defs>
+                  <linearGradient
+                    id="book-icon-gold"
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#e8d9a8" />
+                    <stop offset="45%" stopColor="#c9a24b" />
+                    <stop offset="100%" stopColor="#f0e6c8" />
+                  </linearGradient>
+                </defs>
+              </svg>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {CALL_POINTS.map((point, i) => (
-                  <Reveal key={point.lead} index={i + 2} className="card h-full">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-hairline-gold text-gold-300">
-                      <point.Icon />
+                  <Reveal
+                    key={point.lead}
+                    index={i + 2}
+                    className="card spot h-full reveal-left"
+                  >
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-hairline-gold">
+                      <point.Icon stroke="url(#book-icon-gold)" />
                     </span>
                     <h3 className="type-h3 mt-4 text-primary">{point.lead}</h3>
                     <p className="type-body mt-2 text-secondary">
@@ -465,9 +495,11 @@ export default function BookingFlow() {
         <section id="intake" className="section scroll-mt-24">
           <div className="container-site">
             <div className="mx-auto max-w-[560px]">
-              <Reveal index={0}>
-                <h2 className="type-h2 text-primary">First, the basics.</h2>
-              </Reveal>
+              <SplitHeading
+                as="h2"
+                text="First, the basics."
+                className="type-h2 text-primary"
+              />
               <Reveal index={1}>
                 {/* [review] */}
                 <p className="type-body mt-3 text-secondary">
@@ -477,7 +509,14 @@ export default function BookingFlow() {
               </Reveal>
 
               <form noValidate onSubmit={handlePaySubmit} className="mt-8">
-                <Reveal index={2} className="grid gap-5">
+                <Reveal index={2}>
+                  {/* intake card: gold hairline top edge + cursor spotlight */}
+                  <div className="card spot">
+                    <div
+                      aria-hidden="true"
+                      className="gold-line -mx-6 -mt-6 mb-6 md:-mx-8 md:-mt-8 md:mb-8"
+                    />
+                    <div className="grid gap-5">
                   {/* 1 — Full name */}
                   <div>
                     <label htmlFor="bk-name" className="field-label">
@@ -653,12 +692,14 @@ export default function BookingFlow() {
                       {errors.goal}
                     </p>
                   </div>
+                    </div>
+                  </div>
                 </Reveal>
 
                 {/* ---------- §4 PAYMENT BLOCK ---------- */}
                 <Reveal index={3}>
-                  <div id="pay" className="card card-featured mt-8">
-                    <p className="type-price text-primary">₹2,000</p>
+                  <div id="pay" className="card card-featured spot mt-8">
+                    <p className="type-price text-gold-grad">₹2,000</p>
                     <p className="type-small mt-1 text-secondary">
                       · 45-minute Discovery Consultation on WhatsApp
                     </p>
@@ -733,7 +774,20 @@ export default function BookingFlow() {
               </form>
             </div>
           </div>
-        </section>
+          </section>
+
+          {/* The gold thread: one continuous 1px line drawing itself down the
+              left gutter as you scroll, stitching hero → payment. Decorative,
+              desktop only, reduced-motion → static (kit classes handle both). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 hidden lg:block"
+          >
+            <div className="container-site relative h-full">
+              <div className="thread-v sd-draw absolute inset-y-0 left-0" />
+            </div>
+          </div>
+        </div>
 
         {/* ---------- §7 FAQ (STATE A only) ---------- */}
         <section className="section cv-auto">
@@ -744,7 +798,7 @@ export default function BookingFlow() {
               </Reveal>
               <div className="mt-8 grid gap-4">
                 <Reveal index={1}>
-                  <details className="card group">
+                  <details className="card group spot">
                     <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
                       <span className="type-h3 text-primary">
                         Is the payment safe?
@@ -764,7 +818,7 @@ export default function BookingFlow() {
                   </details>
                 </Reveal>
                 <Reveal index={2}>
-                  <details className="card group">
+                  <details className="card group spot">
                     <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
                       <span className="type-h3 text-primary">
                         Can I get a refund?
@@ -791,7 +845,7 @@ export default function BookingFlow() {
                   </details>
                 </Reveal>
                 <Reveal index={3}>
-                  <details className="card group">
+                  <details className="card group spot">
                     <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
                       <span className="type-h3 text-primary">
                         What if I can&apos;t make the time?
@@ -845,7 +899,7 @@ export default function BookingFlow() {
 
       {/* ============ STATE B + C (the §6 banner persists into C) ============ */}
       <div hidden={stateA} aria-hidden={stateA}>
-        <section className="section">
+        <section className="section aurora grain relative overflow-hidden">
           <div className="container-site">
             <div className="mx-auto max-w-[720px]">
               <div ref={postPayRef}>
@@ -853,7 +907,7 @@ export default function BookingFlow() {
                 <div className="card card-featured">
                   <div className="flex items-start gap-4">
                     <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-300">
-                      <CheckIcon width={20} height={20} aria-hidden="true" />
+                      <DrawCheckIcon width={20} height={20} />
                     </span>
                     <BannerHeading
                       ref={bannerHeadingRef}
@@ -1152,6 +1206,28 @@ function ShieldGlyph(props: SVGProps<SVGSVGElement>) {
     >
       <path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z" />
       <path d="M9 12l2 2 4-4" />
+    </svg>
+  );
+}
+
+// Success-banner check that draws itself in on STATE B entry. pathLength=60
+// matches the kit's .stroke-draw dasharray (60), so the tick strokes on
+// regardless of its geometric length; reduced motion → static (kit-handled).
+function DrawCheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path className="stroke-draw" pathLength={60} d="M20 6 9 17l-5-5" />
     </svg>
   );
 }

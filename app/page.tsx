@@ -4,8 +4,11 @@ import Link from "next/link";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import LeadMagnetForm from "@/components/LeadMagnetForm";
+import Marquee from "@/components/Marquee";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
+import TiltCard from "@/components/TiltCard";
 import { BLUEPRINT_PDF } from "@/lib/config";
 import { businessSchema, personSchema } from "@/lib/schema";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
@@ -123,9 +126,10 @@ const BLUEPRINT_SUCCESS_BODY = "Check your inbox for the Lifestyle Blueprint."; 
 // WhatsApp conversion lives on /programs itself.
 const SEE_PROGRAMS_LABEL = "See Programs"; /* [review] */
 
-// Shared inline text-link style (page-scoped)
+// Shared inline text-link style (page-scoped) — gold underline draws in on
+// hover/keyboard focus (link-draw), replacing the plain text-decoration underline
 const TEXT_LINK =
-  "inline-block py-2 font-semibold text-gold-300 underline-offset-4 transition-colors hover:text-gold-200 hover:underline";
+  "link-draw inline-block py-2 font-semibold text-gold-300 transition-colors hover:text-gold-200";
 
 export default function Home() {
   return (
@@ -135,9 +139,17 @@ export default function Home() {
       {/* ============ SECTION 1 — HERO ============ */}
       <section
         id="hero"
-        className="bg-void glow-top grain border-b border-hairline-soft"
+        className="bg-void glow-top grain aurora relative overflow-hidden border-b border-hairline-soft"
       >
-        <div className="container-site section-lg grid items-center gap-12 nav:grid-cols-[55fr_45fr] nav:gap-16">
+        {/* one ghost watermark — vocabulary from the H1 — drifting behind the
+            portrait side; decorative, clipped by the section's overflow-hidden */}
+        <span
+          aria-hidden="true"
+          className="ghost-word sd-ghost-drift bottom-[4%] right-[-4%] hidden sm:block"
+        >
+          POTENTIAL
+        </span>
+        <div className="container-site section-lg relative z-10 grid items-center gap-12 nav:grid-cols-[55fr_45fr] nav:gap-16">
           <div>
             {/* Scripted entrance: above-fold Reveals fire immediately via IO;
                 delays ~70ms apart starting ~80ms after paint. */}
@@ -152,7 +164,7 @@ export default function Home() {
             <Reveal
               as="p"
               delayMs={150}
-              className="type-lead text-secondary mt-6 max-w-[46ch]"
+              className="type-lead text-secondary reveal-blur mt-6 max-w-[46ch]"
             >
               {
                 "Men's Lifestyle Coach helping men rebuild their body, mind and confidence."
@@ -165,7 +177,7 @@ export default function Home() {
                 Coaching worldwide
               </span>
             </Reveal>
-            <Reveal delayMs={220} className="mt-8">
+            <Reveal delayMs={220} className="reveal-scale mt-8">
               <div className="cta-stack">
                 <Link href={LINKS.blueprint} className="btn-gold">
                   Get My Free Blueprint
@@ -183,7 +195,7 @@ export default function Home() {
           {/* Portrait — the page's real LCP element, so it paints statically
               (A2 hard rule beats the fade); the entrance is the spec's
               alternative gold-glow fade-in, animated on the glow only. */}
-          <div className="relative mx-auto w-full max-w-[420px] nav:max-w-none">
+          <div className="sd-parallax-soft relative mx-auto w-full max-w-[420px] nav:max-w-none">
             <Reveal
               delayMs={300}
               className="pointer-events-none absolute -inset-y-8 inset-x-0 -z-10"
@@ -201,6 +213,7 @@ export default function Home() {
               h={IMAGES.heroPortrait.h}
               variant="portrait"
               alt={IMAGES.heroPortrait.alt}
+              className="sd-zoom"
             />
           </div>
         </div>
@@ -209,33 +222,40 @@ export default function Home() {
       {/* ============ SECTION 2 — METHOD TEASER ============ */}
       <section id="method-teaser" className="cv-auto bg-base">
         <div className="container-site section">
-          <Reveal className="max-w-2xl">
-            <p className="eyebrow">THE METHOD</p>
+          <div className="max-w-2xl">
+            <Reveal as="p" className="eyebrow">
+              THE METHOD
+            </Reveal>
             {/* [review] */}
-            <h2 className="type-h2 text-primary mt-3">
-              The Right Order of Change. Most coaches get this wrong.
-            </h2>
-          </Reveal>
-          <ol className="mt-10 grid gap-5 sm:grid-cols-2 nav:grid-cols-4">
-            {METHOD_STEPS.map((step, i) => (
-              <Reveal as="li" key={step.num} delayMs={i * 60} className="relative">
-                <div className="card h-full">
-                  <p className="type-numeral" aria-hidden="true">
-                    {step.num}
-                  </p>
-                  <p className="type-step text-primary mt-3">{step.label}</p>
-                  <p className="type-small text-secondary mt-2">{step.body}</p>
-                </div>
-                {/* decorative 01→04 order connector (desktop only) */}
-                {i < METHOD_STEPS.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-1/2 -right-5 hidden h-px w-5 bg-hairline-gold nav:block"
-                  />
-                )}
-              </Reveal>
-            ))}
-          </ol>
+            <SplitHeading
+              as="h2"
+              text="The Right Order of Change. Most coaches get this wrong."
+              className="type-h2 text-primary mt-3"
+            />
+          </div>
+          <div className="relative isolate mt-10">
+            {/* the gold thread stitches the four steps in order (desktop only) */}
+            <span
+              aria-hidden="true"
+              className="thread-h sd-draw pointer-events-none absolute inset-x-0 top-1/2 -z-10 hidden nav:block"
+            />
+            <ol className="grid gap-5 sm:grid-cols-2 nav:grid-cols-4">
+              {METHOD_STEPS.map((step, i) => (
+                <Reveal as="li" key={step.num} delayMs={i * 60}>
+                  <div className="card spot h-full">
+                    <p
+                      className="type-numeral text-gold-grad"
+                      aria-hidden="true"
+                    >
+                      {step.num}
+                    </p>
+                    <p className="type-step text-primary mt-3">{step.label}</p>
+                    <p className="type-small text-secondary mt-2">{step.body}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </ol>
+          </div>
           <Reveal delayMs={260} className="mt-8">
             <Link href={LINKS.method} className={TEXT_LINK}>
               {"Read the full method →"}
@@ -244,10 +264,17 @@ export default function Home() {
         </div>
       </section>
 
+      {/* narrative stitch: the method → who it is for */}
+      <div aria-hidden="true" className="bg-base">
+        <div className="container-site py-2">
+          <span className="thread-h sd-draw block" />
+        </div>
+      </div>
+
       {/* ============ SECTION 3 — TWO AUDIENCE CARDS ============ */}
       <section
         id="audience"
-        className="cv-auto bg-alt border-y border-hairline-soft"
+        className="cv-auto bg-alt border-b border-hairline-soft"
       >
         <div className="container-site section">
           <Reveal className="text-center">
@@ -257,29 +284,37 @@ export default function Home() {
           </Reveal>
           <div className="mx-auto mt-10 grid max-w-4xl gap-6 md:grid-cols-2">
             <Reveal className="h-full">
-              <article className="card-light h-full">
-                <p className="eyebrow card-gold">THE YOUNG MAN · 22–30</p>
-                {/* [review] */}
-                <p className="type-body mt-4">
-                  You want direction. You want to build yourself the right way
-                  from the start. You do not want to waste years figuring out
-                  what actually works. This is for you.
-                </p>
-              </article>
+              <TiltCard className="h-full">
+                <article className="card-light h-full">
+                  <p className="eyebrow card-gold">THE YOUNG MAN · 22–30</p>
+                  {/* [review] */}
+                  <p className="type-body mt-4">
+                    You want direction. You want to build yourself the right way
+                    from the start. You do not want to waste years figuring out
+                    what actually works. This is for you.
+                  </p>
+                </article>
+              </TiltCard>
             </Reveal>
             <Reveal delayMs={80} className="h-full">
-              <article className="card-dark-gold h-full">
-                <p className="eyebrow">THE SUCCESSFUL MAN · 30–50</p>
-                {/* [review] */}
-                <p className="type-body mt-4">
-                  You built the career. You made the money. But somewhere along
-                  the way you lost your health, your drive and your confidence.
-                  You want it back. This is for you too.
-                </p>
-              </article>
+              <TiltCard className="h-full">
+                <article className="card-dark-gold h-full">
+                  {/* spotlight rides an inner wrapper so it never collides with
+                      the card's built-in corner-bracket ::before */}
+                  <div className="spot h-full">
+                    <p className="eyebrow">THE SUCCESSFUL MAN · 30–50</p>
+                    {/* [review] */}
+                    <p className="type-body mt-4">
+                      You built the career. You made the money. But somewhere
+                      along the way you lost your health, your drive and your
+                      confidence. You want it back. This is for you too.
+                    </p>
+                  </div>
+                </article>
+              </TiltCard>
             </Reveal>
           </div>
-          <Reveal delayMs={160} className="mt-10 text-center">
+          <Reveal delayMs={160} className="reveal-blur mt-10 text-center">
             <p className="type-h3 text-primary">
               Two different men. The same right order of change.
             </p>
@@ -296,71 +331,84 @@ export default function Home() {
       {/* ============ SECTION 4 — PROOF TEASER ============ */}
       <section id="proof" className="cv-auto bg-base">
         <div className="container-site section">
-          <Reveal className="max-w-2xl">
-            <h2 className="type-h2 text-primary">Real Men. Real Results.</h2>
-            <p className="type-lead text-secondary mt-4">
+          <div className="max-w-2xl">
+            <SplitHeading
+              as="h2"
+              text="Real Men. Real Results."
+              className="type-h2 text-primary"
+            />
+            <Reveal as="p" delayMs={80} className="type-lead text-secondary mt-4">
               No filters. No shortcuts. Just discipline and the right guidance.
-            </p>
-          </Reveal>
+            </Reveal>
+          </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <Reveal className="h-full">
-              <figure className="card h-full">
-                {/* static side-by-side pair (no slider — protects first paint).
-                    Swap for real <img loading="lazy" width={480} height={600} /> */}
-                <div className="grid grid-cols-2 gap-3">
-                  <PlaceholderImage
-                    label="BEFORE"
-                    w={IMAGES.proof.w}
-                    h={IMAGES.proof.h}
-                    variant="portrait"
-                    alt="Aditya before his transformation, 100kg"
-                  />
-                  <PlaceholderImage
-                    label="AFTER"
-                    w={IMAGES.proof.w}
-                    h={IMAGES.proof.h}
-                    variant="portrait"
-                    alt="Aditya after his transformation"
-                  />
-                </div>
-                <blockquote className="type-body text-secondary mt-6">
-                  This was me. 100kg. Zero confidence. The decision to change
-                  was the hardest part. Everything else followed.
-                </blockquote>
-                <figcaption className="type-caption text-muted mt-4">
-                  — Aditya, before coaching
-                </figcaption>
-                {/* [review] */}
-              </figure>
+              <TiltCard className="h-full">
+                <figure className="card spot h-full">
+                  {/* static side-by-side pair (no slider — protects first paint).
+                      Each image wipes up on scroll; swap for real
+                      <img loading="lazy" width={480} height={600} /> */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <PlaceholderImage
+                      label="BEFORE"
+                      w={IMAGES.proof.w}
+                      h={IMAGES.proof.h}
+                      variant="portrait"
+                      alt="Aditya before his transformation, 100kg"
+                      className="sd-wipe"
+                    />
+                    <PlaceholderImage
+                      label="AFTER"
+                      w={IMAGES.proof.w}
+                      h={IMAGES.proof.h}
+                      variant="portrait"
+                      alt="Aditya after his transformation"
+                      className="sd-wipe"
+                    />
+                  </div>
+                  <blockquote className="type-body text-secondary mt-6">
+                    This was me. 100kg. Zero confidence. The decision to change
+                    was the hardest part. Everything else followed.
+                  </blockquote>
+                  <figcaption className="type-caption text-muted mt-4">
+                    — Aditya, before coaching
+                  </figcaption>
+                  {/* [review] */}
+                </figure>
+              </TiltCard>
             </Reveal>
             <Reveal delayMs={100} className="h-full">
-              <figure className="card h-full">
-                <div className="grid grid-cols-2 gap-3">
-                  <PlaceholderImage
-                    label="BEFORE"
-                    w={IMAGES.proof.w}
-                    h={IMAGES.proof.h}
-                    variant="portrait"
-                    alt="Client before his transformation"
-                  />
-                  <PlaceholderImage
-                    label="AFTER"
-                    w={IMAGES.proof.w}
-                    h={IMAGES.proof.h}
-                    variant="portrait"
-                    alt="Client after his transformation"
-                  />
-                </div>
-                <blockquote className="type-body text-secondary mt-6">
-                  He did not come to me to lose weight. He came because he did
-                  not recognize himself anymore. We did not just change his
-                  body. We changed his entire lifestyle.
-                </blockquote>
-                <figcaption className="type-caption text-muted mt-4">
-                  — Client transformation
-                </figcaption>
-                {/* [review] */}
-              </figure>
+              <TiltCard className="h-full">
+                <figure className="card spot h-full">
+                  <div className="grid grid-cols-2 gap-3">
+                    <PlaceholderImage
+                      label="BEFORE"
+                      w={IMAGES.proof.w}
+                      h={IMAGES.proof.h}
+                      variant="portrait"
+                      alt="Client before his transformation"
+                      className="sd-wipe"
+                    />
+                    <PlaceholderImage
+                      label="AFTER"
+                      w={IMAGES.proof.w}
+                      h={IMAGES.proof.h}
+                      variant="portrait"
+                      alt="Client after his transformation"
+                      className="sd-wipe"
+                    />
+                  </div>
+                  <blockquote className="type-body text-secondary mt-6">
+                    He did not come to me to lose weight. He came because he did
+                    not recognize himself anymore. We did not just change his
+                    body. We changed his entire lifestyle.
+                  </blockquote>
+                  <figcaption className="type-caption text-muted mt-4">
+                    — Client transformation
+                  </figcaption>
+                  {/* [review] */}
+                </figure>
+              </TiltCard>
             </Reveal>
           </div>
           <Reveal delayMs={160} className="mt-6">
@@ -377,15 +425,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* decorative ticker between proof and the offer — reuses the verbatim
+          proof headline (Marquee handles its own aria/sr-only) */}
+      <div className="bg-void border-t border-hairline-soft">
+        <Marquee
+          items={["Real Men. Real Results."]}
+          speedS={38}
+          className="py-8"
+        />
+      </div>
+
       {/* ============ SECTION 5 — LEAD MAGNET (inline) ============ */}
       {/* Owns the #blueprint anchor (hero + final CTA point at /tools#blueprint;
           this inline capture mirrors it on Home). */}
       <section
         id="blueprint"
-        className="cv-auto bg-alt border-y border-hairline-soft"
+        className="cv-auto bg-alt aurora relative overflow-hidden border-y border-hairline-soft"
       >
         <div className="container-site section">
-          <Reveal className="card glow-top mx-auto max-w-3xl [border-color:var(--hairline-gold)]">
+          <Reveal className="card glow-top spot mx-auto max-w-3xl [border-color:var(--hairline-gold)]">
             <p className="eyebrow">FREE DOWNLOAD</p>
             <h2 className="type-h2 text-primary mt-3">The Lifestyle Blueprint</h2>
             <p className="type-lead text-secondary mt-4">
@@ -426,36 +484,42 @@ export default function Home() {
       {/* ============ SECTION 6 — WORK-WITH-ME TEASER ============ */}
       <section id="programs-teaser" className="cv-auto bg-base">
         <div className="container-site section">
-          <Reveal>
-            <h2 className="type-h2 text-primary">Work With Me.</h2>
-          </Reveal>
+          <SplitHeading
+            as="h2"
+            text="Work With Me."
+            className="type-h2 text-primary"
+          />
           <ul className="mt-12 grid gap-6 pt-2 md:grid-cols-3">
-            {/* Card 1 — FEATURED: the single gold CTA in this section → /book */}
+            {/* Card 1 — FEATURED: the single gold CTA in this section → /book.
+                Badge lives outside the spot article so overflow-hidden can't
+                clip it. */}
             <Reveal as="li" index={0} className="h-full">
-              <article className="card card-featured relative flex h-full flex-col">
-                <p className="eyebrow absolute -top-3.5 left-6 rounded-full border border-hairline-gold bg-void px-3 py-1.5">
+              <div className="relative h-full">
+                <p className="eyebrow absolute -top-3.5 left-6 z-10 rounded-full border border-hairline-gold bg-void px-3 py-1.5">
                   RECOMMENDED
                 </p>
-                <h3 className="type-h3 text-primary mt-2">
-                  Discovery Consultation
-                </h3>
-                <p className="type-price text-gold-300 mt-3">₹2,000</p>
-                <p className="type-caption text-muted mt-1">
-                  45 minutes · online via WhatsApp
-                </p>
-                <p className="type-small text-secondary mt-4 mb-6">
-                  We go through your current lifestyle, health, habits and
-                  goals. I tell you exactly what needs to change and in what
-                  order. You leave with complete clarity.
-                </p>
-                <Link href={LINKS.book} className="btn-gold mt-auto w-full">
-                  Book Now
-                </Link>
-              </article>
+                <article className="card card-featured spot flex h-full flex-col">
+                  <h3 className="type-h3 text-primary mt-2">
+                    Discovery Consultation
+                  </h3>
+                  <p className="type-price text-gold-300 mt-3">₹2,000</p>
+                  <p className="type-caption text-muted mt-1">
+                    45 minutes · online via WhatsApp
+                  </p>
+                  <p className="type-small text-secondary mt-4 mb-6">
+                    We go through your current lifestyle, health, habits and
+                    goals. I tell you exactly what needs to change and in what
+                    order. You leave with complete clarity.
+                  </p>
+                  <Link href={LINKS.book} className="btn-gold mt-auto w-full">
+                    Book Now
+                  </Link>
+                </article>
+              </div>
             </Reveal>
             {/* Card 2 */}
             <Reveal as="li" index={1} className="h-full">
-              <article className="card relative flex h-full flex-col">
+              <article className="card spot relative flex h-full flex-col">
                 <h3 className="type-h3 text-primary mt-2">Monthly Coaching</h3>
                 <p className="type-caption text-muted mt-3">
                   Price disclosed after consultation
@@ -474,7 +538,7 @@ export default function Home() {
             </Reveal>
             {/* Card 3 */}
             <Reveal as="li" index={2} className="h-full">
-              <article className="card relative flex h-full flex-col">
+              <article className="card spot relative flex h-full flex-col">
                 <h3 className="type-h3 text-primary mt-2">Online Plan</h3>
                 <p className="type-caption text-muted mt-3">
                   Price disclosed after consultation
@@ -507,18 +571,21 @@ export default function Home() {
         className="cv-auto bg-alt grain border-t border-hairline-soft"
       >
         <div className="container-site section grid items-center gap-10 md:grid-cols-[4fr_5fr] md:gap-16">
-          <Reveal className="mx-auto w-full max-w-[380px] md:max-w-none">
-            {/* Swap for real <img loading="lazy" width={560} height={700}
+          <Reveal className="reveal-right mx-auto w-full max-w-[380px] overflow-hidden md:max-w-none">
+            {/* portrait drifts on scroll (parallax) inside the overflow-hidden
+                frame; Swap for real <img loading="lazy" width={560} height={700}
                 decoding="async" /> */}
-            <PlaceholderImage
-              label="FOUNDER PORTRAIT"
-              w={IMAGES.founderPortrait.w}
-              h={IMAGES.founderPortrait.h}
-              variant="portrait"
-              alt={IMAGES.founderPortrait.alt}
-            />
+            <div className="sd-parallax">
+              <PlaceholderImage
+                label="FOUNDER PORTRAIT"
+                w={IMAGES.founderPortrait.w}
+                h={IMAGES.founderPortrait.h}
+                variant="portrait"
+                alt={IMAGES.founderPortrait.alt}
+              />
+            </div>
           </Reveal>
-          <Reveal delayMs={120}>
+          <Reveal delayMs={120} className="reveal-left">
             <p className="eyebrow">THE COACH</p>
             {/* [review] */}
             <h2 className="type-h2 text-primary mt-3">
@@ -547,9 +614,16 @@ export default function Home() {
         </div>
       </section>
 
+      {/* narrative stitch: the coach → the one decision */}
+      <div aria-hidden="true" className="bg-alt">
+        <div className="container-site py-2">
+          <span className="thread-h sd-draw block" />
+        </div>
+      </div>
+
       {/* ============ SECTION 8 — FINAL CTA ============ */}
-      {/* Shared FinalCta band (surface-warm, FAB clearance built in);
-          wrapper div carries the spec'd #final-cta anchor. */}
+      {/* Shared FinalCta band (surface-warm, FAB clearance built in; the band
+          already carries aurora/grain). Wrapper div carries the #final-cta anchor. */}
       <div id="final-cta">
         <FinalCta
           heading="The man you want to become is waiting for one decision."

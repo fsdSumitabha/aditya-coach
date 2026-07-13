@@ -1089,6 +1089,13 @@ h3,
 .reveal.reveal-scale {
   transform: scale(0.96) translateY(12px);
 }
+/* cascade reset — the modifiers above sit later in the file than
+   .reveal.is-in at equal specificity, so restate the settled state */
+.reveal.reveal-left.is-in,
+.reveal.reveal-right.is-in,
+.reveal.reveal-scale.is-in {
+  transform: none;
+}
 
 /* ---- Split headline (word-mask rise; SplitHeading component) ---- */
 .split-mask {

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
+import ScrollProgress from "@/components/ScrollProgress";
 import ArticleCard from "@/components/blog/ArticleCard";
 import AuthorBox from "@/components/blog/AuthorBox";
 import CategoryChip from "@/components/blog/CategoryChip";
@@ -163,6 +164,8 @@ export default async function BlogPostPage({ params }: Params) {
 
   return (
     <>
+      {/* Reading-progress bar pinned to viewport top (decorative, motion-safe) */}
+      <ScrollProgress />
       <JsonLd data={[blogPostingSchema, breadcrumbSchema]} />
 
       <div className="container-site section">
@@ -191,7 +194,8 @@ export default async function BlogPostPage({ params }: Params) {
             <header className="mt-8">
               <Reveal className="flex flex-wrap items-center gap-3">
                 <CategoryChip label={post.category} />
-                <span className="type-caption text-muted">
+                {/* read time as a matching gold-hairline chip */}
+                <span className="type-caption inline-flex items-center rounded-full border border-hairline-gold px-3 py-1 text-muted">
                   {post.readTime}
                 </span>
               </Reveal>
@@ -223,20 +227,24 @@ export default async function BlogPostPage({ params }: Params) {
             {/* 3. COVER — the LCP. Inline-SVG placeholder: zero network,
                    explicit w/h, zero CLS (swap for a real eager +
                    fetchpriority="high" <img> of the same w/h). */}
-            <figure className="mt-8">
+            <figure className="mt-8 overflow-hidden rounded-[16px]">
               <PlaceholderImage
                 label="ARTICLE COVER"
                 w={post.cover.w}
                 h={post.cover.h}
                 alt={post.cover.alt}
                 variant="cover"
+                className="sd-zoom"
               />
             </figure>
 
             {/* 4–5. PROSE BODY (+ mid-article CTA placed inside the body by
                    its content component). Bodies start at h2 — this template
-                   owns the H1/cover/meta/author chrome. */}
-            <div className="article-prose mx-auto mt-10">
+                   owns the H1/cover/meta/author chrome.
+                   Presentation-only, scoped to this wrapper (copy unchanged):
+                   • drop cap on the intro paragraph (Fraunces, gold, float)
+                   • pull-quotes get a faint gold glow (bg tint + inset shadow) */}
+            <div className="article-prose mx-auto mt-10 [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:mr-3 [&>p:first-of-type]:first-letter:font-display [&>p:first-of-type]:first-letter:text-[3.2em] [&>p:first-of-type]:first-letter:font-medium [&>p:first-of-type]:first-letter:leading-[0.72] [&>p:first-of-type]:first-letter:text-gold-300 [&_blockquote]:rounded-r-[10px] [&_blockquote]:bg-[color:rgba(201,162,75,0.045)] [&_blockquote]:pr-5 [&_blockquote]:shadow-[inset_0_0_44px_-16px_rgba(201,162,75,0.5)]">
               <Body />
             </div>
 
@@ -251,6 +259,13 @@ export default async function BlogPostPage({ params }: Params) {
             </Reveal>
           </article>
         </div>
+
+        {/* Gold-thread stitch — draws itself as you scroll from the article
+            into the "keep reading" zone (base state = fully drawn). */}
+        <div
+          className="thread-h sd-draw mx-auto mt-16 max-w-[760px]"
+          aria-hidden="true"
+        />
 
         {/* 8. RELATED + PREV/NEXT — the other two posts (in-blog cross-links) */}
         <section

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import type { ReactNode, SVGProps } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
+import TiltCard from "@/components/TiltCard";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import { CheckIcon, WhatsAppIcon } from "@/components/icons";
 import CtaLink from "@/components/programs/CtaLink";
+import FaqItem from "@/components/programs/FaqItem";
 import { waLink } from "@/lib/config";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 
@@ -196,23 +199,6 @@ function OfferIcon({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
 function NotIncluded() {
   return (
     <>
@@ -226,9 +212,18 @@ export default function ProgramsPage() {
   return (
     <>
       <JsonLd data={[faqSchema, ...serviceSchemas]} />
+      {/* Page-scoped CSS: (1) supply the is-in transform reset the shipped kit
+          omits for reveal-scale so the table settles at full size; (2) the
+          sanctioned grid-template-rows accordion transition + reduced-motion
+          guard used by <FaqItem>. Neither touches shared files. */}
+      <style>{`
+        #compare .reveal-scale.is-in { transform: none; }
+        .faq-panel { transition: grid-template-rows 0.35s var(--ease-out-expo); }
+        @media (prefers-reduced-motion: reduce) { .faq-panel { transition: none; } }
+      `}</style>
 
       {/* ============ 1. HERO — "Work With Me." ============ */}
-      <section className="bg-void glow-top grain">
+      <section className="bg-void aurora grain relative overflow-hidden">
         <div className="container-site section-lg">
           <div className="max-w-[760px] mx-auto text-center">
             {/* Hero H1 — never animated (LCP paints at final state frame 1) */}
@@ -271,8 +266,16 @@ export default function ProgramsPage() {
       </section>
 
       {/* ============ 2. THREE OFFER BLOCKS ============ */}
-      <section className="bg-base">
-        <div className="container-site section">
+      <section className="bg-base relative overflow-hidden isolate">
+        {/* Ghost watermark — reuses the hero word "Work", decorative, clipped
+            to the section; drifts on scroll where supported. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+        >
+          <span className="ghost-word sd-ghost-drift">WORK</span>
+        </div>
+        <div className="container-site section relative z-10">
           <Reveal>
             {/* [review] */}
             <p className="eyebrow text-center">The Three Ways In</p>
@@ -288,18 +291,21 @@ export default function ProgramsPage() {
               style={{ transitionTimingFunction: "var(--ease-overshoot)" }}
             >
               <article
-                className="card card-featured relative h-full flex flex-col nav:scale-[1.03]"
+                className="card card-featured relative h-full nav:scale-[1.03]"
                 style={{ background: "var(--surface-warm)" }}
               >
                 <span
-                  className="absolute -top-3.5 right-6 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-on-gold"
+                  className="absolute -top-3.5 right-6 z-10 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-on-gold"
                   style={{ background: "var(--grad-gold)", boxShadow: "var(--glow-gold)" }}
                 >
                   Recommended
                 </span>
+                {/* Inner .spot carries the cursor glow (kept off the article so
+                    the badge can straddle the top edge un-clipped). */}
+                <div className="spot flex flex-col h-full">
                 <OfferIcon src={IMG_OFFER_ICON_DISCOVERY} alt="Discovery Consultation" />
                 <h2 className="type-h3 text-primary mt-5">Discovery Consultation</h2>
-                <p className="type-price text-gold-300 mt-3">{PRICE_CONSULT}</p>
+                <p className="type-price text-gold-grad mt-3">{PRICE_CONSULT}</p>
                 <p className="type-small text-muted mt-1">
                   45 minutes · Online via WhatsApp
                 </p>
@@ -365,12 +371,15 @@ export default function ProgramsPage() {
                     .
                   </p>
                 </div>
+                </div>
               </article>
             </Reveal>
 
             {/* --- 3b. MONTHLY COACHING --- */}
             <Reveal delayMs={0} className="h-full nav:order-1">
-              <article className="card-dark-gold h-full flex flex-col transition-transform duration-300 hover:-translate-y-1">
+              <TiltCard className="h-full">
+              <article className="card-dark-gold h-full">
+                <div className="spot flex flex-col h-full">
                 <OfferIcon src={IMG_OFFER_ICON_MONTHLY} alt="Monthly Coaching" />
                 <h2 className="card-head type-h3 mt-5">Monthly Coaching</h2>
                 <p className="type-body font-medium text-secondary mt-3">
@@ -433,12 +442,16 @@ export default function ProgramsPage() {
                     it&apos;s the right fit.
                   </p>
                 </div>
+                </div>
               </article>
+              </TiltCard>
             </Reveal>
 
             {/* --- 3c. ONLINE PLAN --- */}
             <Reveal delayMs={90} className="h-full nav:order-3">
-              <article className="card-dark-gold h-full flex flex-col transition-transform duration-300 hover:-translate-y-1">
+              <TiltCard className="h-full">
+              <article className="card-dark-gold h-full">
+                <div className="spot flex flex-col h-full">
                 <OfferIcon src={IMG_OFFER_ICON_ONLINE} alt="Online Plan" />
                 <h2 className="card-head type-h3 mt-5">Online Plan</h2>
                 <p className="type-body font-medium text-secondary mt-3">
@@ -500,7 +513,9 @@ export default function ProgramsPage() {
                     themselves.
                   </p>
                 </div>
+                </div>
               </article>
+              </TiltCard>
             </Reveal>
           </div>
         </div>
@@ -510,10 +525,12 @@ export default function ProgramsPage() {
       <section id="compare" className="bg-alt cv-auto">
         <div className="container-site section">
           <div className="max-w-[760px] mx-auto text-center">
-            <Reveal>
-              {/* [review] */}
-              <h2 className="type-h2 text-primary">Which One Is You?</h2>
-            </Reveal>
+            {/* [review] */}
+            <SplitHeading
+              as="h2"
+              text="Which One Is You?"
+              className="type-h2 text-primary"
+            />
             <Reveal delayMs={80}>
               {/* [review] */}
               <p className="type-small text-secondary mt-4">
@@ -525,7 +542,7 @@ export default function ProgramsPage() {
 
           {/* [review] — mobile treatment: single semantic table kept scrollable
               inside .table-scroll (never page-level horizontal scroll at 375px) */}
-          <Reveal className="mt-10">
+          <Reveal className="mt-10 reveal-scale">
             <div className="table-scroll rounded-2xl border border-hairline-soft bg-surface-1">
               <table className="w-full min-w-[760px] border-collapse text-left">
                 <caption className="sr-only">
@@ -562,7 +579,10 @@ export default function ProgramsPage() {
                 </thead>
                 <tbody>
                   {compareRows.map((row) => (
-                    <tr key={row.label}>
+                    <tr
+                      key={row.label}
+                      className="transition-colors hover:bg-[rgba(201,162,75,0.04)]"
+                    >
                       <th
                         scope="row"
                         className={`${cellBase} font-semibold text-primary`}
@@ -624,13 +644,14 @@ export default function ProgramsPage() {
       {/* ============ 4. PRICE-REASSURANCE LINE ============ */}
       <section className="bg-surface-1 border-y border-hairline-soft">
         <div className="container-site py-12 md:py-16">
+          {/* Gold-thread stitches bracket the reassurance line, drawing in on scroll */}
+          <div className="thread-h sd-draw w-24 mx-auto mb-10" aria-hidden="true" />
           <Reveal className="text-center">
             {/* [review] */}
             <p className="font-display text-[1.375rem] md:text-[1.75rem] leading-snug tracking-[-0.01em] text-primary max-w-[34ch] mx-auto">
               The {PRICE_CONSULT} consultation is the only price you decide on
               today.
             </p>
-            <div className="gold-line w-16 mx-auto mt-5" aria-hidden="true" />
             {/* [review] */}
             <p className="type-small text-secondary mt-5 max-w-[62ch] mx-auto">
               Coaching and plan pricing is shared after we talk — once I
@@ -645,6 +666,7 @@ export default function ProgramsPage() {
               .
             </p>
           </Reveal>
+          <div className="thread-h sd-draw w-24 mx-auto mt-10" aria-hidden="true" />
         </div>
       </section>
 
@@ -652,29 +674,18 @@ export default function ProgramsPage() {
       <section className="bg-base cv-auto">
         <div className="container-site section">
           <div className="max-w-[760px] mx-auto">
-            <Reveal>
-              {/* [review] */}
-              <h2 className="type-h2 text-primary text-center">
-                Questions Men Ask Before Starting
-              </h2>
-            </Reveal>
+            {/* [review] */}
+            <SplitHeading
+              as="h2"
+              text="Questions Men Ask Before Starting"
+              className="type-h2 text-primary text-center"
+            />
             <div className="mt-10">
               {faqs.map((f, i) => (
                 <Reveal key={f.q} delayMs={i * 60}>
-                  <details
-                    className="group border-b border-hairline-soft"
-                    open={i === 0}
-                  >
-                    <summary className="flex items-center justify-between gap-4 min-h-[56px] py-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                      <span className="font-display text-[1.125rem] md:text-[1.25rem] font-medium text-primary">
-                        {f.q}
-                      </span>
-                      <ChevronDownIcon className="w-5 h-5 shrink-0 text-gold-500 transition-transform duration-300 group-open:rotate-180" />
-                    </summary>
-                    <p className="type-body text-secondary pb-6 max-w-[64ch]">
-                      {f.aJsx ?? f.a}
-                    </p>
-                  </details>
+                  <FaqItem question={f.q} defaultOpen={i === 0}>
+                    {f.aJsx ?? f.a}
+                  </FaqItem>
                 </Reveal>
               ))}
             </div>
@@ -692,16 +703,16 @@ export default function ProgramsPage() {
       {/* ============ 6. CTA BAND ============ */}
       {/* Built in-page (not FinalCta) — spec adds a trust micro-line + bg-void
           band + "Book Now" label + overshoot pop on the gold button. */}
-      <section className="bg-void glow-top grain border-t border-hairline-soft">
+      <section className="bg-void aurora grain border-t border-hairline-soft relative overflow-hidden">
         <div
           className="container-site section flex flex-col items-center text-center"
           style={{ paddingBottom: 112 }}
         >
-          <Reveal>
-            <h2 className="type-h2 text-primary max-w-[18ch] mx-auto">
-              The man you want to become is waiting for one decision.
-            </h2>
-          </Reveal>
+          <SplitHeading
+            as="h2"
+            text="The man you want to become is waiting for one decision."
+            className="type-h2 text-primary max-w-[18ch] mx-auto"
+          />
           <Reveal delayMs={100}>
             <p className="type-lead text-secondary mt-4 max-w-xl mx-auto">
               Start with a free blueprint. Or book a consultation today. Either

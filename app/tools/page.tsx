@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
 import Calculator from "@/components/tools/Calculator";
 import LeadMagnetCard from "@/components/tools/LeadMagnetCard";
 import { BLUEPRINT_PDF, SPLIT_PDF, OG_IMAGE } from "@/lib/config";
@@ -50,17 +51,23 @@ const toolsSchema = [
 ];
 
 const chipClass =
-  "inline-flex min-h-[48px] items-center justify-center rounded-full border border-hairline px-5 type-small text-secondary transition-colors hover:border-hairline-gold hover:text-primary";
+  "tools-chip inline-flex min-h-[48px] items-center justify-center rounded-full border border-hairline px-5 type-small text-secondary transition-colors hover:border-hairline-gold hover:text-primary";
 
 export default function ToolsPage() {
   return (
     <>
       <JsonLd data={toolsSchema} />
-      {/* smooth in-page anchor scroll for the micro-nav chips; motion-safe only */}
-      <style>{`@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}`}</style>
+      {/* smooth in-page anchor scroll for the micro-nav chips; motion-safe only.
+          The anchor chips are links → a gold "metal shine" sweeps across on
+          hover (same material language as .btn-gold; motion-safe + desktop). */}
+      <style>{`@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}
+.tools-chip{position:relative;overflow:hidden}
+.tools-chip::after{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:45%;pointer-events:none;background:linear-gradient(105deg,transparent,rgba(240,230,200,0.26) 50%,transparent);transform:translateX(-160%) skewX(-18deg)}
+@media (hover:hover) and (prefers-reduced-motion: no-preference){.tools-chip:hover::after{animation:tools-chip-shine .8s var(--ease-standard)}}
+@keyframes tools-chip-shine{to{transform:translateX(320%) skewX(-18deg)}}`}</style>
 
       {/* ---- 1. HERO — no photo, no CTA button; the tools below ARE the CTAs ---- */}
-      <section className="bg-void glow-top grain">
+      <section className="bg-void grain aurora relative overflow-hidden">
         <div className="container-site section-lg text-center">
           <h1 className="type-h1 text-primary max-w-[14ch] mx-auto">
             Start Here. Completely Free.
@@ -141,23 +148,35 @@ export default function ToolsPage() {
         </div>
       </section>
 
+      {/* gold-thread stitch: the give-first magnets draw down into the payoff.
+          Static (full) on non-supporting browsers; scale-draws on scroll. */}
+      <div className="container-site" aria-hidden="true">
+        <div className="thread-h sd-draw" />
+      </div>
+
       {/* ---- 4. THE CALORIE CALCULATOR — the hero tool ---- */}
       <section
         id="calculator"
-        className="bg-alt cv-auto border-t border-hairline-soft"
+        className="bg-alt cv-auto aurora relative overflow-hidden"
       >
         {/* extra bottom padding keeps ~88px+ clearance under the WhatsApp FAB */}
         <div className="container-site section" style={{ paddingBottom: 112 }}>
-          <Reveal className="text-center max-w-[720px] mx-auto">
-            <h2 className="type-h2 text-primary">
-              Get a Starting Estimate of How Much You Should Be Eating.
-            </h2>
-            <p className="type-lead text-secondary mt-5">
+          <div className="text-center max-w-[720px] mx-auto">
+            <SplitHeading
+              as="h2"
+              text="Get a Starting Estimate of How Much You Should Be Eating."
+              className="type-h2 text-primary"
+            />
+            <Reveal
+              as="p"
+              delayMs={120}
+              className="type-lead text-secondary mt-5"
+            >
               Most men are eating for the body they currently have. You should
               be eating for the body you want to have. This calculator shows
               you the difference.
-            </p>
-          </Reveal>
+            </Reveal>
+          </div>
           <Reveal index={1} className="max-w-[880px] mx-auto mt-10">
             <Calculator />
           </Reveal>

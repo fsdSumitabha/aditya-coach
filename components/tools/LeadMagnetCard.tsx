@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import LeadMagnetForm from "@/components/LeadMagnetForm";
+import TiltCard from "@/components/TiltCard";
 
 /**
  * /tools lead-magnet card (spec §2 + §3) — one parametrised card rendered
@@ -30,22 +31,25 @@ export default function LeadMagnetCard({
   successBody: string;
 }) {
   return (
-    <div className="card">
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_240px] md:items-center">
-        {/* IMG placeholder — swap for a real <img loading="lazy" width={480}
-            height={600}> of the PDF cover when the asset exists. Above text on
-            mobile (first in DOM), right-aligned on desktop (md:order-2). */}
-        <div className="w-full max-w-[280px] mx-auto md:order-2 md:max-w-none">
-          <PlaceholderImage
-            label={imageLabel}
-            w={480}
-            h={600}
-            alt={imageAlt}
-            variant="cover"
-          />
-        </div>
+    <TiltCard>
+      <div className="card spot">
+        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_240px] md:items-center">
+          {/* IMG placeholder — swap for a real <img loading="lazy" width={480}
+              height={600}> of the PDF cover when the asset exists. Above text on
+              mobile (first in DOM), right-aligned on desktop (md:order-2). The
+              overflow-hidden frame lets the cover settle-zoom on scroll. */}
+          <div className="w-full max-w-[280px] mx-auto md:order-2 md:max-w-none overflow-hidden rounded-2xl">
+            <PlaceholderImage
+              label={imageLabel}
+              w={480}
+              h={600}
+              alt={imageAlt}
+              variant="cover"
+              className="sd-zoom"
+            />
+          </div>
 
-        <div className="md:order-1">
+          <div className="md:order-1">
           <h2 className="eyebrow">FREE DOWNLOAD</h2>
           {/* [review] eyebrow label */}
           <h3 className="type-h2 text-primary mt-3">{title}</h3>
@@ -84,8 +88,9 @@ export default function LeadMagnetCard({
               Book My ₹2,000 Consultation
             </Link>
           </LeadMagnetForm>
+          </div>
         </div>
       </div>
-    </div>
+    </TiltCard>
   );
 }

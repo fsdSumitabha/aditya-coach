@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { ReactNode, SVGProps } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
 import JsonLd from "@/components/JsonLd";
 import ContactForm from "@/components/contact/ContactForm";
 import {
@@ -52,7 +53,7 @@ const WA_CONTACT_LINK = waLink(
 );
 
 const SOCIAL_ICON_CLASS =
-  "inline-flex h-12 w-12 items-center justify-center rounded-full border border-hairline-gold text-secondary transition-colors hover:text-primary hover:border-[var(--gold-500)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold-500)]";
+  "inline-flex h-12 w-12 items-center justify-center rounded-full border border-hairline-gold text-secondary transition-[color,border-color,transform] duration-200 ease-out hover:text-primary hover:border-[var(--gold-500)] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold-500)]";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact Aditya | Men's Lifestyle Coach Kolkata",
@@ -90,11 +91,87 @@ const localBusinessSchema = {
   sameAs: [SOCIAL.instagram, SOCIAL.youtube, SOCIAL.whatsapp].filter(Boolean),
 };
 
-/** Label/value row inside the Direct Contact card — stacked on mobile, 2-col ≥768px. */
-function ContactRow({ label, children }: { label: string; children: ReactNode }) {
+// ---- Small line icons for the Direct Contact rows (decorative, aria-hidden).
+// Line style + strokeWidth 1.6 to match the shared PinIcon set. ----
+const rowIconProps: SVGProps<SVGSVGElement> = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.6,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true,
+};
+function PersonIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <div className="border-b border-hairline-soft py-5 first:pt-0 last:border-b-0 last:pb-0 md:grid md:grid-cols-[180px_1fr] md:items-start md:gap-x-10">
-      <div className="eyebrow md:pt-1">{label}</div>
+    <svg {...rowIconProps} {...props}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" />
+    </svg>
+  );
+}
+function MailIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...rowIconProps} {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+function ChatIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...rowIconProps} {...props}>
+      <path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z" />
+    </svg>
+  );
+}
+function GlobeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...rowIconProps} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z" />
+    </svg>
+  );
+}
+function ClockIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...rowIconProps} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+function CalendarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...rowIconProps} {...props}>
+      <rect x="3" y="4.5" width="18" height="16" rx="2" />
+      <path d="M3 9h18M8 3v3M16 3v3" />
+    </svg>
+  );
+}
+
+/** Label/value row inside the Direct Contact card — stacked on mobile, 2-col ≥768px. */
+function ContactRow({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="group border-b border-hairline-soft py-5 first:pt-0 last:border-b-0 last:pb-0 md:grid md:grid-cols-[180px_1fr] md:items-start md:gap-x-10">
+      <div className="eyebrow md:pt-1 flex items-center gap-2.5">
+        <span
+          aria-hidden="true"
+          className="text-gold-500 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+        >
+          {icon}
+        </span>
+        {label}
+      </div>
       <div className="mt-2 md:mt-0">{children}</div>
     </div>
   );
@@ -106,7 +183,7 @@ export default function ContactPage() {
       <JsonLd data={localBusinessSchema} />
 
       {/* 1) HERO — text LCP; H1 paints at final state frame 1 (never animated) */}
-      <section className="bg-void glow-top grain">
+      <section className="bg-void aurora grain relative overflow-hidden">
         <div className="container-site section-lg flex flex-col items-center text-center">
           <h1 className="type-h1 text-primary">Let&apos;s Talk.</h1>
           <Reveal delayMs={60}>
@@ -157,9 +234,7 @@ export default function ContactPage() {
       {/* 2) DIRECT CONTACT — Razorpay-visible details as real selectable text */}
       <section className="bg-base">
         <div className="container-site section">
-          <Reveal>
-            <h2 className="type-h2 text-primary">Reach Me Directly.</h2>
-          </Reveal>
+          <SplitHeading as="h2" text="Reach Me Directly." className="type-h2 text-primary" />
           <Reveal index={1}>
             <p className="type-lead text-secondary mt-4 max-w-2xl">
               {"The fastest way is WhatsApp. Everything below is a real, monitored channel — no bots, no call centre."}
@@ -167,11 +242,12 @@ export default function ContactPage() {
             </p>
           </Reveal>
           <Reveal index={2} className="mt-10 max-w-3xl">
-            <div className="card">
-              <ContactRow label="Coach">
+            {/* gold hairline top edge reads as a concierge desk card */}
+            <div className="card spot" style={{ borderTopColor: "var(--gold-600)" }}>
+              <ContactRow label="Coach" icon={<PersonIcon width={15} height={15} />}>
                 <p className="type-body text-primary">{COACH_NAME}</p>
               </ContactRow>
-              <ContactRow label="Email">
+              <ContactRow label="Email" icon={<MailIcon width={15} height={15} />}>
                 <a
                   href={`mailto:${EMAIL}`}
                   className="type-body inline-flex min-h-12 items-center text-gold-300 underline underline-offset-4 hover:text-gold-100"
@@ -184,7 +260,7 @@ export default function ContactPage() {
                   {/* [review] */}
                 </p>
               </ContactRow>
-              <ContactRow label="WhatsApp">
+              <ContactRow label="WhatsApp" icon={<ChatIcon width={15} height={15} />}>
                 <a
                   href={WA_CONTACT_LINK}
                   target="_blank"
@@ -202,30 +278,33 @@ export default function ContactPage() {
                   {/* [review] */}
                 </p>
               </ContactRow>
-              <ContactRow label="Location">
+              <ContactRow label="Location" icon={<PinIcon width={15} height={15} />}>
                 <p className="type-body text-primary">{CITY}</p>
               </ContactRow>
-              <ContactRow label="Availability">
+              <ContactRow label="Availability" icon={<GlobeIcon width={15} height={15} />}>
                 <p className="type-body text-primary">{SERVICE_AREA}</p>
               </ContactRow>
-              <ContactRow label="Response time">
+              <ContactRow label="Response time" icon={<ClockIcon width={15} height={15} />}>
                 <p className="type-body text-primary">Typically {RESPONSE_TIME}</p>
               </ContactRow>
-              <ContactRow label="Hours">
+              <ContactRow label="Hours" icon={<CalendarIcon width={15} height={15} />}>
                 {/* [review]: confirm actual working hours */}
                 <p className="type-body text-primary">{HOURS}</p>
               </ContactRow>
             </div>
           </Reveal>
+          {/* gold-thread stitch — draws on scroll, leading the eye into the enquiry form */}
+          <div
+            className="thread-h sd-draw mt-14 max-w-3xl md:mt-16"
+            aria-hidden="true"
+          />
         </div>
       </section>
 
       {/* 3) CONTACT FORM — client island, Phase-1 stubbed submit */}
       <section className="bg-void cv-auto" id="enquiry">
         <div className="container-site section">
-          <Reveal>
-            <h2 className="type-h2 text-primary">Send a Quick Enquiry.</h2>
-          </Reveal>
+          <SplitHeading as="h2" text="Send a Quick Enquiry." className="type-h2 text-primary" />
           <Reveal index={1}>
             <p className="type-lead text-secondary mt-4 max-w-2xl">
               {`Not ready to message yet? Leave a note and I'll come back to you ${RESPONSE_TIME}.`}
@@ -233,7 +312,7 @@ export default function ContactPage() {
             </p>
           </Reveal>
           <Reveal index={2} className="mt-10 max-w-2xl">
-            <div className="card">
+            <div className="card spot">
               <ContactForm
                 waHref={WA_CONTACT_LINK}
                 responseTime={RESPONSE_TIME}
@@ -303,7 +382,7 @@ export default function ContactPage() {
             Based in Kolkata. Coaching everywhere.
           </Reveal>
           <Reveal index={1} className="mx-auto mt-8 max-w-4xl">
-            <div className="card overflow-hidden" style={{ padding: 0 }}>
+            <div className="card spot overflow-hidden" style={{ padding: 0 }}>
               {MAP_IMAGE_SRC ? (
                 // eslint-disable-next-line @next/next/no-img-element -- static export; plain <img> with explicit dimensions (CLS-safe)
                 <img
@@ -321,7 +400,11 @@ export default function ContactPage() {
                   aria-label="Map showing Kolkata, India — Aditya coaches locally and worldwide online"
                   className="flex min-h-[280px] w-full flex-col items-center justify-center px-6 py-12 text-center md:aspect-[1200/480] md:min-h-0"
                 >
-                  <PinIcon width={40} height={40} className="text-gold-500" />
+                  <PinIcon
+                    width={40}
+                    height={40}
+                    className="text-gold-500 motion-safe:animate-[wa-breathe_2600ms_ease-in-out_infinite]"
+                  />
                   <p className="type-h3 text-primary mt-3">Kolkata, India</p>
                   <p className="type-small text-muted mt-1">Coaching worldwide online</p>
                   <p className="eyebrow mt-5">Placeholder — swap via MAP_IMAGE_SRC</p>
@@ -340,17 +423,17 @@ export default function ContactPage() {
       </section>
 
       {/* 6) FINAL CTA BAND — built in-page (WhatsApp secondary differs from shared FinalCta) */}
-      <section className="bg-surface-1 glow-top grain border-t border-hairline-soft">
+      <section className="bg-surface-1 aurora grain relative overflow-hidden border-t border-hairline-soft">
         <div
           className="container-site section flex flex-col items-center text-center"
           style={{ paddingBottom: 112 }}
         >
-          <Reveal>
-            <h2 className="type-h2 text-primary mx-auto max-w-[18ch]">
-              Done talking yourself out of it?
-              {/* [review] — in Aditya's voice; alt: "Ready when you are." */}
-            </h2>
-          </Reveal>
+          {/* [review] — in Aditya's voice; alt: "Ready when you are." */}
+          <SplitHeading
+            as="h2"
+            text="Done talking yourself out of it?"
+            className="type-h2 text-primary mx-auto max-w-[18ch]"
+          />
           <Reveal index={1}>
             <p className="type-lead text-secondary mx-auto mt-4 max-w-xl">
               {"Book the ₹2,000 consultation. 45 minutes, and you'll leave knowing exactly what to change and in what order."}

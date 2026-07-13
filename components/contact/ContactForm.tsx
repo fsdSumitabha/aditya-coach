@@ -123,6 +123,24 @@ export default function ContactForm({
   if (done) {
     return (
       <div role="status" aria-live="polite">
+        {/* decorative gold check that draws itself in (stroke-draw is no-preference-gated) */}
+        <span
+          aria-hidden="true"
+          className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full border border-hairline-gold text-gold-500"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width={26}
+            height={26}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20 6 9 17l-5-5" pathLength={60} className="stroke-draw" />
+          </svg>
+        </span>
         <h3 className="type-h3 text-primary">Message sent.</h3>
         <p className="type-body text-secondary mt-3">
           {`Thanks — I've got it. Expect a reply ${responseTime}. Want to move faster?`}

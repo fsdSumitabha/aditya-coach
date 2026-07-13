@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import CountUp from "@/components/CountUp";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
+import Marquee from "@/components/Marquee";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
+import TiltCard from "@/components/TiltCard";
 import { ArrowRightIcon } from "@/components/icons";
 import { OG_IMAGE } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
@@ -211,20 +215,23 @@ const breadcrumbSchema = {
    ============================================================ */
 
 /**
- * The before/after pair — two IDENTICAL 4:5 crops split by a 1px gold
- * hairline. Static comparison only: NO slider, no drag, no reveal-on-hover.
+ * The before/after pair — two IDENTICAL 4:5 crops split by a gold thread.
+ * Static comparison only: NO slider, no drag, no reveal-on-hover.
  * Stays side-by-side at all breakpoints (preserves the before→after read).
  * [review] optional <340px stacking fallback intentionally NOT implemented —
  * add only if QA shows crowding at 320px (halves are ~140px there, readable).
  *
- * Split + tag micro-motion is pure CSS keyed off the parent Reveal state:
- * `.reveal` (JS-added, motion allowed) primes scaleY(0)/opacity-0; `.is-in`
- * draws the hairline and fades the tags. No JS → base state is fully visible,
- * so reduced-motion / no-IO users see everything instantly.
+ * Motion (all transform/opacity/clip-path, all reduced-motion safe):
+ * - each crop gets `sd-wipe` — a scroll-keyed bottom-up clip reveal (view()
+ *   timeline; base/final state is the full image, so no-JS / non-supporting
+ *   browsers see everything instantly).
+ * - the split is a `thread-v sd-draw` gold thread that scale-draws on scroll.
+ * - BEFORE / AFTER become gold-hairline chips that fade+rise via <Reveal>,
+ *   offset from each other by different reveal indexes for a hand-built feel.
  */
 function TxDiptych({ t }: { t: Transformation }) {
-  const tagBase =
-    "tx-tag absolute bottom-2 left-2 rounded-[4px] bg-[rgba(8,8,10,0.72)] px-2 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] transition-opacity duration-500 delay-300 ease-[var(--ease-standard)] [.reveal_&]:opacity-0 [.reveal.is-in_&]:opacity-100";
+  const chipBase =
+    "tx-tag absolute bottom-2 left-2 rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.72)] px-2.5 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.14em]";
   return (
     <div className="tx-diptych grid grid-cols-[1fr_1px_1fr] overflow-hidden rounded-xl">
       <figure className="tx-half tx-before relative m-0">
@@ -235,16 +242,16 @@ function TxDiptych({ t }: { t: Transformation }) {
             h={t.before.h}
             alt={t.beforeAlt}
             variant="portrait"
+            className="sd-wipe"
             style={{ borderRadius: 0, height: "100%" }}
           />
         </div>
-        <figcaption className={`${tagBase} text-muted`}>BEFORE</figcaption>
+        <Reveal as="figcaption" index={0} className={`${chipBase} text-muted`}>
+          BEFORE
+        </Reveal>
       </figure>
-      {/* gold hairline split — draws scaleY(0)→(1) as the card enters view */}
-      <span
-        className="tx-split w-px origin-center scale-y-100 bg-[var(--gold-500)] transition-transform duration-500 delay-150 ease-[var(--ease-out-expo)] [.reveal_&]:scale-y-0 [.reveal.is-in_&]:scale-y-100"
-        aria-hidden="true"
-      />
+      {/* gold thread split — scale-draws top→bottom as the card enters view */}
+      <span className="tx-split thread-v sd-draw" aria-hidden="true" />
       <figure className="tx-half tx-after relative m-0">
         <div className="tx-frame aspect-[4/5] overflow-hidden">
           <PlaceholderImage
@@ -253,72 +260,100 @@ function TxDiptych({ t }: { t: Transformation }) {
             h={t.after.h}
             alt={t.afterAlt}
             variant="portrait"
+            className="sd-wipe"
             style={{ borderRadius: 0, height: "100%" }}
           />
         </div>
-        {/* AFTER tinted gold to signal the win */}
-        <figcaption className={`${tagBase} text-gold-300`}>AFTER</figcaption>
+        {/* AFTER tinted gold to signal the win; offset from BEFORE via index */}
+        <Reveal as="figcaption" index={2} className={`${chipBase} text-gold-300`}>
+          AFTER
+        </Reveal>
       </figure>
     </div>
   );
 }
 
-function TxCard({ t, delayMs }: { t: Transformation; delayMs: number }) {
+function TxCard({ t }: { t: Transformation }) {
+  // The featured card is the coach himself — its one factual number (already
+  // in the copy, e.g. "100kg → rebuilt") is elevated with CountUp + metallic
+  // gradient. No card is wrapped in <Reveal>: its `sd-wipe` crops must not sit
+  // inside a Reveal (kit rule), so each body block reveals on its own instead.
+  const statMatch = t.featured ? t.stat.match(/^(\d[\d,]*)(.*)$/) : null;
   return (
-    <Reveal
-      as="article"
-      id={t.id}
-      delayMs={delayMs}
-      className="tx-card card"
-      // Featured (the coach himself) is visually elevated: warm panel +
-      // gold hairline top border. Inline style because .card is unlayered CSS.
-      style={
-        t.featured
-          ? {
-              background: "var(--grad-card-warm)",
-              borderTopColor: "var(--hairline-gold)",
-            }
-          : undefined
-      }
-    >
-      <TxDiptych t={t} />
-      <div className="tx-body mt-5 md:mt-6">
-        <p className="tx-meta flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="tx-eyebrow eyebrow">{t.eyebrow}</span>
-          <span aria-hidden="true" className="text-muted">
-            ·
-          </span>
-          <span className="tx-who type-caption text-secondary">{t.who}</span>
-          {t.stat ? (
-            <>
-              <span aria-hidden="true" className="text-muted">
-                ·
-              </span>
-              <span className="tx-stat type-caption text-muted">{t.stat}</span>
-            </>
-          ) : null}
-        </p>
-        <blockquote
-          className={`tx-quote font-display mt-4 text-primary ${
-            t.featured
-              ? "max-w-[46ch] text-[1.25rem] leading-[1.55] md:text-[1.5rem]"
-              : "text-[1.125rem] leading-[1.6] md:text-[1.25rem]"
-          }`}
-        >
-          {t.quote}
-        </blockquote>
-        <cite className="tx-attr type-small mt-3 block not-italic text-muted">
-          {t.attribution}
-        </cite>
-        <Link
-          href={t.linkHref}
-          className="tx-link mt-5 inline-flex min-h-[48px] items-center gap-1.5 text-[0.9375rem] font-medium text-gold-300 underline-offset-4 hover:underline"
-        >
-          {t.linkLabel}
-          <ArrowRightIcon aria-hidden="true" className="h-4 w-4" />
-        </Link>
-      </div>
-    </Reveal>
+    <TiltCard className="tx-tilt">
+      <article
+        id={t.id}
+        className="tx-card card spot"
+        // Featured (the coach himself) is visually elevated: warm panel +
+        // gold hairline top border. Inline style because .card is unlayered CSS.
+        style={
+          t.featured
+            ? {
+                background: "var(--grad-card-warm)",
+                borderTopColor: "var(--hairline-gold)",
+              }
+            : undefined
+        }
+      >
+        <TxDiptych t={t} />
+        <div className="tx-body mt-5 md:mt-6">
+          <Reveal
+            as="p"
+            index={0}
+            className="tx-meta flex flex-wrap items-baseline gap-x-2 gap-y-1"
+          >
+            <span className="tx-eyebrow eyebrow">{t.eyebrow}</span>
+            <span aria-hidden="true" className="text-muted">
+              ·
+            </span>
+            <span className="tx-who type-caption text-secondary">{t.who}</span>
+            {t.stat ? (
+              <>
+                <span aria-hidden="true" className="text-muted">
+                  ·
+                </span>
+                {statMatch ? (
+                  <span className="tx-stat type-caption font-semibold">
+                    <CountUp
+                      value={Number(statMatch[1].replace(/,/g, ""))}
+                      className="text-gold-grad"
+                    />
+                    <span className="text-gold-grad">{statMatch[2]}</span>
+                  </span>
+                ) : (
+                  <span className="tx-stat type-caption text-muted">
+                    {t.stat}
+                  </span>
+                )}
+              </>
+            ) : null}
+          </Reveal>
+          <Reveal
+            as="blockquote"
+            index={1}
+            className={`tx-quote reveal-blur font-display mt-4 text-primary ${
+              t.featured
+                ? "max-w-[46ch] text-[1.25rem] leading-[1.55] md:text-[1.5rem]"
+                : "text-[1.125rem] leading-[1.6] md:text-[1.25rem]"
+            }`}
+          >
+            {t.quote}
+          </Reveal>
+          <Reveal as="div" index={2}>
+            <cite className="tx-attr type-small mt-3 block not-italic text-muted">
+              {t.attribution}
+            </cite>
+            <Link
+              href={t.linkHref}
+              className="tx-link link-draw mt-5 inline-flex min-h-[48px] items-center gap-1.5 text-[0.9375rem] font-medium text-gold-300"
+            >
+              {t.linkLabel}
+              <ArrowRightIcon aria-hidden="true" className="h-4 w-4" />
+            </Link>
+          </Reveal>
+        </div>
+      </article>
+    </TiltCard>
   );
 }
 
@@ -328,7 +363,7 @@ function GhostCard({ delayMs }: { delayMs: number }) {
     <Reveal
       as="article"
       delayMs={delayMs}
-      className="tx-card tx-ghost card"
+      className="tx-card tx-ghost reveal-scale card"
       style={{
         borderStyle: "dashed",
         borderColor: "rgba(110, 84, 24, 0.55)", // --gold-900, muted
@@ -360,8 +395,8 @@ export default function ResultsPage() {
       <JsonLd data={breadcrumbSchema} />
 
       {/* §3.1 HERO — Real Men. Real Results. */}
-      <section className="bg-void glow-top grain border-b border-hairline-soft">
-        <div className="container-site section-lg text-center">
+      <section className="bg-void aurora grain relative overflow-hidden border-b border-hairline-soft">
+        <div className="container-site section-lg relative z-10 text-center">
           <div className="mx-auto max-w-[760px]">
             <Reveal as="p" delayMs={0} className="eyebrow">
               PROOF{/* [review] optional eyebrow — omit if it competes with the H1 */}
@@ -384,17 +419,39 @@ export default function ResultsPage() {
         </div>
       </section>
 
+      {/* Decorative ticker directly under the hero — verbatim page phrase,
+          aria-hidden internally by <Marquee>; stitched down by a gold thread. */}
+      <section className="bg-void">
+        <Marquee
+          items={["Real Men. Real Results."]}
+          speedS={38}
+          className="py-6 md:py-8"
+        />
+        <div className="container-site">
+          <div className="thread-h sd-draw" aria-hidden="true" />
+        </div>
+      </section>
+
       {/* §3.2 TRANSFORMATION GALLERY */}
-      <section className="bg-base">
-        <div className="container-site section">
+      <section className="bg-base relative overflow-hidden">
+        {/* ONE ghost watermark behind the proof wall (aria-hidden, drifts on
+            scroll; the overflow-hidden section clips its bleed). */}
+        <span
+          className="ghost-word filled sd-ghost-drift"
+          aria-hidden="true"
+          style={{ top: "4%", left: "-3%" }}
+        >
+          PROOF
+        </span>
+        <div className="container-site section relative z-10">
           {/* [review] sr-only <h2> chosen (spec-preferred) to keep focus on the images */}
           <h2 className="sr-only">Transformations</h2>
 
           {/* Featured card — full width, always first. Likely LCP: not cv-auto,
               and when real photos land this pair gets loading="eager"
               fetchpriority="high". */}
-          {featured.map((t, i) => (
-            <TxCard key={t.id} t={t} delayMs={i * 80} />
+          {featured.map((t) => (
+            <TxCard key={t.id} t={t} />
           ))}
 
           {/* Standard client cards + ghost slots share one responsive grid.
@@ -403,25 +460,27 @@ export default function ResultsPage() {
               2–3 across as entries grow to 6–9. Scales for N = 1…9 with
               zero markup edits. */}
           <div className="cv-auto mt-6 grid grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))] gap-6 md:mt-8 md:gap-8">
-            {standard.map((t, i) => (
-              <TxCard key={t.id} t={t} delayMs={(featured.length + i) * 80} />
+            {standard.map((t) => (
+              <TxCard key={t.id} t={t} />
             ))}
             {Array.from({ length: GHOST_SLOTS }).map((_, i) => (
-              <GhostCard
-                key={`ghost-${i}`}
-                delayMs={(featured.length + standard.length + i) * 80}
-              />
+              <GhostCard key={`ghost-${i}`} delayMs={i * 80} />
             ))}
           </div>
         </div>
       </section>
 
       {/* §3.3 "HOW THESE HAPPENED" — METHOD BRIDGE (+ §3.4 compliance note) */}
-      <section className="cv-auto bg-alt border-y border-hairline-soft">
+      <section className="cv-auto bg-alt border-b border-hairline-soft">
         <div className="container-site section text-center">
-          <Reveal as="h2" className="type-h2 text-primary">
-            How these happened.{/* [review] */}
-          </Reveal>
+          {/* gold-thread stitch carrying the gallery into the method */}
+          <div className="thread-h sd-draw mb-12 md:mb-16" aria-hidden="true" />
+          {/* [review] */}
+          <SplitHeading
+            as="h2"
+            text="How these happened."
+            className="type-h2 text-primary"
+          />
           <Reveal
             as="p"
             index={1}
@@ -435,7 +494,7 @@ export default function ResultsPage() {
           <Reveal index={2} className="mt-7">
             <Link
               href="/method"
-              className="inline-flex min-h-[48px] items-center gap-2 font-semibold text-gold-300 underline-offset-4 hover:text-gold-200 hover:underline"
+              className="link-draw inline-flex min-h-[48px] items-center gap-2 font-semibold text-gold-300 hover:text-gold-200"
             >
               See The Right Order of Change
               <ArrowRightIcon aria-hidden="true" className="h-4 w-4" />

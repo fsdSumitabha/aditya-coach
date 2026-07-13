@@ -6,11 +6,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import FadeIn from "@/components/about/FadeIn";
-import TimelineSpine from "@/components/about/TimelineSpine";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
+import TiltCard from "@/components/TiltCard";
 import { ArrowRightIcon, InstagramIcon, PinIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
@@ -38,6 +39,29 @@ const IMG_ABOUT_HERO = { label: "IMG_ABOUT_HERO", w: 720, h: 900 } as const;
 const IMG_TL_BEFORE = { label: "IMG_TL_BEFORE", w: 480, h: 360 } as const;
 const IMG_ABOUT_BEFORE = { label: "IMG_ABOUT_BEFORE", w: 640, h: 800 } as const;
 const IMG_ABOUT_AFTER = { label: "IMG_ABOUT_AFTER", w: 640, h: 800 } as const;
+
+// ---- Page-local scroll-FX styles (scoped to /about via static export) ----
+// Two things the shipped kit classes can't express on their own:
+//  1) Design Kit 2.0's .reveal-left/.reveal-right set a START transform but
+//     ship no .is-in reset (unlike .reveal-blur, which has its companion), so
+//     used alone the entries would stick at their ±28px offset. These two rules
+//     complete that pattern for the gold-thread timeline. When globals.css
+//     carries the reset, delete this block — it becomes a harmless duplicate.
+//  2) The timeline node dots ignite (scale + opacity) the moment their entry
+//     reveals. Base state stays fully lit for no-JS / reduced-motion — the
+//     dimmed state only applies while the entry carries the JS-added .reveal.
+const ABOUT_FX_CSS = `
+.reveal.reveal-left.is-in,
+.reveal.reveal-right.is-in { transform: none; }
+.reveal .tl-dot { transform: scale(0.2); opacity: 0; }
+.reveal.is-in .tl-dot {
+  transform: none;
+  opacity: 1;
+  transition:
+    transform 0.6s var(--ease-out-expo) 0.15s,
+    opacity 0.5s var(--ease-standard) 0.15s;
+}
+`;
 
 // ---- Page-level structured data: this page owns the rich Person entity + nested Service ----
 // Geo stays Kolkata; serviceArea worldwide — consistent with the site schema strategy.
@@ -87,10 +111,21 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={[aboutPersonJsonLd, coachingServiceJsonLd]} />
+      {/* Page-authored FX CSS — see ABOUT_FX_CSS note above */}
+      <style>{ABOUT_FX_CSS}</style>
 
       {/* ============ Section 1 — HERO ("The Fade-In") ============ */}
-      <section className="bg-void glow-top grain">
-        <div className="container-site section-lg">
+      {/* aurora + grain atmosphere; overflow-hidden pens the drifting ghost word. */}
+      <section className="bg-void glow-top grain aurora relative overflow-hidden">
+        {/* ONE ghost word, low behind the hero — from the H1's own vocabulary. */}
+        <span
+          aria-hidden="true"
+          className="ghost-word sd-ghost-drift -bottom-6 left-0 right-0 text-center"
+        >
+          REBUILT
+        </span>
+
+        <div className="container-site section-lg relative z-10">
           <div className="grid items-center gap-10 nav:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] nav:gap-16">
             {/* Text block — mobile: after the portrait; desktop: left column */}
             <div className="order-2 nav:order-1">
@@ -149,48 +184,55 @@ export default function AboutPage() {
         <div className="container-site section-lg">
           <h2 className="sr-only">The Founder Story</h2>
 
-          <Reveal className="mx-auto max-w-[60ch] text-center">
-            <div aria-hidden="true" className="gold-line mx-auto w-16" />
-            {/* Copy VERBATIM from the copy bank — paragraph breaks are pacing only, words unchanged. */}
-            <p className="type-lead text-primary mt-10 leading-[1.7]">
+          {/* Editorial column: left-aligned prose so the drop cap reads as a
+              magazine opening. Copy VERBATIM — paragraph breaks pace it, words
+              unchanged; each body line blurs up on its own beat. */}
+          <div className="mx-auto max-w-[60ch]">
+            <div aria-hidden="true" className="gold-line w-16" />
+
+            <Reveal
+              as="p"
+              index={0}
+              className="reveal-blur type-lead text-primary mt-10 leading-[1.7] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-[3.2em] first-letter:leading-[0.8] first-letter:text-gold-300"
+            >
               I am not a celebrity trainer. I am not a gym influencer. I am
               someone who rebuilt himself completely from the ground up.
-            </p>
-            <p className="type-lead text-primary mt-6 leading-[1.7]">
+            </Reveal>
+            <Reveal as="p" index={1} className="reveal-blur type-lead text-primary mt-6 leading-[1.7]">
               From 100kg with zero confidence to coaching some of the most
               successful men in Kolkata.
-            </p>
-            <p className="type-lead text-primary mt-6 leading-[1.7]">
+            </Reveal>
+            <Reveal as="p" index={2} className="reveal-blur type-lead text-primary mt-6 leading-[1.7]">
               I have sat with businessmen, entrepreneurs and professionals who
               had everything — and still felt like something was missing.
-            </p>
-            <p className="type-lead text-primary mt-6 leading-[1.7]">
+            </Reveal>
+            <Reveal as="p" index={3} className="reveal-blur type-lead text-primary mt-6 leading-[1.7]">
               That missing thing is always the same.
-            </p>
-          </Reveal>
+            </Reveal>
 
-          {/* The four-noun punch — lands a beat after the rest of the block */}
-          <Reveal delayMs={400} className="mx-auto max-w-[60ch] text-center">
-            <p className="font-display mt-8 text-2xl leading-snug text-gold-300 md:text-[2rem]">
-              Their health. Their drive. Their confidence. Their discipline.
-            </p>
-          </Reveal>
+            {/* The four-noun punch — lands a beat after the block above */}
+            <Reveal delayMs={450} className="mt-8">
+              <p className="font-display text-2xl leading-snug text-gold-300 md:text-[2rem]">
+                Their health. Their drive. Their confidence. Their discipline.
+              </p>
+            </Reveal>
 
-          <Reveal delayMs={150} className="mx-auto max-w-[60ch] text-center">
-            <p className="type-lead text-primary mt-8 leading-[1.7]">
-              I help men get that back. Not with a crash diet. Not with a
-              supplement stack. With a complete lifestyle redesign that lasts
-              for the rest of their life.
-            </p>
-            <div className="mt-12">
-              <p className="font-display text-2xl italic text-gold-300">
-                — Aditya{/* [review] */}
+            <Reveal delayMs={150} className="reveal-blur mt-8">
+              <p className="type-lead text-primary leading-[1.7]">
+                I help men get that back. Not with a crash diet. Not with a
+                supplement stack. With a complete lifestyle redesign that lasts
+                for the rest of their life.
               </p>
-              <p className="type-caption mt-2 uppercase tracking-[0.18em] text-muted">
-                Aditya Kumar Upadhyay
-              </p>
-            </div>
-          </Reveal>
+              <div className="mt-12">
+                <p className="font-display text-2xl italic text-gold-300">
+                  — Aditya{/* [review] */}
+                </p>
+                <p className="type-caption mt-2 uppercase tracking-[0.18em] text-muted">
+                  Aditya Kumar Upadhyay
+                </p>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -203,28 +245,36 @@ export default function AboutPage() {
         this timeline stays qualitative on purpose. Node labels marked
         [review] are editorial framing for his approval.
       */}
-      <section className="bg-base cv-auto">
+      {/* overflow-hidden pens the alternating reveal-left/right entries so the
+          transient ±28px offset can never trip horizontal scroll. */}
+      <section className="bg-base cv-auto overflow-hidden">
         <div className="container-site section">
-          <Reveal className="max-w-2xl">
-            <h2 className="type-h2 text-primary">
-              The Long Way Back.{/* [review] */}
-            </h2>
-            <p className="type-lead text-secondary mt-4">
+          <div className="max-w-2xl">
+            <SplitHeading
+              as="h2"
+              text="The Long Way Back."
+              className="type-h2 text-primary"
+            />
+            {/* [review] */}
+            <Reveal as="p" delayMs={150} className="type-lead text-secondary mt-4">
               {/* [review] */}
               Nobody handed me this. I built it one decision at a time.
-            </p>
-          </Reveal>
+            </Reveal>
+          </div>
 
           <div className="relative mt-12 nav:mt-16">
-            {/* Gold spine — draws (scaleY) as the journey builds; single left rail at every width */}
-            <TimelineSpine className="absolute bottom-1 left-[11px] top-1 w-px" />
+            {/* The gold thread — draws itself (scaleY) as the journey scrolls in. */}
+            <div
+              aria-hidden="true"
+              className="thread-v sd-draw absolute bottom-1 left-[11px] top-1"
+            />
 
             <ol className="space-y-12 nav:space-y-16">
               {/* Node 1 — 100kg. Zero confidence. */}
-              <Reveal as="li" index={0} className="relative pl-12 nav:pl-16">
+              <Reveal as="li" index={0} className="reveal-left relative pl-12 nav:pl-16">
                 <span
                   aria-hidden="true"
-                  className="absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
+                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
                 />
                 <p className="eyebrow">THE STARTING POINT{/* [review] */}</p>
                 <h3 className="type-h3 text-primary mt-2">100kg. Zero confidence.</h3>
@@ -248,10 +298,10 @@ export default function AboutPage() {
               </Reveal>
 
               {/* Node 2 — The decision. */}
-              <Reveal as="li" index={1} className="relative pl-12 nav:pl-16">
+              <Reveal as="li" index={1} className="reveal-right relative pl-12 nav:pl-16">
                 <span
                   aria-hidden="true"
-                  className="absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
+                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
                 />
                 <p className="eyebrow">THE TURN{/* [review] */}</p>
                 <h3 className="type-h3 text-primary mt-2">The decision.</h3>
@@ -267,10 +317,10 @@ export default function AboutPage() {
               </Reveal>
 
               {/* Node 3 — The rebuild. (previews the Right Order of Change → Section 4) */}
-              <Reveal as="li" index={2} className="relative pl-12 nav:pl-16">
+              <Reveal as="li" index={2} className="reveal-left relative pl-12 nav:pl-16">
                 <span
                   aria-hidden="true"
-                  className="absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
+                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
                 />
                 <p className="eyebrow">THE REBUILD{/* [review] */}</p>
                 <h3 className="type-h3 text-primary mt-2">The rebuild.</h3>
@@ -287,10 +337,10 @@ export default function AboutPage() {
               </Reveal>
 
               {/* Node 4 — Coaching successful men in Kolkata. */}
-              <Reveal as="li" index={3} className="relative pl-12 nav:pl-16">
+              <Reveal as="li" index={3} className="reveal-right relative pl-12 nav:pl-16">
                 <span
                   aria-hidden="true"
-                  className="absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
+                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
                 />
                 <p className="eyebrow">WHERE IT LED{/* [review] */}</p>
                 <h3 className="type-h3 text-primary mt-2">
@@ -315,6 +365,9 @@ export default function AboutPage() {
       {/* ============ Section 4 — THE PHILOSOPHY ("In Brief") ============ */}
       <section className="bg-surface-1 border-y border-hairline-soft cv-auto">
         <div className="container-site section">
+          {/* Gold-thread stitch — carries the line language in from the timeline. */}
+          <div aria-hidden="true" className="thread-h sd-draw mb-8 w-24" />
+
           <Reveal className="max-w-2xl">
             <p className="eyebrow">WHAT I BELIEVE</p>
             <h2 className="type-h2 text-primary mt-3">
@@ -340,8 +393,8 @@ export default function AboutPage() {
                   index={i}
                   className="inline-flex items-center gap-3"
                 >
-                  <span className="type-caption inline-flex min-h-[36px] items-center rounded-full border border-hairline-gold px-4 uppercase tracking-[0.08em] text-gold-300">
-                    {label}
+                  <span className="spot type-caption inline-flex min-h-[36px] items-center rounded-full border border-hairline-gold px-4 uppercase tracking-[0.08em] text-gold-300">
+                    <span>{label}</span>
                   </span>
                   {i < 3 && (
                     <span aria-hidden="true" className="gold-line hidden w-6 md:block" />
@@ -363,37 +416,46 @@ export default function AboutPage() {
       {/* ============ Section 5 — WHO I HELP ("Two Men") ============ */}
       <section className="bg-base cv-auto">
         <div className="container-site section">
-          <Reveal>
-            <h2 className="type-h2 text-primary text-center">
-              Who This Is For.{/* [review] */}
-            </h2>
-          </Reveal>
+          <SplitHeading
+            as="h2"
+            text="Who This Is For."
+            className="type-h2 text-primary text-center"
+          />
+          {/* [review] */}
 
           <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2">
             {/* Card A — The Young Man (22–30) — informational, no per-card buttons */}
             <Reveal index={0}>
-              <div className="card-light h-full">
-                <p className="eyebrow card-gold">22–30</p>
-                <h3 className="type-h3 mt-3">The Young Man</h3>
-                <p className="type-body mt-4">
-                  You want direction. You want to build yourself the right way
-                  from the start. You do not want to waste years figuring out
-                  what actually works. This is for you.
-                </p>
-              </div>
+              <TiltCard className="h-full">
+                <div className="card-light h-full">
+                  <p className="eyebrow card-gold">22–30</p>
+                  <h3 className="type-h3 mt-3">The Young Man</h3>
+                  <p className="type-body mt-4">
+                    You want direction. You want to build yourself the right way
+                    from the start. You do not want to waste years figuring out
+                    what actually works. This is for you.
+                  </p>
+                </div>
+              </TiltCard>
             </Reveal>
 
             {/* Card B — The Successful Man (30–50) */}
             <Reveal index={1}>
-              <div className="card-dark-gold h-full">
-                <p className="eyebrow">30–50</p>
-                <h3 className="type-h3 mt-3">The Successful Man</h3>
-                <p className="type-body mt-4">
-                  You built the career. You made the money. But somewhere along
-                  the way you lost your health, your drive and your confidence.
-                  You want it back. This is for you too.
-                </p>
-              </div>
+              <TiltCard className="h-full">
+                <div className="card-dark-gold h-full">
+                  {/* Inner spot wrapper: the card's own ::before draws the corner
+                      bracket, so the cursor glow rides a nested .spot instead. */}
+                  <div className="spot">
+                    <p className="eyebrow">30–50</p>
+                    <h3 className="type-h3 mt-3">The Successful Man</h3>
+                    <p className="type-body mt-4">
+                      You built the career. You made the money. But somewhere along
+                      the way you lost your health, your drive and your confidence.
+                      You want it back. This is for you too.
+                    </p>
+                  </div>
+                </div>
+              </TiltCard>
             </Reveal>
           </div>
         </div>
@@ -402,36 +464,45 @@ export default function AboutPage() {
       {/* ============ Section 6 — HIS OWN BEFORE / AFTER ("Proof On His Own Body") ============ */}
       <section className="bg-alt border-y border-hairline-soft cv-auto">
         <div className="container-site section">
-          <Reveal className="text-center">
-            <h2 className="type-h2 text-primary">
-              Proof. On my own body.{/* [review] */}
-            </h2>
-          </Reveal>
-
-          <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
-            <Reveal index={0}>
-              <p className="eyebrow mb-3">BEFORE</p>
-              <PlaceholderImage
-                label={IMG_ABOUT_BEFORE.label}
-                w={IMG_ABOUT_BEFORE.w}
-                h={IMG_ABOUT_BEFORE.h}
-                alt="Before — Aditya at 100kg, his starting point"
-                variant="portrait"
-              />
-            </Reveal>
-            <Reveal index={1}>
-              <p className="eyebrow mb-3">AFTER</p>
-              <PlaceholderImage
-                label={IMG_ABOUT_AFTER.label}
-                w={IMG_ABOUT_AFTER.w}
-                h={IMG_ABOUT_AFTER.h}
-                alt="After — Aditya today, rebuilt through his own lifestyle-first method"
-                variant="portrait"
-              />
-            </Reveal>
+          <div className="text-center">
+            <SplitHeading
+              as="h2"
+              text="Proof. On my own body."
+              className="type-h2 text-primary"
+            />
+            {/* [review] */}
           </div>
 
-          <Reveal delayMs={200} className="mt-12 text-center">
+          <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
+            <div>
+              <Reveal as="p" className="eyebrow mb-3">BEFORE</Reveal>
+              {/* sd-wipe reveals the photo bottom-up as it scrolls in (not wrapped
+                  in Reveal — an sd-* entrance never shares an element with one). */}
+              <div className="sd-wipe">
+                <PlaceholderImage
+                  label={IMG_ABOUT_BEFORE.label}
+                  w={IMG_ABOUT_BEFORE.w}
+                  h={IMG_ABOUT_BEFORE.h}
+                  alt="Before — Aditya at 100kg, his starting point"
+                  variant="portrait"
+                />
+              </div>
+            </div>
+            <div>
+              <Reveal as="p" className="eyebrow mb-3">AFTER</Reveal>
+              <div className="sd-wipe">
+                <PlaceholderImage
+                  label={IMG_ABOUT_AFTER.label}
+                  w={IMG_ABOUT_AFTER.w}
+                  h={IMG_ABOUT_AFTER.h}
+                  alt="After — Aditya today, rebuilt through his own lifestyle-first method"
+                  variant="portrait"
+                />
+              </div>
+            </div>
+          </div>
+
+          <Reveal delayMs={200} className="reveal-blur mt-12 text-center">
             <blockquote className="font-display mx-auto max-w-[40ch] text-2xl leading-snug text-primary md:text-[1.75rem]">
               This was me. 100kg. Zero confidence. The decision to change was
               the hardest part. Everything else followed.
@@ -468,7 +539,7 @@ export default function AboutPage() {
                 href={SOCIAL_INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-colors hover:border-hairline-gold hover:text-primary sm:w-auto"
+                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
               >
                 <InstagramIcon className="h-5 w-5" />
                 Instagram
@@ -479,7 +550,7 @@ export default function AboutPage() {
                 href={SOCIAL_YOUTUBE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-colors hover:border-hairline-gold hover:text-primary sm:w-auto"
+                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
               >
                 <YouTubeIcon className="h-5 w-5" />
                 YouTube
@@ -501,7 +572,8 @@ export default function AboutPage() {
       </section>
 
       {/* ============ Section 8 — FINAL CTA BAND ("One Decision") ============ */}
-      {/* Shared closer — copy verbatim from bank; routes only (no email field → no consent line needed) */}
+      {/* Shared closer — copy verbatim from bank; routes only (no email field → no consent line needed).
+          FinalCta already carries the aurora + grain atmosphere for this band. */}
       <FinalCta
         heading="The man you want to become is waiting for one decision."
         sub="Start with a free blueprint. Or book a consultation today. Either way — start now."

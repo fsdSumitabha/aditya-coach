@@ -58,32 +58,14 @@ function sanitizeType(raw: string | null): ThankYouType {
 }
 
 /**
- * Gold check / seal mark. Server HTML renders it at final state (visible —
- * progressive enhancement, JS-off safe); on mount, motion-allowed clients
- * replay a single --ease-overshoot pop. Reduced-motion → stays static.
+ * Gold check / seal mark. The framing rings paint at final state (visible —
+ * progressive enhancement, JS-off safe); the check path draws itself in via
+ * the kit's `stroke-draw` primitive (pathLength=60 to match the assumed
+ * dasharray). Reduced-motion → the check is simply drawn, no animation.
  */
 function SealMark() {
-  const ref = useRef<HTMLSpanElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Same progressive-enhancement pattern as the shared Reveal primitive:
-    // hide only once we know we can animate back in.
-    el.style.opacity = "0";
-    el.style.transform = "scale(0.5)";
-    const t = window.setTimeout(() => {
-      el.style.transition =
-        "opacity 0.5s var(--ease-overshoot), transform 0.5s var(--ease-overshoot)";
-      el.style.opacity = "1";
-      el.style.transform = "scale(1)";
-    }, 30);
-    return () => window.clearTimeout(t);
-  }, []);
-
   return (
-    <span ref={ref} aria-hidden="true" className="inline-flex">
+    <span aria-hidden="true" className="inline-flex">
       <svg width={72} height={72} viewBox="0 0 72 72" fill="none">
         <circle
           cx="36"
@@ -102,6 +84,8 @@ function SealMark() {
           strokeWidth="1"
         />
         <path
+          className="stroke-draw"
+          pathLength={60}
           d="M24 37.5 32.5 46 48 28"
           stroke="var(--gold-500)"
           strokeWidth="2.5"
@@ -118,16 +102,23 @@ function ThankYouView({ type }: { type: ThankYouType }) {
   const copy = COPY[type];
 
   return (
-    <section className="section-lg glow-top">
+    <section className="section-lg glow-top aurora grain relative overflow-hidden">
       <div className="container-site">
         <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
-          {/* 1. Confirmation hero — seal mark → H1 (query-swapped) → subline.
-              H1 is never animated; min-height reserved so the JS copy swap
-              cannot shift layout (CLS < 0.1). */}
+          {/* 1. Confirmation hero — seal check draws in → H1 (query-swapped,
+              static, paints frame 1) → subline reveals a beat later for a
+              quiet stagger. min-height reserved so the JS copy swap cannot
+              shift layout (CLS < 0.1). */}
           <SealMark />
           <div className="mt-8 flex min-h-[232px] flex-col items-center md:min-h-[248px]">
             <h1 className="type-h1">{copy.h1}</h1>
-            <p className="type-lead mt-5 text-secondary">{copy.subline}</p>
+            <Reveal
+              as="p"
+              delayMs={140}
+              className="type-lead mt-5 text-secondary"
+            >
+              {copy.subline}
+            </Reveal>
           </div>
 
           {/* 2. What happens next — quiet reassurance in Aditya's voice */}

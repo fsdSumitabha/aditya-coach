@@ -30,12 +30,22 @@ const WA_404_PREFILL =
 export default function NotFound() {
   return (
     <div className="bg-void">
-      <section className="section-lg glow-top">
-        <div className="container-site">
+      <section className="section-lg glow-top relative overflow-hidden">
+        {/* Oversized ghost "404" drifting behind the content — one showpiece
+            watermark, filled + whisper-faint, aria-hidden, clipped by the
+            section's overflow-hidden so it never adds horizontal scroll. */}
+        <span
+          aria-hidden="true"
+          className="ghost-word filled sd-ghost-drift"
+          style={{ top: "14%", left: 0, right: 0, textAlign: "center" }}
+        >
+          404
+        </span>
+        <div className="container-site relative z-10">
           <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
-            {/* 1. Restrained 404 glyph — calm ease-out-expo fade, no bounce
-                (Reveal primitive; reduced-motion safe, H1 stays static). */}
-            <Reveal as="div" delayMs={0}>
+            {/* 1. Restrained 404 glyph — calm soft-focus fade, no bounce
+                (Reveal + reveal-blur; reduced-motion safe, H1 stays static). */}
+            <Reveal as="div" delayMs={0} className="reveal-blur">
               <span
                 aria-hidden="true"
                 className="font-display text-[clamp(3.5rem,10vw,5.5rem)] leading-none text-[var(--gold-500)] opacity-90"
@@ -75,17 +85,17 @@ export default function NotFound() {
                   <li>
                     <Link
                       href="/tools"
-                      className="type-small inline-flex min-h-[48px] items-center px-3 text-secondary underline decoration-[rgba(201,162,75,0.4)] underline-offset-4 transition-colors hover:text-primary"
+                      className="type-small inline-flex min-h-[48px] items-center px-3 text-secondary transition-colors hover:text-primary"
                     >
-                      Get a Free Tool
+                      <span className="link-draw">Get a Free Tool</span>
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="/book"
-                      className="type-small inline-flex min-h-[48px] items-center px-3 text-secondary underline decoration-[rgba(201,162,75,0.4)] underline-offset-4 transition-colors hover:text-primary"
+                      className="type-small inline-flex min-h-[48px] items-center px-3 text-secondary transition-colors hover:text-primary"
                     >
-                      Book a Consultation
+                      <span className="link-draw">Book a Consultation</span>
                     </Link>
                   </li>
                   <li>
@@ -93,10 +103,10 @@ export default function NotFound() {
                       href={waLink(WA_404_PREFILL)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="type-small inline-flex min-h-[48px] items-center gap-2 px-3 text-[var(--wa-green)] underline decoration-[rgba(37,211,102,0.4)] underline-offset-4 transition-opacity hover:opacity-80"
+                      className="type-small inline-flex min-h-[48px] items-center gap-2 px-3 text-[var(--wa-green)] transition-opacity hover:opacity-80"
                     >
                       <WhatsAppIcon className="h-4 w-4" />
-                      WhatsApp: Chat with Aditya
+                      <span className="link-draw">WhatsApp: Chat with Aditya</span>
                     </a>
                   </li>
                 </ul>

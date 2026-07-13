@@ -3,6 +3,8 @@ import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import LeadMagnetForm from "@/components/LeadMagnetForm";
 import Reveal from "@/components/Reveal";
+import SplitHeading from "@/components/SplitHeading";
+import TiltCard from "@/components/TiltCard";
 import ArticleCard from "@/components/blog/ArticleCard";
 import { BLUEPRINT_PDF } from "@/lib/config";
 import { posts } from "@/lib/blog";
@@ -64,8 +66,10 @@ export default function BlogIndexPage() {
     <>
       <JsonLd data={[blogSchema, breadcrumbSchema]} />
 
-      {/* 1. HERO — compact dark text band (LCP is the H1 text node) */}
-      <section className="glow-top">
+      {/* 1. HERO — compact dark text band (LCP is the H1 text node).
+             aurora = drifting gold atmosphere, grain = material; H1 static.
+             overflow-hidden contains the aurora bleed (no horizontal scroll). */}
+      <section className="aurora grain relative overflow-hidden">
         <div className="container-site pt-16 pb-10 md:pt-24 md:pb-14">
           <Reveal as="p" className="eyebrow">
             THE BLOG {/* [review] */}
@@ -99,7 +103,10 @@ export default function BlogIndexPage() {
             <div className="grid grid-cols-1 gap-6 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3 md:gap-8">
               {posts.map((post, i) => (
                 <Reveal key={post.slug} delayMs={i * 80} className="h-full">
-                  <ArticleCard post={post} headingLevel="h2" />
+                  {/* TiltCard = desktop-only ≤3° cursor tilt (no-op on touch) */}
+                  <TiltCard className="h-full">
+                    <ArticleCard post={post} headingLevel="h2" />
+                  </TiltCard>
                 </Reveal>
               ))}
             </div>
@@ -111,15 +118,17 @@ export default function BlogIndexPage() {
              the real lead magnets live on /tools (this routes there) */}
       <section
         aria-labelledby="blog-blueprint-heading"
-        className="cv-auto border-t border-hairline-gold bg-void"
+        className="cv-auto aurora relative overflow-hidden border-t border-hairline-gold bg-void"
       >
         <div className="container-site section" style={{ paddingBottom: 112 }}>
           <div className="mx-auto max-w-2xl text-center">
-            <Reveal>
-              <h2 id="blog-blueprint-heading" className="type-h2 text-primary">
-                Get the free blueprint. {/* [review] */}
-              </h2>
-            </Reveal>
+            {/* [review] copy — SplitHeading word-mask rise (replaces Reveal) */}
+            <SplitHeading
+              as="h2"
+              id="blog-blueprint-heading"
+              text="Get the free blueprint."
+              className="type-h2 text-primary"
+            />
             <Reveal index={1}>
               <p className="type-lead mt-4 text-secondary">
                 10 lifestyle changes that rebuild a man completely — body, mind

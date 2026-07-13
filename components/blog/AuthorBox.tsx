@@ -10,7 +10,7 @@ export default function AuthorBox() {
   return (
     <aside
       aria-label="About the author"
-      className="card mt-10 flex flex-col items-start gap-6 min-[600px]:flex-row min-[600px]:items-center"
+      className="card spot mt-10 flex flex-col items-start gap-6 min-[600px]:flex-row min-[600px]:items-center"
     >
       <div className="w-[120px] shrink-0 min-[600px]:w-[160px]">
         <PlaceholderImage
