@@ -9,7 +9,8 @@ export const COACH_WHATSAPP =
   process.env.NEXT_PUBLIC_COACH_WHATSAPP || "91XXXXXXXXXX"; // TODO
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || ""; // TODO
 export const IG_URL =
-  process.env.NEXT_PUBLIC_IG_URL || "https://instagram.com/adityakumarupadhyay"; // TODO confirm
+  process.env.NEXT_PUBLIC_IG_URL ||
+  "https://www.instagram.com/adityakumarupadhyay_"; // confirmed handle (trailing underscore)
 export const YOUTUBE_URL =
   process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://youtube.com/@__REPLACE__"; // TODO [review] real handle — single placeholder shared by footer/header/about/schema
 export const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY || ""; // TODO Phase 2

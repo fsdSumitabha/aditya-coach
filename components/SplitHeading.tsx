@@ -60,7 +60,7 @@ export default function SplitHeading({
     return () => io.disconnect();
   }, [text, staggerMs]);
 
-  const Tag = as as ElementType<{
+  const Tag = as as unknown as React.FC<{
     ref?: React.Ref<HTMLElement>;
     className?: string;
     id?: string;

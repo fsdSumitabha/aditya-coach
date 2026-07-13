@@ -68,7 +68,7 @@ export default function Reveal({
       ? ({ ...style, "--reveal-delay": `${delay}ms` } as CSSProperties)
       : style;
 
-  const Tag = as as ElementType<{
+  const Tag = as as unknown as React.FC<{
     ref?: React.Ref<HTMLElement>;
     className?: string;
     id?: string;

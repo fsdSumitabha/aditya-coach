@@ -67,7 +67,12 @@ export default function FadeIn({
     return () => cancelAnimationFrame(raf);
   }, [delayMs, durationMs, scaleFrom, y]);
 
-  const Tag = as;
+  const Tag = as as unknown as React.FC<{
+    ref?: React.Ref<HTMLElement>;
+    className?: string;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
+  }>;
   return (
     <Tag ref={ref} className={className} style={style}>
       {children}
