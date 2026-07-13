@@ -10,6 +10,7 @@ import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { waLink } from "@/lib/config";
 import SmoothScrollLink from "@/components/method/SmoothScrollLink";
 import FoundationStack from "@/components/method/FoundationStack";
+import StepRail from "@/components/method/StepRail";
 import {
   OG_METHOD_IMG,
   ICON_STEP1,
@@ -180,12 +181,15 @@ export default function MethodPage() {
         >
           ORDER
         </span>
-        <div className="container-site section-lg relative z-10">
-          <div className="mx-auto flex max-w-[720px] flex-col items-center text-center md:mx-0 md:items-start md:text-left">
-            <div aria-hidden="true" className="mb-6 h-px w-14 bg-gold-500/70" />
-            <p className="eyebrow">THE METHOD</p>{/* [review] */}
+        {/* Full-viewport doctrine opener — the page states its law, then proves it */}
+        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16">
+          <div className="mx-auto flex max-w-[760px] flex-col items-center text-center md:mx-0 md:items-start md:text-left">
+            <div className="flex items-center gap-4">
+              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
+              <p className="eyebrow">THE METHOD</p>{/* [review] */}
+            </div>
             {/* Hero H1 — LCP element; never animated, paints at final state frame 1 */}
-            <h1 className="type-h1 mt-4 text-primary">
+            <h1 className="font-display mt-5 text-[clamp(2.4rem,4.8vw,4.2rem)] font-medium leading-[1.06] tracking-[-0.02em] text-primary">
               The Right Order of Change.{" "}
               <span className="block text-secondary">
                 Most coaches get this wrong.
@@ -217,7 +221,7 @@ export default function MethodPage() {
             <Reveal delayMs={220} className="mt-8">
               <SmoothScrollLink
                 targetId="foundation-stack"
-                className="inline-flex min-h-[48px] items-center gap-2 font-medium text-gold-300 underline decoration-[var(--hairline-gold)] underline-offset-4 transition-colors hover:text-gold-200"
+                className="link-draw inline-flex min-h-[48px] items-center gap-2 font-medium text-gold-300 transition-colors hover:text-gold-200 motion-safe:animate-[wa-breathe_2.6s_ease-in-out_infinite]"
               >
                 See how the order works ↓{/* [review] */}
               </SmoothScrollLink>
@@ -249,6 +253,8 @@ export default function MethodPage() {
       </div>
 
       {/* ============ 4. FOUR EXPANDED STEP SECTIONS (01 → 04) ============ */}
+      {/* Sticky numeral rail (desktop) lights the active step as you read */}
+      <StepRail />
       <section className="cv-auto bg-base">
         <div className="container-site section">
           <div className="relative">
@@ -393,7 +399,7 @@ export default function MethodPage() {
             {MYTH_TRUTH.map((row, i) => (
               <div
                 key={i}
-                className="grid gap-y-3 border-b border-hairline-soft py-6 first:border-t md:grid-cols-2 md:gap-x-10"
+                className="group grid gap-y-3 border-b border-hairline-soft px-3 py-6 transition-colors duration-300 first:border-t hover:bg-[rgba(201,162,75,0.04)] md:grid-cols-2 md:gap-x-10"
               >
                 <Reveal
                   as="dt"
@@ -408,7 +414,7 @@ export default function MethodPage() {
                 <Reveal
                   as="dd"
                   delayMs={i * 100 + 150}
-                  className="reveal-right type-body border-l-2 border-[var(--gold-500)] pl-4 text-primary"
+                  className="reveal-right type-body border-l-2 border-[var(--gold-500)] pl-4 text-primary transition-shadow duration-300 group-hover:[box-shadow:-6px_0_18px_-8px_rgba(201,162,75,0.5)]"
                 >
                   <span className="type-step mb-1 block text-gold-500">
                     Truth

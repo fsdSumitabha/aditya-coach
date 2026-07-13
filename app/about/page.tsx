@@ -126,7 +126,8 @@ function Chapter({
       <span className="font-display text-[1.5rem] leading-none text-gold-500">
         {num}
       </span>
-      <span aria-hidden="true" className="h-px w-10 bg-hairline-gold" />
+      {/* the rule draws itself in as the chapter scrolls into view */}
+      <span aria-hidden="true" className="thread-h sd-draw h-px w-10" />
       <span className="eyebrow">{label}</span>
     </div>
   );
@@ -191,14 +192,17 @@ export default function AboutPage() {
               >
                 <span aria-hidden="true" />
               </FadeIn>
-              {/* One restrained gold moment: 1px gold hairline frame */}
-              <div className="p-1.5">
+              {/* One restrained gold moment: 1px gold hairline frame.
+                  Inner clip lets the portrait settle-zoom on scroll (transform
+                  only — the LCP still paints frame 1). */}
+              <div className="overflow-hidden rounded-[16px] p-1.5">
                 <PlaceholderImage
                   label={IMG_ABOUT_HERO.label}
                   w={IMG_ABOUT_HERO.w}
                   h={IMG_ABOUT_HERO.h}
                   alt="Aditya Kumar Upadhyay, men's lifestyle coach, Kolkata — present-day portrait, composed and direct to camera"
                   variant="portrait"
+                  className="sd-zoom"
                 />
               </div>
             </div>
@@ -224,7 +228,7 @@ export default function AboutPage() {
       </section>
 
       {/* ============ Section 2 — THE FOUNDER STORY ("The Centerpiece") ============ */}
-      <section className="bg-surface-1 grain border-y border-hairline-soft">
+      <section className="bg-surface-1 grain aurora relative overflow-hidden border-y border-hairline-soft">
         <div className="container-site section-lg">
           <h2 className="sr-only">The Founder Story</h2>
 
@@ -257,7 +261,7 @@ export default function AboutPage() {
             </Reveal>
 
             {/* The four-noun punch — the page's loudest typographic moment */}
-            <Reveal delayMs={450} className="mt-10">
+            <Reveal delayMs={450} className="reveal-blur mt-10">
               <p className="font-display border-l-2 border-gold-500 pl-6 text-[clamp(1.75rem,3.6vw,2.9rem)] leading-[1.25] text-gold-300">
                 Their health. Their drive. Their confidence. Their discipline.
               </p>
@@ -335,7 +339,9 @@ export default function AboutPage() {
                   Out of breath on the stairs. Avoiding the mirror. Telling
                   myself I&apos;d start Monday — every Sunday.
                 </p>
-                <div className="mt-5 max-w-[280px]">
+                {/* wipes itself open as the node scrolls in (sd-wipe on the
+                    frame — the Reveal owns the parent li, never this element) */}
+                <div className="sd-wipe mt-5 max-w-[280px]">
                   <PlaceholderImage
                     label={IMG_TL_BEFORE.label}
                     w={IMG_TL_BEFORE.w}
