@@ -184,8 +184,15 @@ export default function ContactPage() {
 
       {/* 1) HERO — text LCP; H1 paints at final state frame 1 (never animated) */}
       <section className="bg-void aurora grain relative overflow-hidden">
-        <div className="container-site section-lg flex flex-col items-center text-center">
-          <h1 className="type-h1 text-primary">Let&apos;s Talk.</h1>
+        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col items-center justify-center py-16 text-center">
+          <div className="mb-6 flex items-center justify-center gap-4">
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+            <p className="eyebrow">CONTACT{/* [review] */}</p>
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+          </div>
+          <h1 className="font-display text-[clamp(3rem,7vw,5.4rem)] font-medium leading-[1.02] tracking-[-0.03em] text-primary">
+            Let&apos;s Talk.
+          </h1>
           <Reveal delayMs={60}>
             <p className="type-lead text-secondary mx-auto mt-5 max-w-xl">
               {"Whatever's been holding you back — put it in a message. I read every one."}
@@ -209,7 +216,7 @@ export default function ContactPage() {
           </Reveal>
           <Reveal delayMs={180} className="mt-9 w-full sm:w-auto">
             <div className="cta-stack justify-center">
-              <Link href="/book" className="btn-gold">
+              <Link href="/book" className="btn-gold shine-loop">
                 Book a Consultation
               </Link>
               <a
