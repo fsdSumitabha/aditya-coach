@@ -24,7 +24,7 @@ export default function FinalCta({
   primaryFirst?: boolean;
 }) {
   const primary = (
-    <Link key="p" href={primaryHref} className="btn-gold">
+    <Link key="p" href={primaryHref} className="btn-gold shine-loop">
       {primaryLabel}
     </Link>
   );

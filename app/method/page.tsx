@@ -303,7 +303,8 @@ export default function MethodPage() {
                         <div className="flex items-center gap-4 md:gap-5">
                           <span
                             aria-hidden="true"
-                            className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-500 md:h-[72px] md:w-[72px]"
+                            className="float-idle inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-500 md:h-[72px] md:w-[72px]"
+                            style={{ animationDelay: `${i * 0.55}s` }}
                           >
                             <Icon width={40} height={40} />
                           </span>
@@ -320,13 +321,19 @@ export default function MethodPage() {
                         {/* VERBATIM step copy — do not alter */}
                         <p className="type-lead mt-5 text-primary">{step.body}</p>
                         <div className="mt-5 space-y-3 border-t border-hairline-soft pt-5">
-                          {step.depth.map((d) => (
-                            <p key={d.lead} className="type-body text-secondary">
+                          {/* each depth line lands on its own beat */}
+                          {step.depth.map((d, di) => (
+                            <Reveal
+                              as="p"
+                              key={d.lead}
+                              delayMs={di * 90}
+                              className="type-body text-secondary"
+                            >
                               <strong className="font-semibold text-primary">
                                 {d.lead}
                               </strong>{" "}
                               {d.text}
-                            </p>
+                            </Reveal>
                           ))}
                         </div>
                         {step.id === "step-2" && (
@@ -478,7 +485,7 @@ export default function MethodPage() {
               delayMs={450}
               style={{ transitionTimingFunction: "var(--ease-overshoot)" }}
             >
-              <Link href="/book" className="btn-gold w-full md:w-auto">
+              <Link href="/book" className="btn-gold shine-loop w-full md:w-auto">
                 Get your order mapped — ₹2,000
               </Link>{/* [review] */}
             </Reveal>

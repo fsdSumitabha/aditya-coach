@@ -10,6 +10,7 @@ import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
+import Marquee from "@/components/Marquee";
 import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
 import { ArrowRightIcon, InstagramIcon, PinIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
@@ -286,6 +287,19 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Decorative reprise of the four-noun line — the chant between chapters */}
+      <div className="border-b border-hairline-soft bg-void py-5 md:py-7">
+        <Marquee
+          items={[
+            "Their health.",
+            "Their drive.",
+            "Their confidence.",
+            "Their discipline.",
+          ]}
+          speedS={40}
+        />
+      </div>
+
       {/* ============ Section 3 — THE TIMELINE ("The Journey") ============ */}
       {/*
         [review] REVIEWER NOTE: no hard numbers were invented beyond the
@@ -452,7 +466,7 @@ export default function AboutPage() {
                     <span>{label}</span>
                   </span>
                   {i < 3 && (
-                    <span aria-hidden="true" className="gold-line hidden w-6 md:block" />
+                    <span aria-hidden="true" className="thread-h sd-draw hidden h-px w-6 md:block" />
                   )}
                 </Reveal>
               ),
@@ -602,7 +616,7 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
               >
-                <InstagramIcon className="h-5 w-5" />
+                <span className="float-idle inline-flex"><InstagramIcon className="h-5 w-5" /></span>
                 Instagram
               </a>
             </Reveal>
@@ -613,7 +627,7 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
               >
-                <YouTubeIcon className="h-5 w-5" />
+                <span className="float-idle inline-flex" style={{ animationDelay: "0.5s" }}><YouTubeIcon className="h-5 w-5" /></span>
                 YouTube
               </a>
             </Reveal>
@@ -624,7 +638,7 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 className="btn-wa w-full sm:w-auto"
               >
-                <WhatsAppIcon className="h-5 w-5" />
+                <span className="float-idle inline-flex" style={{ animationDelay: "1s" }}><WhatsAppIcon className="h-5 w-5" /></span>
                 Chat with Aditya
               </a>
             </Reveal>
