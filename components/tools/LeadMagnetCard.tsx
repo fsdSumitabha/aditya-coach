@@ -38,7 +38,7 @@ export default function LeadMagnetCard({
               height={600}> of the PDF cover when the asset exists. Above text on
               mobile (first in DOM), right-aligned on desktop (md:order-2). The
               overflow-hidden frame lets the cover settle-zoom on scroll. */}
-          <div className="w-full max-w-[280px] mx-auto md:order-2 md:max-w-none overflow-hidden rounded-2xl">
+          <div className="float-idle w-full max-w-[280px] mx-auto md:order-2 md:max-w-none overflow-hidden rounded-2xl">
             <PlaceholderImage
               label={imageLabel}
               w={480}

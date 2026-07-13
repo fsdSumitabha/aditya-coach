@@ -200,7 +200,7 @@ export default function Calculator() {
         <div className="mt-4 text-center">
           <button
             type="submit"
-            className="btn-gold w-full md:w-auto md:min-w-[260px]"
+            className="btn-gold shine-loop w-full md:w-auto md:min-w-[260px]"
           >
             Calculate My Numbers{/* [review] */}
           </button>
@@ -371,7 +371,7 @@ export default function Calculator() {
           full plan built around your numbers?
         </p>
         <div className="cta-stack justify-center mt-6">
-          <Link href="/book" className="btn-gold">
+          <Link href="/book" className="btn-gold shine-loop">
             Book My Call — ₹2,000
           </Link>
         </div>

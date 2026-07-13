@@ -68,8 +68,13 @@ export default function ToolsPage() {
 
       {/* ---- 1. HERO — no photo, no CTA button; the tools below ARE the CTAs ---- */}
       <section className="bg-void grain aurora relative overflow-hidden">
-        <div className="container-site section-lg text-center">
-          <h1 className="type-h1 text-primary max-w-[14ch] mx-auto">
+        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 text-center">
+          <div className="mb-6 flex items-center justify-center gap-4">
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+            <p className="eyebrow">FREE TOOLS{/* [review] */}</p>
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+          </div>
+          <h1 className="font-display mx-auto max-w-[15ch] text-[clamp(2.6rem,6vw,4.8rem)] font-medium leading-[1.04] tracking-[-0.03em] text-primary">
             Start Here. Completely Free.
           </h1>
           <Reveal
@@ -96,6 +101,22 @@ export default function ToolsPage() {
                 Calorie Calculator
               </a>
             </nav>
+          </Reveal>
+
+          {/* quiet cue at the panel's base */}
+          <Reveal
+            delayMs={500}
+            className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2"
+          >
+            <div
+              aria-hidden="true"
+              className="flex flex-col items-center gap-2 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
+            >
+              <span className="type-caption tracking-[0.24em] text-muted">
+                PICK YOUR TOOL{/* [review] */}
+              </span>
+              <span className="block h-9 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
+            </div>
           </Reveal>
         </div>
       </section>
