@@ -1397,6 +1397,59 @@ h3,
   transform: scale(0.94);
 }
 
+/* ---- Periodic gleam: a shine sweeps the element every few seconds ----
+   (for the RECOMMENDED badge + high-intent gold CTAs; conversion accent) */
+.shine-loop {
+  position: relative;
+  overflow: hidden;
+}
+.shine-loop::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -40%;
+  width: 36%;
+  background: linear-gradient(
+    105deg,
+    transparent,
+    rgba(255, 255, 255, 0.38) 50%,
+    transparent
+  );
+  transform: translateX(-140%) skewX(-18deg);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .shine-loop::before {
+    animation: shine-loop-sweep 4.6s var(--ease-standard) infinite;
+  }
+}
+@keyframes shine-loop-sweep {
+  0%,
+  72% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  92%,
+  100% {
+    transform: translateX(480%) skewX(-18deg);
+  }
+}
+
+/* ---- Idle float: slow vertical bob for icons/ornaments ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .float-idle {
+    animation: float-idle 3.4s ease-in-out infinite alternate;
+  }
+}
+@keyframes float-idle {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
+
 /* ---- SVG stroke draw (thank-you check, decorative icons) ---- */
 @media (prefers-reduced-motion: no-preference) {
   .stroke-draw {

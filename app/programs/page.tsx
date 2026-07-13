@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
+import Marquee from "@/components/Marquee";
+import PriceTicker from "@/components/programs/PriceTicker";
 import TiltCard from "@/components/TiltCard";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
@@ -256,7 +258,7 @@ export default function ProgramsPage() {
               <div className="flex flex-col items-center gap-5">
                 <CtaLink
                   href={BOOK_URL}
-                  className="btn-gold w-full sm:w-auto"
+                  className="btn-gold shine-loop w-full sm:w-auto"
                   data={{ page: "programs", cta: "hero_book", target: BOOK_URL }}
                 >
                   Book the {PRICE_CONSULT} Consultation
@@ -273,8 +275,16 @@ export default function ProgramsPage() {
         </div>
       </section>
 
+      {/* Decorative ticker — the three offer names, verbatim */}
+      <div className="border-y border-hairline-soft bg-void py-5 md:py-7">
+        <Marquee
+          items={["Discovery Consultation", "Monthly Coaching", "Online Plan"]}
+          speedS={38}
+        />
+      </div>
+
       {/* ============ 2. THREE OFFER BLOCKS ============ */}
-      <section className="bg-base relative overflow-hidden isolate">
+      <section className="bg-base aurora relative overflow-hidden isolate">
         {/* Ghost watermark — reuses the hero word "Work", decorative, clipped
             to the section; drifts on scroll where supported. */}
         <div
@@ -303,7 +313,7 @@ export default function ProgramsPage() {
                 style={{ background: "var(--surface-warm)" }}
               >
                 <span
-                  className="absolute -top-3.5 right-6 z-10 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-on-gold"
+                  className="shine-loop absolute -top-3.5 right-6 z-10 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-on-gold"
                   style={{ background: "var(--grad-gold)", boxShadow: "var(--glow-gold)" }}
                 >
                   Recommended
@@ -311,11 +321,11 @@ export default function ProgramsPage() {
                 {/* Inner .spot carries the cursor glow (kept off the article so
                     the badge can straddle the top edge un-clipped). */}
                 <div className="spot flex flex-col h-full">
-                <OfferIcon src={IMG_OFFER_ICON_DISCOVERY} alt="Discovery Consultation" />
+                <div className="float-idle self-start"><OfferIcon src={IMG_OFFER_ICON_DISCOVERY} alt="Discovery Consultation" /></div>
                 <h2 className="type-h3 text-primary mt-5">Discovery Consultation</h2>
                 {/* the number the whole page exists to sell — let it carry weight */}
                 <p className="font-display text-gold-grad mt-3 text-[clamp(2.1rem,3.2vw,2.8rem)] leading-none">
-                  {PRICE_CONSULT}
+                  <PriceTicker value={2000} />
                 </p>
                 <p className="type-small text-muted mt-1">
                   45 minutes · Online via WhatsApp
@@ -330,37 +340,38 @@ export default function ProgramsPage() {
                 </p>
                 {/* [review] — bullet list invented in Aditya's voice */}
                 <ul className="mt-4 flex flex-col gap-3">
-                  <li className="flex gap-3 type-small text-secondary">
+                  {/* each takeaway lands on its own beat */}
+                  <Reveal as="li" index={0} className="flex gap-3 type-small text-secondary">
                     <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                     <span>
                       A clear read on where your lifestyle, health and habits
                       actually stand
                     </span>
-                  </li>
-                  <li className="flex gap-3 type-small text-secondary">
+                  </Reveal>
+                  <Reveal as="li" index={1} className="flex gap-3 type-small text-secondary">
                     <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                     <span>The exact order of what to change first — no guessing</span>
-                  </li>
-                  <li className="flex gap-3 type-small text-secondary">
+                  </Reveal>
+                  <Reveal as="li" index={2} className="flex gap-3 type-small text-secondary">
                     <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                     <span>
                       Your biggest blocker named out loud, and how to move past it
                     </span>
-                  </li>
-                  <li className="flex gap-3 type-small text-secondary">
+                  </Reveal>
+                  <Reveal as="li" index={3} className="flex gap-3 type-small text-secondary">
                     <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                     <span>
                       A realistic picture of what&apos;s possible in the next 3–6
                       months
                     </span>
-                  </li>
-                  <li className="flex gap-3 type-small text-secondary">
+                  </Reveal>
+                  <Reveal as="li" index={4} className="flex gap-3 type-small text-secondary">
                     <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                     <span>
                       Complete clarity on whether coaching is right for you — zero
                       pressure
                     </span>
-                  </li>
+                  </Reveal>
                 </ul>
                 <div className="mt-auto pt-8">
                   <CtaLink
@@ -391,7 +402,7 @@ export default function ProgramsPage() {
               <TiltCard className="h-full">
               <article className="card-dark-gold h-full">
                 <div className="spot flex flex-col h-full">
-                <OfferIcon src={IMG_OFFER_ICON_MONTHLY} alt="Monthly Coaching" />
+                <div className="float-idle self-start" style={{ animationDelay: "0.6s" }}><OfferIcon src={IMG_OFFER_ICON_MONTHLY} alt="Monthly Coaching" /></div>
                 <h2 className="card-head type-h3 mt-5">Monthly Coaching</h2>
                 <p className="type-body font-medium text-secondary mt-3">
                   Price disclosed after your consultation
@@ -463,7 +474,7 @@ export default function ProgramsPage() {
               <TiltCard className="h-full">
               <article className="card-dark-gold h-full">
                 <div className="spot flex flex-col h-full">
-                <OfferIcon src={IMG_OFFER_ICON_ONLINE} alt="Online Plan" />
+                <div className="float-idle self-start" style={{ animationDelay: "1.2s" }}><OfferIcon src={IMG_OFFER_ICON_ONLINE} alt="Online Plan" /></div>
                 <h2 className="card-head type-h3 mt-5">Online Plan</h2>
                 <p className="type-body font-medium text-secondary mt-3">
                   Price disclosed after your consultation
@@ -589,9 +600,11 @@ export default function ProgramsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {compareRows.map((row) => (
-                    <tr
+                  {compareRows.map((row, ri) => (
+                    <Reveal
+                      as="tr"
                       key={row.label}
+                      delayMs={ri * 60}
                       className="transition-colors hover:bg-[rgba(201,162,75,0.04)]"
                     >
                       <th
@@ -608,7 +621,7 @@ export default function ProgramsPage() {
                           {cell === DASH ? <NotIncluded /> : cell}
                         </td>
                       ))}
-                    </tr>
+                    </Reveal>
                   ))}
                   {/* CTA row — second conversion surface, same three targets */}
                   <tr>
