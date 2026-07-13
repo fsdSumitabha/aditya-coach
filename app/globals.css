@@ -907,6 +907,504 @@ h3,
 }
 
 /* ============================================================
+   DESIGN KIT 2.0 — material depth, scroll-driven motion, gold-as-metal
+   Rules: transform/opacity/clip-path only; every scroll-driven effect is
+   wrapped in @supports + prefers-reduced-motion: no-preference so the base
+   state stays fully visible everywhere else.
+   ============================================================ */
+
+/* ---- Ambient atmosphere: slow-drifting gold aurora on hero/CTA bands ---- */
+.aurora {
+  position: relative;
+  isolation: isolate;
+}
+.aurora::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 34% at 22% 18%, rgba(201, 162, 75, 0.09), transparent 70%),
+    radial-gradient(36% 30% at 82% 60%, rgba(201, 162, 75, 0.06), transparent 70%),
+    radial-gradient(50% 42% at 55% 105%, rgba(138, 106, 36, 0.07), transparent 72%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .aurora::before {
+    animation: aurora-drift 26s var(--ease-standard) infinite alternate;
+  }
+}
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(-2.5%, -1.5%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2.5%, 2%, 0) scale(1.06);
+  }
+}
+
+/* ---- Ghost typography: oversized Fraunces watermark behind sections ---- */
+.ghost-word {
+  position: absolute;
+  z-index: 0;
+  font: 500 clamp(96px, 20vw, 260px) / 0.9 var(--font-fraunces);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201, 162, 75, 0.08);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.ghost-word.filled {
+  -webkit-text-stroke: 0;
+  color: rgba(244, 241, 234, 0.028);
+}
+
+/* ---- The gold thread: lines that draw themselves as you scroll ---- */
+.thread-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--gold-500) 12%, var(--gold-500) 88%, transparent);
+  transform-origin: top center;
+}
+.thread-h {
+  height: 1px;
+  background: var(--grad-gold-line);
+  transform-origin: left center;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .thread-v.sd-draw {
+      animation: thread-draw-v linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 70%;
+    }
+    .thread-h.sd-draw {
+      animation: thread-draw-h linear both;
+      animation-timeline: view();
+      animation-range: entry 20% entry 90%;
+    }
+  }
+}
+@keyframes thread-draw-v {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes thread-draw-h {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ---- Scroll-driven depth (parallax drift / image wipe / soft zoom) ---- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sd-parallax {
+      animation: sd-parallax linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .sd-parallax-soft {
+      animation: sd-parallax-soft linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .sd-wipe {
+      animation: sd-wipe linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 75%;
+    }
+    .sd-zoom {
+      animation: sd-zoom linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .sd-ghost-drift {
+      animation: sd-ghost-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+@keyframes sd-parallax {
+  from {
+    transform: translateY(7%);
+  }
+  to {
+    transform: translateY(-7%);
+  }
+}
+@keyframes sd-parallax-soft {
+  from {
+    transform: translateY(3.5%);
+  }
+  to {
+    transform: translateY(-3.5%);
+  }
+}
+@keyframes sd-wipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes sd-zoom {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes sd-ghost-drift {
+  from {
+    transform: translateX(3%);
+  }
+  to {
+    transform: translateX(-3%);
+  }
+}
+
+/* ---- Reveal 2.0 modifiers (compose with the existing .reveal element) ---- */
+.reveal.reveal-blur {
+  filter: blur(10px);
+}
+.reveal.reveal-blur.is-in {
+  filter: blur(0);
+  transition:
+    opacity 0.7s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo),
+    filter 0.7s var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.reveal-left {
+  transform: translateX(-28px);
+}
+.reveal.reveal-right {
+  transform: translateX(28px);
+}
+.reveal.reveal-scale {
+  transform: scale(0.96) translateY(12px);
+}
+
+/* ---- Split headline (word-mask rise; SplitHeading component) ---- */
+.split-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.split-word {
+  display: inline-block;
+  will-change: transform;
+}
+.split-ready .split-word {
+  transform: translateY(112%);
+  opacity: 0;
+}
+.split-in .split-word {
+  transform: none;
+  opacity: 1;
+  transition:
+    transform 0.8s var(--ease-out-expo),
+    opacity 0.4s var(--ease-standard);
+  transition-delay: var(--w-delay, 0ms);
+}
+
+/* ---- Marquee (verbatim phrases as decorative ticker) ---- */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track {
+    animation: marquee var(--marquee-s, 42s) linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-inline: 28px;
+  font: 500 clamp(1.5rem, 4vw, 2.75rem) / 1.1 var(--font-fraunces);
+  letter-spacing: -0.01em;
+  color: rgba(244, 241, 234, 0.16);
+  white-space: nowrap;
+}
+.marquee-item .tick {
+  color: rgba(201, 162, 75, 0.45);
+  font-size: 0.5em;
+}
+
+/* ---- Gold-as-metal: button shine sweep + gradient text + card sheen ---- */
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+}
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -30%;
+  width: 40%;
+  background: linear-gradient(
+    105deg,
+    transparent,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn-gold:hover::after {
+    animation: shine-sweep 0.8s var(--ease-standard);
+  }
+}
+@keyframes shine-sweep {
+  to {
+    transform: translateX(420%) skewX(-18deg);
+  }
+}
+
+.text-gold-grad {
+  background: linear-gradient(100deg, #e8d9a8 0%, #c9a24b 45%, #e6d19a 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Featured card: slow breathing sheen on the gold border */
+@media (prefers-reduced-motion: no-preference) {
+  .card-featured {
+    animation: featured-breathe 5.5s var(--ease-standard) infinite;
+  }
+}
+@keyframes featured-breathe {
+  0%,
+  100% {
+    box-shadow: var(--shadow-card), 0 8px 30px rgba(201, 162, 75, 0.14);
+  }
+  50% {
+    box-shadow: var(--shadow-card), 0 10px 44px rgba(201, 162, 75, 0.26);
+  }
+}
+
+/* ---- Spotlight cards: radial highlight tracks the cursor ----
+   Opt-in with class "spot"; FxController sets --mx/--my per card. */
+.spot {
+  position: relative;
+  overflow: hidden;
+}
+.spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-standard);
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(201, 162, 75, 0.09),
+    transparent 65%
+  );
+}
+@media (hover: hover) {
+  .spot:hover::before {
+    opacity: 1;
+  }
+}
+.spot > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card top-light: a 1px inner highlight so surfaces read as material */
+.card,
+.card-dark-gold {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.028),
+    transparent 42%
+  );
+}
+
+/* ---- Link underline draw ---- */
+.link-draw {
+  position: relative;
+  text-decoration: none;
+}
+.link-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: var(--gold-500);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s var(--ease-out-expo);
+}
+.link-draw:hover::after,
+.link-draw:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Nav links: hover underline draws in (active stays solid) */
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(201, 162, 75, 0.55);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+.nav-link:hover::before {
+  transform: scaleX(1);
+}
+.nav-link.active::before {
+  display: none;
+}
+
+/* ---- Route transition (app/template.tsx re-mounts per navigation) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .route-fade {
+    animation: route-in 0.5s var(--ease-out-expo);
+  }
+}
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* ---- Cursor glow (FxController, pointer:fine only) ---- */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  z-index: 90;
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 75, 0.055),
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-standard);
+}
+
+/* ---- Reading progress (blog articles) ---- */
+.read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 110;
+  background: var(--grad-gold-line);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+/* ---- Sticky-pinned scroll scenes (position:sticky narratives) ---- */
+.pin-scene {
+  position: relative;
+}
+.pin-stage {
+  position: sticky;
+  top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ---- Tilt cards (TiltCard component sets --rx/--ry) ---- */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.25s var(--ease-standard);
+  will-change: transform;
+}
+
+/* ---- Scrollbar (desktop, WebKit + Firefox) ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 162, 75, 0.35) var(--bg-void);
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-void);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(201, 162, 75, 0.4), rgba(138, 106, 36, 0.4));
+  border-radius: 8px;
+  border: 2px solid var(--bg-void);
+}
+
+/* ---- Header 2.0: scrolled state gains a gold hairline + tighter wordmark ---- */
+.site-header.scrolled {
+  box-shadow: 0 1px 0 rgba(201, 162, 75, 0.14);
+}
+.wordmark {
+  transition: transform 0.3s var(--ease-standard);
+  transform-origin: left center;
+}
+.site-header.scrolled .wordmark {
+  transform: scale(0.94);
+}
+
+/* ---- SVG stroke draw (thank-you check, decorative icons) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .stroke-draw {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: stroke-draw 0.9s var(--ease-out-expo) 0.15s forwards;
+  }
+}
+@keyframes stroke-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ============================================================
    ARTICLE PROSE (blog posts + legal pages)
    ============================================================ */
 .article-prose {

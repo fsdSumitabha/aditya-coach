@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppFab from "@/components/WhatsAppFab";
 import CookieBanner from "@/components/CookieBanner";
 import TrackPageview from "@/components/TrackPageview";
+import FxController from "@/components/FxController";
 import JsonLd from "@/components/JsonLd";
 import { businessSchema, personSchema } from "@/lib/schema";
 import { SITE_NAME, SITE_ORIGIN } from "@/lib/site";
@@ -71,6 +72,7 @@ export default function RootLayout({
         <Footer />
         <WhatsAppFab />
         <CookieBanner />
+        <FxController />
       </body>
     </html>
   );
