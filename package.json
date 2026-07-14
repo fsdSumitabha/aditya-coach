@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build && node scripts/fix-segment-export.mjs",
     "start": "next start",
+    "preview": "node scripts/serve-out.js",
     "lint": "eslint"
   },
   "dependencies": {
