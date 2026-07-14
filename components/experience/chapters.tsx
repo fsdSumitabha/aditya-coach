@@ -63,7 +63,7 @@ export function Arrival() {
   const { size } = useThree();
   const landscape = size.width > size.height;
   const sealX = landscape ? 2.35 : 0;
-  const sealY = landscape ? 1.55 : 2.15;
+  const sealY = landscape ? 1.55 : 2.35;
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;

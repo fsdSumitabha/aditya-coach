@@ -139,7 +139,14 @@ export default async function BlogPostPage({ params }: Params) {
     articleSection: post.category,
     inLanguage: "en",
     author: authorPerson,
-    publisher: authorPerson,
+    publisher: {
+    "@type": "Organization",
+    name: "Aditya Kumar Upadhyay Coaching",
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_ORIGIN}/icon-512.png`,
+    },
+  },
   };
 
   const breadcrumbSchema = {

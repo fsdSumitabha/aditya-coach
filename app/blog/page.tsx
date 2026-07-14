@@ -37,7 +37,14 @@ const blogSchema = {
   url: `${SITE_ORIGIN}/blog`,
   description:
     "Direct, no-fluff articles on lifestyle, nutrition, sleep and discipline for men who want their drive and confidence back.",
-  publisher: authorPerson,
+  publisher: {
+    "@type": "Organization",
+    name: "Aditya Kumar Upadhyay Coaching",
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_ORIGIN}/icon-512.png`,
+    },
+  },
   blogPost: posts.map((post) => ({
     "@type": "BlogPosting",
     headline: post.title,

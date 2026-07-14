@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useExperience } from "./store";
 import { CHAPTERS, FACTS } from "./facts";
 
@@ -33,13 +33,49 @@ export default function Overlay() {
   const fact = focus ? FACTS[focus] : null;
   const chapter = chapterIdx >= 0 ? CHAPTERS[chapterIdx] : null;
 
+  const cardRef = useRef<HTMLElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const prevFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFocus(null);
+      if (e.key === "Escape") {
+        setFocus(null);
+        return;
+      }
+      // simple focus trap while a fact card is open
+      if (e.key === "Tab" && useExperience.getState().focus && cardRef.current) {
+        const focusables = cardRef.current.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled])",
+        );
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [setFocus]);
+
+  // dialog focus: move to the close button on open, restore on close
+  const factId = fact?.id ?? null;
+  useEffect(() => {
+    if (factId) {
+      prevFocusRef.current = document.activeElement as HTMLElement | null;
+      // wait one frame so framer-motion has mounted the card
+      const raf = requestAnimationFrame(() => closeBtnRef.current?.focus());
+      return () => cancelAnimationFrame(raf);
+    }
+    prevFocusRef.current?.focus?.();
+    prevFocusRef.current = null;
+  }, [factId]);
 
   const jump = (p: number) =>
     window.dispatchEvent(new CustomEvent("journey:jump", { detail: p }));
@@ -63,11 +99,19 @@ export default function Overlay() {
                 : "absolute inset-x-0 bottom-[16dvh] flex flex-col items-center px-5 text-center sm:bottom-[12dvh]"
             }
           >
+            {/* feathered scrim — guarantees contrast for the text block even
+                when a bright gold object drifts behind it (no hard edges) */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-10 -inset-y-8 -z-10 bg-[radial-gradient(70%_90%_at_50%_55%,rgba(8,8,10,0.78),rgba(8,8,10,0.35)_60%,transparent_78%)]"
+            />
             <p className={EYEBROW}>{chapter.eyebrow}</p>
+            {/* the page's semantic h1 lives server-side in app/page.tsx —
+                these chapter titles are visual-only */}
             {chapter.id === "arrival" ? (
-              <h1 className="font-display mt-3 max-w-[19ch] text-[clamp(2rem,5vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.02em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]">
+              <p className="font-display mt-3 max-w-[19ch] text-[clamp(2rem,5vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.02em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]">
                 {chapter.title}
-              </h1>
+              </p>
             ) : (
               <p className="font-display mt-3 max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] font-medium leading-[1.12] tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]">
                 {chapter.title}
@@ -150,6 +194,7 @@ export default function Overlay() {
       <AnimatePresence>
         {fact && (
           <motion.aside
+            ref={cardRef}
             key={fact.id}
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
@@ -157,9 +202,11 @@ export default function Overlay() {
             transition={{ duration: 0.55, ease: easeExpo }}
             className="pointer-events-auto absolute inset-x-3 bottom-3 max-h-[62dvh] overflow-y-auto rounded-2xl border border-[rgba(201,162,75,0.25)] bg-[rgba(11,11,12,0.9)] p-6 shadow-[0_10px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(201,162,75,0.12)] backdrop-blur-md sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-1/2 sm:w-[380px] sm:-translate-y-1/2 sm:p-7"
             role="dialog"
+            aria-modal="true"
             aria-label={fact.title}
           >
             <button
+              ref={closeBtnRef}
               type="button"
               onClick={() => setFocus(null)}
               aria-label="Close"

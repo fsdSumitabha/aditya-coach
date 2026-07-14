@@ -50,9 +50,9 @@ export default function LeadMagnetCard({
           </div>
 
           <div className="md:order-1">
-          <h2 className="eyebrow">FREE DOWNLOAD</h2>
-          {/* [review] eyebrow label */}
-          <h3 className="type-h2 text-primary mt-3">{title}</h3>
+          <p className="eyebrow">FREE DOWNLOAD</p>
+          {/* [review] eyebrow label — non-heading so the card title outranks it */}
+          <h2 className="type-h2 text-primary mt-3">{title}</h2>
           <p className="type-lead text-secondary mt-4">{description}</p>
 
           <LeadMagnetForm

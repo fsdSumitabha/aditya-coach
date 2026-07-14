@@ -214,12 +214,9 @@ export default function ProgramsPage() {
   return (
     <>
       <JsonLd data={[faqSchema, ...serviceSchemas]} />
-      {/* Page-scoped CSS: (1) supply the is-in transform reset the shipped kit
-          omits for reveal-scale so the table settles at full size; (2) the
-          sanctioned grid-template-rows accordion transition + reduced-motion
-          guard used by <FaqItem>. Neither touches shared files. */}
+      {/* Page-scoped CSS: the sanctioned grid-template-rows accordion
+          transition + reduced-motion guard used by <FaqItem>. */}
       <style>{`
-        #compare .reveal-scale.is-in { transform: none; }
         .faq-panel { transition: grid-template-rows 0.35s var(--ease-out-expo); }
         @media (prefers-reduced-motion: reduce) { .faq-panel { transition: none; } }
       `}</style>
@@ -328,7 +325,7 @@ export default function ProgramsPage() {
                   <PriceTicker value={2000} />
                 </p>
                 <p className="type-small text-muted mt-1">
-                  45 minutes · Online via WhatsApp
+                  45 minutes · online via WhatsApp
                 </p>
                 <p className="type-body text-secondary mt-5">
                   We go through your current lifestyle, health, habits and goals.
@@ -456,7 +453,7 @@ export default function ProgramsPage() {
                     data={{ page: "programs", cta: "monthly_apply_now", target: "whatsapp" }}
                   >
                     <WhatsAppIcon className="w-5 h-5" />
-                    Apply Now
+                    Apply Now<span className="sr-only"> for Monthly Coaching</span>
                   </CtaLink>
                   {/* [review] */}
                   <p className="type-caption text-muted text-center mt-3">
@@ -527,7 +524,7 @@ export default function ProgramsPage() {
                     data={{ page: "programs", cta: "online_learn_more", target: "whatsapp" }}
                   >
                     <WhatsAppIcon className="w-5 h-5" />
-                    Learn More
+                    Learn More<span className="sr-only"> about the Online Plan</span>
                   </CtaLink>
                   {/* [review] */}
                   <p className="type-caption text-muted text-center mt-3">
@@ -644,7 +641,7 @@ export default function ProgramsPage() {
                         className="btn-wa"
                         data={{ page: "programs", cta: "compare_apply_now", target: "whatsapp" }}
                       >
-                        Apply Now
+                        Apply Now<span className="sr-only"> for Monthly Coaching</span>
                       </CtaLink>
                     </td>
                     <td className="p-4">
@@ -654,7 +651,7 @@ export default function ProgramsPage() {
                         className="btn-wa"
                         data={{ page: "programs", cta: "compare_learn_more", target: "whatsapp" }}
                       >
-                        Learn More
+                        Learn More<span className="sr-only"> about the Online Plan</span>
                       </CtaLink>
                     </td>
                   </tr>

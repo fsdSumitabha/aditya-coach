@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import Home3D from "@/components/experience/Home3D";
+import { FACTS } from "@/components/experience/facts";
 import { businessSchema, personSchema } from "@/lib/schema";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
@@ -60,10 +61,39 @@ export default function Home() {
   return (
     <>
       <JsonLd data={HOME_SCHEMA} />
+
+      {/* The page's ONE h1 — server-rendered and permanent, independent of
+          scroll state or WebGL (the 3D overlay shows the same line visually
+          as a styled <p>). Also gives crawlers/AT the hero copy the canvas
+          can't carry. */}
+      <div className="sr-only">
+        <h1>
+          Most men are living below their potential. This page changes that.
+        </h1>
+        <p>
+          Men&apos;s Lifestyle Coach helping men rebuild their body, mind and
+          confidence. | Coaching worldwide
+        </p>
+      </div>
+
       <Home3D />
 
-      {/* Crawlable funnel map (visually hidden; the 3D overlay owns the
-          visible h1 — this block deliberately uses list semantics only). */}
+      {/* Every fact from the 3D journey, as real HTML — keyboard and
+          screen-reader users get the full content without touching the
+          canvas, and crawlers get the body copy. */}
+      <section aria-label="What you will find here" className="sr-only">
+        {Object.values(FACTS).map((f) => (
+          <article key={f.id}>
+            <h2>{f.title}</h2>
+            <p>{f.eyebrow}</p>
+            <p>{f.body}</p>
+            {f.attribution && <p>{f.attribution}</p>}
+            {f.cta && <Link href={f.cta.href}>{f.cta.label}</Link>}
+          </article>
+        ))}
+      </section>
+
+      {/* Crawlable funnel map (visually hidden). */}
       <nav aria-label="Explore the site" className="sr-only">
         <ul>
           <li>

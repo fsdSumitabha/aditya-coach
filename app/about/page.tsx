@@ -42,18 +42,11 @@ const IMG_ABOUT_BEFORE = { label: "IMG_ABOUT_BEFORE", w: 640, h: 800 } as const;
 const IMG_ABOUT_AFTER = { label: "IMG_ABOUT_AFTER", w: 640, h: 800 } as const;
 
 // ---- Page-local scroll-FX styles (scoped to /about via static export) ----
-// Two things the shipped kit classes can't express on their own:
-//  1) Design Kit 2.0's .reveal-left/.reveal-right set a START transform but
-//     ship no .is-in reset (unlike .reveal-blur, which has its companion), so
-//     used alone the entries would stick at their ±28px offset. These two rules
-//     complete that pattern for the gold-thread timeline. When globals.css
-//     carries the reset, delete this block — it becomes a harmless duplicate.
-//  2) The timeline node dots ignite (scale + opacity) the moment their entry
+// One thing the shipped kit classes can't express on their own:
+// the timeline node dots ignite (scale + opacity) the moment their entry
 //     reveals. Base state stays fully lit for no-JS / reduced-motion — the
 //     dimmed state only applies while the entry carries the JS-added .reveal.
 const ABOUT_FX_CSS = `
-.reveal.reveal-left.is-in,
-.reveal.reveal-right.is-in { transform: none; }
 .reveal .tl-dot { transform: scale(0.2); opacity: 0; }
 .reveal.is-in .tl-dot {
   transform: none;
@@ -159,7 +152,7 @@ export default function AboutPage() {
             <div className="order-2 nav:order-1">
               <FadeIn className="flex items-center gap-4" delayMs={120}>
                 <span aria-hidden="true" className="h-px w-10 bg-hairline-gold" />
-                <p className="eyebrow">MY STORY</p>
+                <p className="eyebrow">MY STORY{/* [review] */}</p>
               </FadeIn>
               {/* Hero H1 — LCP text, paints at final state frame 1. Never animated. */}
               <h1 className="font-display mt-5 max-w-[15ch] text-[clamp(2.5rem,5.2vw,4.4rem)] font-medium leading-[1.05] tracking-[-0.025em] text-primary">

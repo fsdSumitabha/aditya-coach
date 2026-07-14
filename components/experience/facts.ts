@@ -1,6 +1,7 @@
 // ---- The museum's fact layer ----
-// Every string is verbatim site copy (master spec) — the 3D world is the
-// presentation; the words stay exactly as approved.
+// Fact bodies/titles and most chapter copy are verbatim site copy (master
+// spec). Chapter eyebrows and interaction cues added for the 3D journey are
+// marked [review] — owner-approvable, in Aditya's voice.
 
 export type Fact = {
   id: string;
@@ -140,28 +141,28 @@ export const CHAPTERS = [
   {
     id: "man",
     range: [0.15, 0.29] as const,
-    eyebrow: "THE MAN",
+    eyebrow: "THE MAN" /* [review] */,
     title: "I rebuilt myself from the ground up.",
-    sub: "Touch the two figures — the before, and the rebuild.",
+    sub: "Touch the two figures — the before, and the rebuild." /* [review] */,
   },
   {
     id: "order",
     range: [0.36, 0.53] as const,
     eyebrow: "THE METHOD",
     title: "The Right Order of Change. Most coaches get this wrong.",
-    sub: "The foundation builds itself as you move. Touch a layer to read it.",
+    sub: "The foundation builds itself as you move. Touch a layer to read it." /* [review] */,
   },
   {
     id: "proof",
     range: [0.58, 0.72] as const,
-    eyebrow: "THE PROOF",
+    eyebrow: "THE PROOF" /* [review] */,
     title: "Real Men. Real Results.",
     sub: "No filters. No shortcuts. Just discipline and the right guidance.",
   },
   {
     id: "decision",
     range: [0.8, 1] as const,
-    eyebrow: "ONE DECISION",
+    eyebrow: "ONE DECISION" /* [review] */,
     title: "The man you want to become is waiting for one decision.",
     sub: "Start with a free blueprint. Or book a consultation today. Either way — start now.",
   },

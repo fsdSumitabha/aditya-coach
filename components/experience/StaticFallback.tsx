@@ -23,9 +23,11 @@ export default function StaticFallback() {
         <p className="eyebrow">
           MEN&apos;S LIFESTYLE COACH · COACHING WORLDWIDE
         </p>
-        <h1 className="type-h1 text-primary mx-auto mt-4 max-w-[19ch]">
+        {/* visually the hero headline — the page's real h1 is the permanent
+            sr-only one in app/page.tsx (exactly one h1 in every mode) */}
+        <p className="type-h1 text-primary mx-auto mt-4 max-w-[19ch]">
           Most men are living below their potential. This page changes that.
-        </h1>
+        </p>
         <p className="type-lead text-secondary mx-auto mt-5 max-w-xl">
           Men&apos;s Lifestyle Coach helping men rebuild their body, mind and
           confidence. <span className="text-muted">|</span> Coaching worldwide

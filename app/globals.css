@@ -1116,6 +1116,7 @@ h3,
 .split-in .split-word {
   transform: none;
   opacity: 1;
+  will-change: auto;
   transition:
     transform 0.8s var(--ease-out-expo),
     opacity 0.4s var(--ease-standard);
@@ -1153,11 +1154,12 @@ h3,
   padding-inline: 28px;
   font: 500 clamp(1.5rem, 4vw, 2.75rem) / 1.1 var(--font-fraunces);
   letter-spacing: -0.01em;
-  color: rgba(244, 241, 234, 0.16);
+  /* 42% ivory ≈ 3.75:1 on the void — clears AA large-text with margin */
+  color: rgba(244, 241, 234, 0.42);
   white-space: nowrap;
 }
 .marquee-item .tick {
-  color: rgba(201, 162, 75, 0.45);
+  color: rgba(201, 162, 75, 0.6);
   font-size: 0.5em;
 }
 
