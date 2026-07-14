@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 export const SITE_ORIGIN =
   process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://adityakumarupadhyay.com"; // TODO: final domain
 
-export const SITE_NAME = "Aditya Kumar Upadhyay — Men's Lifestyle Coach";
+export const SITE_NAME = "Aditya Kumar Upadhyay — Lifestyle & Personality Coach";
 export const BRAND_LINE =
-  "Aditya Kumar Upadhyay — Men's Lifestyle Coach. Become harder to ignore.";
+  "Aditya Kumar Upadhyay — Lifestyle & Personality Coach. Become harder to ignore."; /* [review] */
 
 // Header nav — exact order per A5. [Book ₹2,000] is the pinned gold button, NOT a nav item.
 export const NAV_LINKS = [

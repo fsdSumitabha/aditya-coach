@@ -56,7 +56,7 @@ const SOCIAL_ICON_CLASS =
   "inline-flex h-12 w-12 items-center justify-center rounded-full border border-hairline-gold text-secondary transition-[color,border-color,transform] duration-200 ease-out hover:text-primary hover:border-[var(--gold-500)] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold-500)]";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contact Aditya | Men's Lifestyle Coach Kolkata",
+  title: "Contact Aditya | Lifestyle & Personality Coach" /* [review] repositioned */,
   description:
     "Talk to Aditya Kumar Upadhyay. Message on WhatsApp, email, or send a quick enquiry. Coaching from Kolkata and worldwide online.",
   path: "/contact",
@@ -67,7 +67,7 @@ export const metadata: Metadata = pageMetadata({
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "Aditya Kumar Upadhyay — Men's Lifestyle Coach",
+  name: "Aditya Kumar Upadhyay — Lifestyle & Personality Coach",
   image: `${SITE_ORIGIN}${OG_IMAGE}`,
   url: `${SITE_ORIGIN}/contact`,
   email: EMAIL,

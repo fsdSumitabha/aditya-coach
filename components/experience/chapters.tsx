@@ -519,19 +519,34 @@ export function Decision() {
         sub="45 MINUTES · ONLINE VIA WHATSAPP"
         id="offer-discovery"
       />
+      {/* four-program lineup flanking the Discovery gate (Aditya's brief 2026-07-14) */}
       <Stele
-        position={[-2.4, 0, -0.6]}
-        height={2.4}
-        label="Monthly Coaching"
-        sub="PRICE DISCLOSED AFTER CONSULTATION"
-        id="offer-monthly"
+        position={[-3.5, 0, -1.1]}
+        height={2.2}
+        label="Lifestyle Coaching"
+        sub="MONTHLY · PRICE AFTER CONSULTATION"
+        id="offer-lifestyle"
       />
       <Stele
-        position={[2.4, 0, -0.6]}
-        height={2.4}
-        label="Online Plan"
-        sub="PRICE DISCLOSED AFTER CONSULTATION"
-        id="offer-online"
+        position={[-1.85, 0, -0.5]}
+        height={2.45}
+        label="Presence & Personality"
+        sub="MONTHLY · PRICE AFTER CONSULTATION"
+        id="offer-presence"
+      />
+      <Stele
+        position={[1.85, 0, -0.5]}
+        height={2.45}
+        label="Complete Transformation"
+        sub="BOTH PILLARS · PRICE AFTER CONSULTATION"
+        id="offer-complete"
+      />
+      <Stele
+        position={[3.5, 0, -1.1]}
+        height={2.2}
+        label="Written Plans"
+        sub="ONLINE · PRICE AFTER CONSULTATION"
+        id="offer-written"
       />
 
       {/* the free blueprint — a floating golden folio off to the side */}

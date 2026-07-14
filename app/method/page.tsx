@@ -434,6 +434,38 @@ export default function MethodPage() {
         </div>
       </section>
 
+      {/* ============ 5b. PILLAR TWO — PRESENCE (Aditya's brief, 2026-07-14) ============ */}
+      <section className="cv-auto aurora grain relative overflow-hidden border-t border-hairline-soft bg-surface-warm">
+        <div className="container-site section text-center">
+          <Reveal>
+            <p className="eyebrow">PILLAR TWO · PRESENCE{/* [review] */}</p>
+          </Reveal>
+          <SplitHeading
+            as="h2"
+            text="A strong body should be matched with a strong presence."
+            className="type-h2 text-primary mx-auto mt-4 max-w-[24ch]"
+          />
+          {/* verbatim from Aditya's brief */}
+          <Reveal delayMs={150} className="reveal-blur mx-auto mt-6 max-w-[58ch]">
+            <p className="type-lead text-secondary">
+              Because there is little value in having a great physique if you
+              still lack confidence when you walk into a room.
+            </p>
+            <p className="type-body text-secondary mt-4">
+              {/* [review] — pillar-two summary in his voice */}
+              The order above rebuilds the body. The second pillar rebuilds how
+              you carry it — body language, grooming, style, communication.
+              That work lives in the programs.
+            </p>
+          </Reveal>
+          <Reveal delayMs={250} className="mt-8">
+            <Link href="/programs" className="btn-outline">
+              See Presence &amp; Personality Coaching
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ============ 6. MEDICAL / RESULTS DISCLAIMER STRIP (compliance) ============ */}
       <section className="bg-void">
         <div className="container-site py-8 md:py-10">

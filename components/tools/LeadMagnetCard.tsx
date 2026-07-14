@@ -5,7 +5,8 @@ import TiltCard from "@/components/TiltCard";
 
 /**
  * /tools lead-magnet card (spec §2 + §3) — one parametrised card rendered
- * twice (Lifestyle Blueprint + Fat Loss Training Split). Server Component;
+ * three times (Lifestyle Blueprint + Fat Loss Training Split + Personality
+ * Audit Blueprint). Server Component;
  * the form/success swap lives in the shared <LeadMagnetForm> client island.
  */
 export default function LeadMagnetCard({

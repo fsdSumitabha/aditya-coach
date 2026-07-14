@@ -15,7 +15,7 @@ export const personSchema = {
   "@type": "Person",
   "@id": `${SITE_ORIGIN}/#person`,
   name: "Aditya Kumar Upadhyay",
-  jobTitle: "Men's Lifestyle Coach",
+  jobTitle: "Lifestyle & Personality Coach" /* [review] repositioned per Aditya's brief 2026-07-14 */,
   url: SITE_ORIGIN,
   image: `${SITE_ORIGIN}/og-image.jpg`,
   address: {
@@ -29,6 +29,9 @@ export const personSchema = {
     "men's fitness",
     "nutrition coaching",
     "habit change",
+    "personality development",
+    "body language and executive presence",
+    "men's grooming and style",
   ],
   sameAs: sameAsLinks,
 };
@@ -37,7 +40,7 @@ export const businessSchema = {
   "@context": "https://schema.org",
   "@type": "HealthAndBeautyBusiness",
   "@id": `${SITE_ORIGIN}/#business`,
-  name: "Aditya Kumar Upadhyay — Men's Lifestyle Coach",
+  name: "Aditya Kumar Upadhyay — Lifestyle & Personality Coach",
   url: SITE_ORIGIN,
   image: `${SITE_ORIGIN}/og-image.jpg`,
   founder: { "@id": `${SITE_ORIGIN}/#person` },

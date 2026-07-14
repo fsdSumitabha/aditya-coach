@@ -25,7 +25,7 @@ export type PostMeta = {
 export const blogAuthor = {
   name: "Aditya Kumar Upadhyay",
   shortName: "Aditya",
-  role: "Men's Lifestyle Coach",
+  role: "Lifestyle & Personality Coach" /* [review] */,
   url: "/about",
   portrait: {
     src: "/img/aditya-portrait.jpg", /* TODO: replace */

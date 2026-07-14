@@ -30,7 +30,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: "Men's Lifestyle Coach Kolkata | Aditya Upadhyay",
+    default: "Lifestyle & Personality Coach Kolkata | Aditya Upadhyay",
     template: "%s",
   },
   description:

@@ -4,12 +4,12 @@ import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import Calculator from "@/components/tools/Calculator";
 import LeadMagnetCard from "@/components/tools/LeadMagnetCard";
-import { BLUEPRINT_PDF, SPLIT_PDF, OG_IMAGE } from "@/lib/config";
+import { BLUEPRINT_PDF, SPLIT_PDF, PERSONALITY_PDF, OG_IMAGE } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
 const TITLE = "Free Tools for Men | Calorie Calculator & Blueprint";
 const DESCRIPTION =
-  "Free lifestyle blueprint, a 3-day fat-loss training split and a calorie calculator that shows how much a man should really be eating.";
+  "Free lifestyle blueprint, fat-loss training split, personality audit and a calorie calculator that shows how much a man should really be eating."; /* [review] 146 chars */
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -82,8 +82,8 @@ export default function ToolsPage() {
             delayMs={100}
             className="type-lead text-secondary mt-5 max-w-[52ch] mx-auto"
           >
-            Three free tools to start rebuilding your body and your discipline
-            today — no payment, no catch.{/* [review] */}
+            Four free tools to start rebuilding your body, your presence and
+            your discipline today — no payment, no catch.{/* [review] */}
           </Reveal>
           <Reveal delayMs={200} className="mt-8">
             {/* [review] micro-nav anchor chips */}
@@ -96,6 +96,9 @@ export default function ToolsPage() {
               </a>
               <a href="#training-split" className={chipClass}>
                 Training Split
+              </a>
+              <a href="#personality-audit" className={chipClass}>
+                Personality Audit{/* [review] */}
               </a>
               <a href="#calculator" className={chipClass}>
                 Calorie Calculator
@@ -169,13 +172,41 @@ export default function ToolsPage() {
         </div>
       </section>
 
+      {/* ---- 4. LEAD MAGNET 3 — The Personality Audit Blueprint ---- */}
+      <section
+        id="personality-audit"
+        className="bg-alt cv-auto border-t border-hairline-soft"
+      >
+        <div className="container-site section">
+          <Reveal className="max-w-[720px] mx-auto">
+            <LeadMagnetCard
+              title={"The Personality Audit Blueprint" /* [review] */}
+              description={
+                "Body language, grooming and style — the starting audit. Where you stand today, and the first fixes that change how people see you." /* [review] */
+              }
+              imageLabel="IMG-PERSONALITY"
+              imageAlt={
+                "Cover of the free Personality Audit Blueprint PDF" /* [review] */
+              }
+              source="tools-personality"
+              pdfHref={PERSONALITY_PDF}
+              pdfLabel={"Open the Personality Audit now" /* [review] */}
+              buttonLabel={"Send Me the Audit" /* [review] */}
+              successBody={
+                "Your Personality Audit Blueprint has been emailed to you." /* [review] */
+              }
+            />
+          </Reveal>
+        </div>
+      </section>
+
       {/* gold-thread stitch: the give-first magnets draw down into the payoff.
           Static (full) on non-supporting browsers; scale-draws on scroll. */}
       <div className="container-site" aria-hidden="true">
         <div className="thread-h sd-draw" />
       </div>
 
-      {/* ---- 4. THE CALORIE CALCULATOR — the hero tool ---- */}
+      {/* ---- 5. THE CALORIE CALCULATOR — the hero tool ---- */}
       <section
         id="calculator"
         className="bg-alt cv-auto aurora relative overflow-hidden"

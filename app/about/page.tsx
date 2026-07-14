@@ -71,7 +71,7 @@ const aboutPersonJsonLd = {
   "@type": "Person",
   "@id": `${SITE_ORIGIN}/#person`,
   name: "Aditya Kumar Upadhyay",
-  jobTitle: "Men's Lifestyle Coach",
+  jobTitle: "Lifestyle & Personality Coach" /* [review] repositioned 2026-07-14 */,
   url: `${SITE_ORIGIN}/about`,
   image: `${SITE_ORIGIN}/og-image.jpg`, // TODO: swap for the real IMG_ABOUT_HERO portrait URL
   address: KOLKATA_ADDRESS,
@@ -523,6 +523,15 @@ export default function AboutPage() {
               </TiltCard>
             </Reveal>
           </div>
+
+          {/* convergence — verbatim from Aditya's brief (2026-07-14) */}
+          <Reveal delayMs={200} className="reveal-blur mx-auto mt-12 max-w-[52ch] text-center">
+            <p className="font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-snug text-primary">
+              The goal isn&apos;t only to change how you look. It&apos;s to
+              change how you carry yourself, how you communicate, how you
+              think, and how you show up in every area of life.
+            </p>
+          </Reveal>
         </div>
       </section>
 

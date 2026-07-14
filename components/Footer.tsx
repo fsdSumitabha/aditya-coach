@@ -21,9 +21,12 @@ const COLUMNS: {
   {
     heading: "Programs",
     links: [
+      /* [review] lineup per Aditya's brief 2026-07-14 */
       { label: "Discovery Consultation ₹2,000", href: "/book" },
-      { label: "Monthly Coaching", href: "/programs" },
-      { label: "Online Plan", href: "/programs" },
+      { label: "Lifestyle Coaching", href: "/programs" },
+      { label: "Presence & Personality Coaching", href: "/programs" },
+      { label: "Complete Transformation", href: "/programs" },
+      { label: "Personalized Written Plans", href: "/programs" },
       { label: "Book Now", href: "/book" },
     ],
   },
@@ -32,6 +35,7 @@ const COLUMNS: {
     links: [
       { label: "Free Lifestyle Blueprint", href: "/tools" },
       { label: "Fat Loss Training Split", href: "/tools" },
+      { label: "Personality Audit Blueprint", href: "/tools" } /* [review] third free blueprint per Aditya's brief */,
       { label: "Calorie Calculator", href: "/tools" },
       { label: "Articles", href: "/blog" },
     ],

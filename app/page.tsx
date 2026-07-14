@@ -15,7 +15,7 @@ import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 // ============================================================
 
 export const metadata: Metadata = pageMetadata({
-  title: "Men's Lifestyle Coach Kolkata | Aditya Upadhyay",
+  title: "Lifestyle & Personality Coach Kolkata | Aditya Upadhyay" /* [review] repositioned */,
   description:
     "Rebuild your body, mind and confidence. Men's lifestyle and transformation coaching in Kolkata and worldwide online. Book a ₹2,000 consultation.",
   path: "/",
@@ -71,8 +71,8 @@ export default function Home() {
           Most men are living below their potential. This page changes that.
         </h1>
         <p>
-          Men&apos;s Lifestyle Coach helping men rebuild their body, mind and
-          confidence. | Coaching worldwide
+          Lifestyle &amp; Personality Coach helping men rebuild their body,
+          mind, presence and confidence. | Coaching worldwide
         </p>
       </div>
 
@@ -106,10 +106,10 @@ export default function Home() {
             <Link href="/results">Real Men. Real Results. — transformations</Link>
           </li>
           <li>
-            <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, calorie calculator</Link>
+            <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
           </li>
           <li>
-            <Link href="/programs">Programs — Discovery Consultation ₹2,000, Monthly Coaching, Online Plan</Link>
+            <Link href="/programs">Programs — Discovery Consultation ₹2,000, Lifestyle Coaching, Presence &amp; Personality Coaching, Complete Transformation, Personalized Written Plans</Link>
           </li>
           <li>
             <Link href="/book">Book your ₹2,000 consultation</Link>

@@ -25,7 +25,7 @@ export default function AuthorBox() {
       <div>
         <p className="type-h3 font-display text-primary">{blogAuthor.name}</p>
         <p className="type-small mt-1 text-muted">
-          {"Men's Lifestyle Coach — Kolkata & worldwide online."}
+          {"Lifestyle & Personality Coach — Kolkata & worldwide online." /* [review] */}
         </p>
         <p className="type-body mt-3 text-secondary">
           {

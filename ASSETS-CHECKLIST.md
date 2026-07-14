@@ -18,10 +18,11 @@ All photos: sharp, well-lit, at least 1500px on the long edge. Before/after pair
 
 ⚠️ **Every client photo needs written consent** (a WhatsApp message saying "yes you can use my photos on your website" screenshot is fine — keep them).
 
-## B. The two free guides 🔴
+## B. The three free guides 🔴
 The site promises these as instant downloads — they must exist:
 1. **The Lifestyle Blueprint** — "10 lifestyle changes that rebuild a man completely — body, mind and hormones." (PDF)
 2. **The Fat Loss Training Split** — "The exact 3 day training plan I use with every client." (PDF)
+3. **The Personality Audit Blueprint** — the body-language/grooming/style starter he described in his voice note. (PDF)
 If he doesn't have them yet, send us the raw content (even voice notes) and we'll design the PDFs.
 
 ## C. Contact & social truth 🔴

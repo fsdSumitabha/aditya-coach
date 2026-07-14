@@ -23,6 +23,7 @@ export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || ""; // TOD
 // ---- Swappable asset constants (A10) ----
 export const BLUEPRINT_PDF = "/downloads/lifestyle-blueprint.pdf"; /* TODO: replace with the real Lifestyle Blueprint PDF */
 export const SPLIT_PDF = "/downloads/fat-loss-training-split.pdf"; /* TODO: replace with the real Fat Loss Training Split PDF */
+export const PERSONALITY_PDF = "/downloads/personality-audit-blueprint.pdf"; /* TODO: replace with the real Personality Audit Blueprint PDF */
 export const OG_IMAGE = "/og-image.jpg"; /* TODO: replace — 1200×630, <300KB, face + tagline */
 
 // ---- WhatsApp deep-link helper (wa.me cannot auto-send; user taps send) ----

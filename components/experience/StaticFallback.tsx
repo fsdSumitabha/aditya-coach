@@ -14,6 +14,10 @@ export default function StaticFallback() {
     FACTS["order-4"],
     FACTS["proof-client"],
     FACTS["offer-discovery"],
+    FACTS["offer-lifestyle"],
+    FACTS["offer-presence"],
+    FACTS["offer-complete"],
+    FACTS["offer-written"],
     FACTS["blueprint"],
   ];
 
@@ -21,7 +25,7 @@ export default function StaticFallback() {
     <div className="bg-void grain">
       <section className="container-site section-lg text-center">
         <p className="eyebrow">
-          MEN&apos;S LIFESTYLE COACH · COACHING WORLDWIDE
+          LIFESTYLE &amp; PERSONALITY COACH · COACHING WORLDWIDE
         </p>
         {/* visually the hero headline — the page's real h1 is the permanent
             sr-only one in app/page.tsx (exactly one h1 in every mode) */}
@@ -29,8 +33,8 @@ export default function StaticFallback() {
           Most men are living below their potential. This page changes that.
         </p>
         <p className="type-lead text-secondary mx-auto mt-5 max-w-xl">
-          Men&apos;s Lifestyle Coach helping men rebuild their body, mind and
-          confidence. <span className="text-muted">|</span> Coaching worldwide
+          Lifestyle &amp; Personality Coach helping men rebuild their body,
+          mind, presence and confidence. <span className="text-muted">|</span> Coaching worldwide
         </p>
         <div className="cta-stack mt-8 justify-center">
           <Link href="/tools#blueprint" className="btn-gold">
