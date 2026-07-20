@@ -7,8 +7,9 @@ import * as THREE from "three";
 import Hotspot from "./Hotspot";
 import { useExperience } from "./store";
 
-const FRAUNCES = "/fonts/fraunces-500.ttf";
-const INTER = "/fonts/inter-500.ttf";
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const FRAUNCES = `${BASE}/fonts/fraunces-500.ttf`;
+const INTER = `${BASE}/fonts/inter-500.ttf`;
 
 const GOLD = "#c9a24b";
 const GOLD_LIGHT = "#e8d9a8";

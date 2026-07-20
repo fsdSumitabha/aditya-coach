@@ -37,8 +37,16 @@ export const metadata: Metadata = {
     "Rebuild your body, mind and confidence. Men's lifestyle and transformation coaching in Kolkata and worldwide online.",
   applicationName: SITE_NAME,
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-touch-icon.png" }],
+    // explicit metadata URLs don't get basePath'd automatically
+    icon: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/favicon.svg`,
+        type: "image/svg+xml",
+      },
+    ],
+    apple: [
+      { url: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/apple-touch-icon.png` },
+    ],
   },
 };
 

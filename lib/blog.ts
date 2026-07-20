@@ -22,13 +22,15 @@ export type PostMeta = {
   primaryCTA: "blueprint" | "calculator" | "book";
 };
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const blogAuthor = {
   name: "Aditya Kumar Upadhyay",
   shortName: "Aditya",
   role: "Lifestyle & Personality Coach" /* [review] */,
   url: "/about",
   portrait: {
-    src: "/img/aditya-portrait.jpg", /* TODO: replace */
+    src: `${BASE}/img/aditya-portrait.jpg`, /* TODO: replace */
     w: 160,
     h: 160,
     alt: "Aditya Kumar Upadhyay, men's lifestyle coach in Kolkata" /* [review] */,
@@ -49,7 +51,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-06-10", // [review]
     dateModified: "2026-06-10", // [review — "reviewed" date]
     cover: {
-      src: "/img/blog/lifestyle-first-cover.jpg", /* TODO: replace */
+      src: `${BASE}/img/blog/lifestyle-first-cover.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "Sunrise over a made bed and running shoes — a man's morning routine" /* [review] */,
@@ -69,7 +71,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-06-24", // [review]
     dateModified: "2026-06-24", // [review]
     cover: {
-      src: "/img/blog/how-much-to-eat-cover.jpg", /* TODO: replace */
+      src: `${BASE}/img/blog/how-much-to-eat-cover.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "A balanced plate and a set of kitchen scales on a dark counter" /* [review] */,
@@ -89,7 +91,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-07-01", // [review]
     dateModified: "2026-07-01", // [review]
     cover: {
-      src: "/img/blog/sleep-drive-cover.jpg", /* TODO: replace */
+      src: `${BASE}/img/blog/sleep-drive-cover.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "A composed man in his forties at a window at dusk, city lights behind" /* [review] */,

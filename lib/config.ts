@@ -20,11 +20,15 @@ export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""; // TODO Phase 2 — empty => tracking no-op
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || ""; // TODO Phase 2 — empty => tracking no-op
 
+// Subpath-hosting support (GitHub Pages): Next prefixes routes/_next
+// automatically via basePath, but hardcoded public/ asset URLs need it too.
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 // ---- Swappable asset constants (A10) ----
-export const BLUEPRINT_PDF = "/downloads/lifestyle-blueprint.pdf"; /* TODO: replace with the real Lifestyle Blueprint PDF */
-export const SPLIT_PDF = "/downloads/fat-loss-training-split.pdf"; /* TODO: replace with the real Fat Loss Training Split PDF */
-export const PERSONALITY_PDF = "/downloads/personality-audit-blueprint.pdf"; /* TODO: replace with the real Personality Audit Blueprint PDF */
-export const OG_IMAGE = "/og-image.jpg"; /* TODO: replace — 1200×630, <300KB, face + tagline */
+export const BLUEPRINT_PDF = `${BASE_PATH}/downloads/lifestyle-blueprint.pdf`; /* TODO: replace with the real Lifestyle Blueprint PDF */
+export const SPLIT_PDF = `${BASE_PATH}/downloads/fat-loss-training-split.pdf`; /* TODO: replace with the real Fat Loss Training Split PDF */
+export const PERSONALITY_PDF = `${BASE_PATH}/downloads/personality-audit-blueprint.pdf`; /* TODO: replace with the real Personality Audit Blueprint PDF */
+export const OG_IMAGE = `${BASE_PATH}/og-image.jpg`; /* TODO: replace — 1200×630, <300KB, face + tagline */
 
 // ---- WhatsApp deep-link helper (wa.me cannot auto-send; user taps send) ----
 export function waLink(
