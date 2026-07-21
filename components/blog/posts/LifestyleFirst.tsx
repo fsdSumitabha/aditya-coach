@@ -160,7 +160,7 @@ export default function LifestyleFirst() {
         <p className="type-small text-muted">
           {/* [review] — secondary link so the post touches both /tools and /book */}
           Prefer to talk it through first?{" "}
-          <Link href="/book">Book a consultation</Link> and we&apos;ll map
+          <Link href="/book">Book your Transformation Audit</Link> and we&apos;ll map
           your order of change in one call.
         </p>
       </Reveal>

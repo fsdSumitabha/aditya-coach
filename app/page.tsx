@@ -15,9 +15,9 @@ import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 // ============================================================
 
 export const metadata: Metadata = pageMetadata({
-  title: "Lifestyle & Personality Coach Kolkata | Aditya Upadhyay" /* [review] repositioned */,
+  title: "Complete Transformation Coach for Men | Aditya Upadhyay" /* [review] §3 */,
   description:
-    "Rebuild your body, mind and confidence. Men's lifestyle and transformation coaching in Kolkata and worldwide online. Book a ₹2,000 consultation.",
+    "Become harder to ignore. Complete transformation for men — body, lifestyle, mindset, personality, presence. Kolkata & worldwide. Book a ₹2,000 Transformation Audit." /* [review] 154 chars */,
   path: "/",
 });
 
@@ -28,7 +28,7 @@ const HOME_SCHEMA = [
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${SITE_ORIGIN}/#coaching-service`,
-    name: "Men's Lifestyle & Transformation Coaching",
+    name: "Complete Transformation Coaching for Men",
     serviceType: "Lifestyle coaching",
     provider: { "@id": `${SITE_ORIGIN}/#business` },
     areaServed: "Worldwide",
@@ -49,7 +49,7 @@ const HOME_SCHEMA = [
     },
     offers: {
       "@type": "Offer",
-      name: "Discovery Consultation",
+      name: "Transformation Audit",
       price: "2000",
       priceCurrency: "INR",
       url: `${SITE_ORIGIN}/book`,
@@ -67,12 +67,10 @@ export default function Home() {
           as a styled <p>). Also gives crawlers/AT the hero copy the canvas
           can't carry. */}
       <div className="sr-only">
-        <h1>
-          Most men are living below their potential. This page changes that.
-        </h1>
+        <h1>Become harder to ignore.</h1>
         <p>
-          Lifestyle &amp; Personality Coach helping men rebuild their body,
-          mind, presence and confidence. | Coaching worldwide
+          A complete transformation system for men who want to build a
+          stronger body, sharper mind, and undeniable presence.
         </p>
       </div>
 
@@ -109,10 +107,10 @@ export default function Home() {
             <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
           </li>
           <li>
-            <Link href="/programs">Programs — Discovery Consultation ₹2,000, Lifestyle Coaching, Presence &amp; Personality Coaching, Complete Transformation, Personalized Written Plans</Link>
+            <Link href="/programs">Coaching — Transformation Audit ₹2,000, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>
           </li>
           <li>
-            <Link href="/book">Book your ₹2,000 consultation</Link>
+            <Link href="/book">Book your ₹2,000 Transformation Audit</Link>
           </li>
           <li>
             <Link href="/blog">Articles for men who want more</Link>

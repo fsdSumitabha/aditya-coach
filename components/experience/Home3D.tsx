@@ -71,6 +71,14 @@ export default function Home3D() {
       const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      // phones start on the low tier (no bloom/reflections, fewer particles);
+      // PerformanceMonitor can only step down further, never up past this
+      if (
+        window.matchMedia("(pointer: coarse)").matches ||
+        window.innerWidth < 768
+      ) {
+        useExperience.getState().setQuality("low");
+      }
       setMode(!reduced && supportsWebGL() ? "3d" : "fallback");
     });
     return () => cancelAnimationFrame(raf);
@@ -135,7 +143,7 @@ export default function Home3D() {
       className="relative bg-[#08080a]"
       style={{ height: `${TRACK_VH * 100}vh` }}
     >
-      <div className="sticky top-0 h-[100dvh] overflow-hidden">
+      <div className="sticky top-0 h-[100svh] overflow-hidden">
         {mode === "loading" ? (
           <Poster />
         ) : (

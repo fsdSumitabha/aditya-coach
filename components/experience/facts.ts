@@ -1,7 +1,7 @@
 // ---- The museum's fact layer ----
-// Fact bodies/titles and most chapter copy are verbatim site copy (master
-// spec). Chapter eyebrows and interaction cues added for the 3D journey are
-// marked [review] — owner-approvable, in Aditya's voice.
+// Repositioned per Aditya's direction doc (2026-07-21): Complete
+// Transformation Coach for Men — "harder to ignore". His verbatim lines are
+// used untouched; copy written in his voice is marked [review].
 
 export type Fact = {
   id: string;
@@ -29,46 +29,56 @@ export const FACTS: Record<string, Fact> = {
     id: "man-after",
     eyebrow: "The rebuild",
     title: "Rebuilt from the ground up.",
-    body: "I am not a celebrity trainer. I am not a gym influencer. I am someone who rebuilt himself completely from the ground up. From 100kg with zero confidence to coaching some of the most successful men in Kolkata.",
+    body: "I am not a celebrity trainer. I am not a gym influencer. I am someone who rebuilt himself completely from the ground up. From 100kg with zero confidence to coaching some of the most successful men in Kolkata. I did not just change how I looked — I changed how I show up." /* [review] final line added per direction doc §7 */,
     cta: { label: "My story →", href: "/about" },
     cam: [2.7, 1.8, -12.7],
     look: [1.7, 1.3, -16],
   },
+  // ---- THE COMPLETE REBUILD (his framework, §6 — step lines verbatim) ----
   "order-1": {
     id: "order-1",
-    eyebrow: "Step 01 · Lifestyle First",
-    title: "LIFESTYLE FIRST",
-    body: "Fix how you live first — sleep, waking, movement, daily habits. This alone starts changing your body.",
-    cta: { label: "Read the full method →", href: "/method" },
-    cam: [3.0, 1.1, -31.2],
-    look: [0, 0.55, -34],
+    eyebrow: "Step 01 · Lifestyle",
+    title: "LIFESTYLE",
+    body: "Fix how you live. Sleep, waking, daily habits, stress, recovery — the layer everything else is built on." /* first line verbatim §6; expansion [review] */,
+    cta: { label: "See the full method →", href: "/method" },
+    cam: [3.0, 0.9, -31.0],
+    look: [0, 0.4, -34],
   },
   "order-2": {
     id: "order-2",
-    eyebrow: "Step 02 · Nutrition",
-    title: "NUTRITION",
-    body: "Only once lifestyle is stable do we touch what you eat. Never before.",
-    cta: { label: "Read the full method →", href: "/method" },
-    cam: [3.0, 1.6, -31.4],
-    look: [0, 1.25, -34],
+    eyebrow: "Step 02 · Body",
+    title: "BODY",
+    body: "Build strength, fitness, and physical confidence.",
+    cta: { label: "See the full method →", href: "/method" },
+    cam: [3.0, 1.3, -31.2],
+    look: [0, 0.95, -34],
   },
   "order-3": {
     id: "order-3",
-    eyebrow: "Step 03 · Supplements",
-    title: "SUPPLEMENTS",
-    body: "Once lifestyle and nutrition work, supplements fill the gaps. They support — never replace.",
-    cta: { label: "Read the full method →", href: "/method" },
-    cam: [3.0, 2.1, -31.6],
-    look: [0, 1.85, -34],
+    eyebrow: "Step 03 · Nutrition",
+    title: "NUTRITION",
+    body: "Fuel your body properly.",
+    cta: { label: "See the full method →", href: "/method" },
+    cam: [3.0, 1.8, -31.4],
+    look: [0, 1.5, -34],
   },
   "order-4": {
     id: "order-4",
-    eyebrow: "Step 04 · Medical",
-    title: "MEDICAL",
-    body: "If needed, always last, always under a doctor. Sustainable change, one layer at a time.",
-    cta: { label: "Read the full method →", href: "/method" },
-    cam: [3.0, 2.6, -31.8],
-    look: [0, 2.4, -34],
+    eyebrow: "Step 04 · Performance",
+    title: "PERFORMANCE",
+    body: "Improve training, recovery, energy, and performance.",
+    cta: { label: "See the full method →", href: "/method" },
+    cam: [3.0, 2.3, -31.6],
+    look: [0, 2.05, -34],
+  },
+  "order-5": {
+    id: "order-5",
+    eyebrow: "Step 05 · Presence",
+    title: "PRESENCE",
+    body: "Improve how you communicate, carry yourself, and show up.",
+    cta: { label: "See the full method →", href: "/method" },
+    cam: [3.0, 2.8, -31.8],
+    look: [0, 2.6, -34],
   },
   "proof-client": {
     id: "proof-client",
@@ -91,50 +101,42 @@ export const FACTS: Record<string, Fact> = {
     cam: [3.2, 1.9, -49.4],
     look: [1.9, 1.8, -52],
   },
-  "offer-discovery": {
-    id: "offer-discovery",
-    eyebrow: "Discovery Consultation · ₹2,000 · 45 minutes · online via WhatsApp",
-    title: "Discovery Consultation",
-    body: "We go through your current lifestyle, health, habits and goals. I tell you exactly what needs to change and in what order. You leave with complete clarity.",
-    cta: { label: "Book Now", href: "/book" },
+  // ---- THE OFFERS (§4 + §9): Transformation Audit gate + three programs ----
+  "offer-audit": {
+    id: "offer-audit",
+    eyebrow: "Transformation Audit · ₹2,000 · 45 minutes · online via WhatsApp",
+    title: "Transformation Audit",
+    body: "We analyse your lifestyle, health, fitness, nutrition, energy, habits, confidence and presence — and identify what is actually holding you back and what needs to be fixed first." /* [review] built from §9 */,
+    cta: { label: "Book Your Transformation Audit", href: "/book" },
     cam: [0, 1.9, -66.4],
     look: [0, 1.5, -70],
   },
   "offer-lifestyle": {
     id: "offer-lifestyle",
-    eyebrow: "Lifestyle Coaching · Monthly · Price disclosed after consultation",
+    eyebrow: "Lifestyle Coaching · Monthly · Price disclosed after your audit",
     title: "Lifestyle Coaching",
-    body: "Full lifestyle transformation. Body. Mind. Confidence. Health. Weekly check ins. Full accountability." /* [review] program lineup per Aditya's brief 2026-07-14 */,
-    cta: { label: "See Programs", href: "/programs" },
-    cam: [-3.4, 1.8, -66.4],
-    look: [-3.0, 1.4, -70],
+    body: "Habits, nutrition, training, sleep, stress, supplements — full health optimisation. Better energy, fat loss, muscle gain, discipline that holds." /* [review] scope per §4.1 */,
+    cta: { label: "See Coaching", href: "/programs" },
+    cam: [-3.6, 1.8, -66.5],
+    look: [-3.4, 1.4, -70],
   },
   "offer-presence": {
     id: "offer-presence",
-    eyebrow: "Presence & Personality Coaching · Monthly · Price disclosed after consultation",
-    title: "Presence & Personality Coaching",
-    body: "Body language. Grooming. Style that fits your body and your skin tone. How you speak, stand and show up in any room." /* [review] */,
-    cta: { label: "See Programs", href: "/programs" },
-    cam: [-1.6, 1.8, -66.2],
-    look: [-1.5, 1.4, -70],
+    eyebrow: "Personality & Presence Coaching · Monthly · Price disclosed after your audit",
+    title: "Personality & Presence Coaching",
+    body: "Body language. Social confidence. Communication. Style, grooming, skincare — dressing for your body type and colours that suit Indian skin tones. Mindset and emotional intelligence." /* [review] scope per §4.2 */,
+    cta: { label: "See Coaching", href: "/programs" },
+    cam: [-1.85, 1.8, -66.3],
+    look: [-1.7, 1.4, -70],
   },
   "offer-complete": {
     id: "offer-complete",
-    eyebrow: "Complete Transformation Program · Price disclosed after consultation",
+    eyebrow: "Complete Transformation · Premium · Price disclosed after your audit",
     title: "Complete Transformation",
-    body: "Both pillars in one program — the full lifestyle rebuild and the full presence rebuild. A strong body matched with a strong presence." /* [review] */,
-    cta: { label: "See Programs", href: "/programs" },
-    cam: [1.6, 1.8, -66.2],
-    look: [1.5, 1.4, -70],
-  },
-  "offer-written": {
-    id: "offer-written",
-    eyebrow: "Personalized Written Plans · Online · Price disclosed after consultation",
-    title: "Personalized Written Plans",
-    body: "A complete written lifestyle, nutrition and training plan built specifically for your body, your goals and your life. No guesswork. Just execution.",
-    cta: { label: "See Programs", href: "/programs" },
-    cam: [3.4, 1.8, -66.4],
-    look: [3.0, 1.4, -70],
+    body: "For men who want a complete transformation — not just a better body or a better wardrobe. Both pillars in one system: body, lifestyle, mindset, personality, presence.",
+    cta: { label: "See Coaching", href: "/programs" },
+    cam: [2.85, 1.85, -66.4],
+    look: [2.6, 1.5, -70],
   },
   blueprint: {
     id: "blueprint",
@@ -147,14 +149,14 @@ export const FACTS: Record<string, Fact> = {
   },
 };
 
-// Chapter overlay copy (verbatim) + progress windows on the journey [0..1]
+// Chapter overlay copy + progress windows on the journey [0..1]
 export const CHAPTERS = [
   {
     id: "arrival",
     range: [0, 0.1] as const,
-    eyebrow: "LIFESTYLE & PERSONALITY COACH · COACHING WORLDWIDE" /* [review] repositioned 2026-07-14 */,
-    title: "Most men are living below their potential. This page changes that.",
-    sub: "Lifestyle & Personality Coach helping men rebuild their body, mind, presence and confidence. | Coaching worldwide" /* [review] */,
+    eyebrow: "COMPLETE TRANSFORMATION COACH FOR MEN" /* [review] §3 */,
+    title: "Become harder to ignore." /* his core brand line, §1-2 */,
+    sub: "A complete transformation system for men who want to build a stronger body, sharper mind, and undeniable presence." /* his hero direction, verbatim §2 */,
   },
   {
     id: "man",
@@ -166,9 +168,9 @@ export const CHAPTERS = [
   {
     id: "order",
     range: [0.36, 0.53] as const,
-    eyebrow: "THE METHOD",
-    title: "The Right Order of Change. Most coaches get this wrong.",
-    sub: "The foundation builds itself as you move. Touch a layer to read it." /* [review] */,
+    eyebrow: "THE COMPLETE REBUILD" /* his framework name, §6 */,
+    title: "Body. Lifestyle. Mindset. Personality. Presence." /* his five words, §16 */,
+    sub: "The rebuild assembles in the right order. Touch a layer to read it." /* [review] */,
   },
   {
     id: "proof",
@@ -182,6 +184,6 @@ export const CHAPTERS = [
     range: [0.8, 1] as const,
     eyebrow: "ONE DECISION" /* [review] */,
     title: "The man you want to become is waiting for one decision.",
-    sub: "Start with a free blueprint. Or book a consultation today. Either way — start now.",
+    sub: "There is no point in having a six-pack if you still look at your shoes when you enter a room." /* his line, verbatim §1 */,
   },
 ];

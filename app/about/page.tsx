@@ -13,7 +13,7 @@ import Reveal from "@/components/Reveal";
 import Marquee from "@/components/Marquee";
 import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
-import { ArrowRightIcon, InstagramIcon, PinIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
+import { ArrowRightIcon, CheckIcon, InstagramIcon, PinIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
@@ -22,8 +22,10 @@ import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 // asset exists — swap via pageMetadata({ ogImage }) then.
 export const metadata: Metadata = pageMetadata({
   title: "About Aditya | Men's Transformation Coach Kolkata",
+  // [review] description refreshed 2026-07-21 — complete-transformation keywords
+  // (men's transformation coach, confidence, personal development for men).
   description:
-    "From 100kg with zero confidence to coaching some of Kolkata's most successful men. The story behind the lifestyle-first coaching method.",
+    "From 100kg with zero confidence to a men's transformation coach in Kolkata. The story behind coaching that changes how a man looks — and how he shows up: confidence, discipline and presence.",
   path: "/about",
   ogType: "profile",
 });
@@ -40,6 +42,43 @@ const IMG_ABOUT_HERO = { label: "IMG_ABOUT_HERO", w: 720, h: 900 } as const;
 const IMG_TL_BEFORE = { label: "IMG_TL_BEFORE", w: 480, h: 360 } as const;
 const IMG_ABOUT_BEFORE = { label: "IMG_ABOUT_BEFORE", w: 640, h: 800 } as const;
 const IMG_ABOUT_AFTER = { label: "IMG_ABOUT_AFTER", w: 640, h: 800 } as const;
+
+// ---- §5 audience checklist ("This is for men who want to…") ----
+// [review] Aditya's voice, from the 2026-07-21 direction (complete transformation,
+// not just a gym program). Two-column checklist with gold ticks; stacks on mobile.
+const AUDIENCE_CHECKLIST = [
+  "Improve their body and physique",
+  "Build better energy and daily habits",
+  "Become genuinely more confident",
+  "Command a stronger presence",
+  "Show up better socially",
+  "Sharpen their style and grooming",
+  "Build real discipline",
+  "Master their mindset and emotions",
+  "Transform completely — not just train",
+] as const; // [review]
+
+// ---- §8 credibility strip ("Why men trust the work") ----
+// [review] No invented stats or credentials — the only figure is the
+// client-supplied 100kg. Restrained trust rows, shown before /results link-out.
+const TRUST_POINTS = [
+  {
+    title: "He lived it first.",
+    body: "100kg to coach. Every method was tested on his own body before it reached yours.",
+  },
+  {
+    title: "Real men, real results.",
+    body: "Client transformations shared with permission — no stock photos, no borrowed proof.",
+  },
+  {
+    title: "One system, not recycled plans.",
+    body: "Every man is audited first. Your plan is built for your life, never copied from someone else's.",
+  },
+  {
+    title: "Direct access.",
+    body: "Coaching happens with Aditya on WhatsApp — never handed off to an assistant.",
+  },
+] as const; // [review]
 
 // ---- Page-local scroll-FX styles (scoped to /about via static export) ----
 // One thing the shipped kit classes can't express on their own:
@@ -71,7 +110,7 @@ const aboutPersonJsonLd = {
   "@type": "Person",
   "@id": `${SITE_ORIGIN}/#person`,
   name: "Aditya Kumar Upadhyay",
-  jobTitle: "Lifestyle & Personality Coach" /* [review] repositioned 2026-07-14 */,
+  jobTitle: "Complete Transformation Coach for Men" /* [review] repositioned 2026-07-21 */,
   url: `${SITE_ORIGIN}/about`,
   image: `${SITE_ORIGIN}/og-image.jpg`, // TODO: swap for the real IMG_ABOUT_HERO portrait URL
   address: KOLKATA_ADDRESS,
@@ -158,10 +197,12 @@ export default function AboutPage() {
               <h1 className="font-display mt-5 max-w-[15ch] text-[clamp(2.5rem,5.2vw,4.4rem)] font-medium leading-[1.05] tracking-[-0.025em] text-primary">
                 I rebuilt myself from the ground up. Now I do it for other men.
               </h1>
-              <FadeIn as="p" className="type-lead text-secondary mt-6 max-w-[46ch]" delayMs={200}>
-                {/* [review] */}
-                Not a celebrity trainer. Not an influencer. A man who did the
-                work — and now builds the same change in other men.
+              <FadeIn as="p" className="type-lead text-secondary mt-6 max-w-[48ch]" delayMs={200}>
+                {/* [review] — sharpened 2026-07-21 to the complete-transformation
+                    identity; the "Not a celebrity trainer. Not an influencer." opening stays. */}
+                Not a celebrity trainer. Not an influencer. A man who rebuilt his
+                own body, discipline and confidence — and now does the same for
+                other men.
               </FadeIn>
               <FadeIn
                 as="p"
@@ -396,6 +437,12 @@ export default function AboutPage() {
                   every day. The body followed the lifestyle — never the other
                   way round.
                 </p>
+                <p className="type-body text-secondary mt-2 max-w-[58ch]">
+                  {/* [review] — added 2026-07-21: the change was never only the body */}
+                  And the body was only half of it. The discipline held. The
+                  confidence followed. I started carrying myself like a
+                  different man.
+                </p>
               </Reveal>
 
               {/* Node 4 — Coaching successful men in Kolkata. */}
@@ -417,6 +464,12 @@ export default function AboutPage() {
                   Businessmen. Entrepreneurs. Professionals who had everything
                   — and still felt something was missing. I help them get it
                   back.
+                </p>
+                <p className="type-body text-secondary mt-2 max-w-[58ch]">
+                  {/* [review] — added 2026-07-21: not just the body, how he shows up */}
+                  And what I rebuild with them isn&apos;t only the body. It&apos;s
+                  how they carry themselves, how they lead, how they show up in
+                  every room they walk into.
                 </p>
               </Reveal>
             </ol>
@@ -488,6 +541,16 @@ export default function AboutPage() {
           />
           {/* [review] */}
 
+          {/* Section-opening thesis — existing verbatim line, relocated to the top
+              of §5 (companion to the convergence closer below; text unchanged). */}
+          <Reveal delayMs={120} className="reveal-blur mx-auto mt-6 max-w-[60ch] text-center">
+            <p className="type-lead text-secondary">
+              The goal isn&apos;t only to change how you look. It&apos;s to
+              change how you carry yourself, how you communicate, how you
+              think, and how you show up in every area of life.
+            </p>
+          </Reveal>
+
           <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2">
             {/* Card A — The Young Man (22–30) — informational, no per-card buttons */}
             <Reveal index={0}>
@@ -524,12 +587,33 @@ export default function AboutPage() {
             </Reveal>
           </div>
 
-          {/* convergence — verbatim from Aditya's brief (2026-07-14) */}
-          <Reveal delayMs={200} className="reveal-blur mx-auto mt-12 max-w-[52ch] text-center">
-            <p className="font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-snug text-primary">
-              The goal isn&apos;t only to change how you look. It&apos;s to
-              change how you carry yourself, how you communicate, how you
-              think, and how you show up in every area of life.
+          {/* "This is for men who want to…" — compact two-column checklist with
+              gold ticks. Single Reveal (calm — all ticks land together, no
+              9-item stagger cascade). Stacks to one column on mobile. */}
+          <Reveal className="mx-auto mt-16 max-w-3xl">
+            <h3 className="type-h3 text-primary text-center">
+              This is for men who want to…{/* [review] */}
+            </h3>
+            <ul className="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2">
+              {AUDIENCE_CHECKLIST.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  {/* [review] */}
+                  <CheckIcon
+                    aria-hidden="true"
+                    className="mt-1 h-5 w-5 shrink-0 text-gold-500"
+                  />
+                  <span className="type-body text-primary">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          {/* Convergence closer — core message VERBATIM from Aditya's direction
+              (2026-07-21). Companion to the thesis line at the top of §5. */}
+          <Reveal delayMs={150} className="reveal-blur mx-auto mt-16 max-w-[46ch] text-center">
+            <p className="font-display text-[clamp(1.4rem,2.8vw,2rem)] leading-snug text-primary">
+              I do not just change how a man looks. I help change how he shows
+              up in every area of his life.
             </p>
           </Reveal>
         </div>
@@ -597,6 +681,54 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ============ Section 6.5 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
+      {/* Restrained trust rows — no invented stats/credentials. Placed after the
+          proof section; links out to /results. [review] framing throughout. */}
+      <section className="bg-surface-1 cv-auto border-y border-hairline-soft">
+        <div className="container-site section">
+          <div className="text-center">
+            <SplitHeading
+              as="h2"
+              text="Why men trust the work."
+              className="type-h2 text-primary"
+            />
+            {/* [review] */}
+          </div>
+
+          <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2">
+            {TRUST_POINTS.map((pt, i) => (
+              <Reveal key={pt.title} index={i}>
+                <div className="card spot h-full">
+                  <div className="flex items-start gap-3">
+                    {/* [review] */}
+                    <CheckIcon
+                      aria-hidden="true"
+                      className="mt-0.5 h-5 w-5 shrink-0 text-gold-500"
+                    />
+                    <div>
+                      <h3 className="font-display text-lg font-medium text-primary">
+                        {pt.title}
+                      </h3>
+                      <p className="type-small text-secondary mt-2">{pt.body}</p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delayMs={200} className="mt-10 text-center">
+            <Link
+              href="/results"
+              className="link-draw inline-flex items-center gap-1.5 font-medium text-gold-300"
+            >
+              See the transformations
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ============ Section 7 — FOLLOW THE WORK ("Social Proof, Live") ============ */}
       <section className="bg-void cv-auto">
         <div className="container-site section text-center">
@@ -653,8 +785,8 @@ export default function AboutPage() {
           FinalCta already carries the aurora + grain atmosphere for this band. */}
       <FinalCta
         heading="The man you want to become is waiting for one decision."
-        sub="Start with a free blueprint. Or book a consultation today. Either way — start now."
-        primaryLabel="Book a Consultation"
+        sub="Start with a free blueprint. Or book your Transformation Audit today. Either way — start now."
+        primaryLabel="Book Your Transformation Audit" /* [review] repositioned CTA 2026-07-21 */
         primaryHref="/book"
         secondaryLabel="Get My Free Blueprint"
         secondaryHref="/tools"

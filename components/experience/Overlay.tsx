@@ -95,8 +95,8 @@ export default function Overlay() {
               chapter.id === "arrival"
                 ? // arrival: left-composed against the seal on the right (landscape);
                   // centered above the fold on portrait
-                  "absolute inset-x-0 bottom-[14dvh] flex flex-col items-center px-5 text-center sm:inset-x-auto sm:left-[7vw] sm:bottom-[16dvh] sm:max-w-[620px] sm:items-start sm:text-left"
-                : "absolute inset-x-0 bottom-[16dvh] flex flex-col items-center px-5 text-center sm:bottom-[12dvh]"
+                  "absolute inset-x-0 bottom-[14svh] flex flex-col items-center px-5 text-center sm:inset-x-auto sm:left-[7vw] sm:bottom-[16svh] sm:max-w-[620px] sm:items-start sm:text-left"
+                : "absolute inset-x-0 bottom-[16svh] flex flex-col items-center px-5 text-center sm:bottom-[12svh]"
             }
           >
             {/* feathered scrim — guarantees contrast for the text block even
@@ -126,14 +126,14 @@ export default function Overlay() {
                   Get My Free Blueprint
                 </Link>
                 <Link href="/book" className={BTN_OUTLINE}>
-                  Book a Consultation
+                  Book Your Transformation Audit
                 </Link>
               </div>
             )}
             {chapter.id === "decision" && (
               <div className="pointer-events-auto mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link href="/book" className={BTN_GOLD}>
-                  Book ₹2,000 Consultation
+                  Book Your Transformation Audit
                 </Link>
                 <Link href="/tools#blueprint" className={BTN_OUTLINE}>
                   Get My Free Blueprint
@@ -200,7 +200,7 @@ export default function Overlay() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 40 }}
             transition={{ duration: 0.55, ease: easeExpo }}
-            className="pointer-events-auto absolute inset-x-3 bottom-3 max-h-[62dvh] overflow-y-auto rounded-2xl border border-[rgba(201,162,75,0.25)] bg-[rgba(11,11,12,0.9)] p-6 shadow-[0_10px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(201,162,75,0.12)] backdrop-blur-md sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-1/2 sm:w-[380px] sm:-translate-y-1/2 sm:p-7"
+            className="pointer-events-auto absolute inset-x-3 bottom-3 max-h-[62svh] overflow-y-auto rounded-2xl border border-[rgba(201,162,75,0.25)] bg-[rgba(11,11,12,0.9)] p-6 shadow-[0_10px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(201,162,75,0.12)] backdrop-blur-md sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-1/2 sm:w-[380px] sm:-translate-y-1/2 sm:p-7"
             role="dialog"
             aria-modal="true"
             aria-label={fact.title}

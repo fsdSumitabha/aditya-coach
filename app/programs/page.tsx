@@ -16,52 +16,54 @@ import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 
 // ===== Page-level config (swappable constants) =====
 // PHASE-2 STUBS — waLink/track come from the ONE global config block (lib/config.ts).
-const PRICE_CONSULT = "₹2,000"; // reused in the Discovery card, comparison table + reassurance line
+const PRICE_CONSULT = "₹2,000"; // reused in the Transformation Audit card, comparison table + reassurance line
 const BOOK_URL = "/book";
-// One WhatsApp prefill per program (Discovery uses /book, not WhatsApp).
+// One WhatsApp prefill per program (the Transformation Audit uses /book, not WhatsApp).
 const WA_LIFESTYLE = waLink("Hi Aditya, I'd like to apply for Lifestyle Coaching.");
 const WA_PRESENCE = waLink(
-  "Hi Aditya, I want to know more about Presence & Personality Coaching."
+  "Hi Aditya, I'd like to apply for Personality & Presence Coaching."
 );
 const WA_COMPLETE = waLink(
-  "Hi Aditya, I'd like to apply for the Complete Transformation Program."
+  "Hi Aditya, I'd like to apply for the Complete Transformation."
 );
-const WA_WRITTEN = waLink("Hi Aditya, tell me more about Personalized Written Plans.");
 
 // ---- Swappable emblem placeholders (~64×64) — set to a real asset path to swap ----
-const IMG_OFFER_ICON_DISCOVERY = ""; /* TODO: real 64×64 emblem — compass/clarity motif */
+const IMG_OFFER_ICON_AUDIT = ""; /* TODO: real 64×64 emblem — audit/clarity motif */
 const IMG_OFFER_ICON_LIFESTYLE = ""; /* TODO: real 64×64 emblem — recurring/loop motif */
 const IMG_OFFER_ICON_PRESENCE = ""; /* TODO: real 64×64 emblem — presence/style motif */
 const IMG_OFFER_ICON_COMPLETE = ""; /* TODO: real 64×64 emblem — two-pillars/union motif */
-const IMG_OFFER_ICON_WRITTEN = ""; /* TODO: real 64×64 emblem — document/plan motif */
 
 export const metadata: Metadata = pageMetadata({
   title: "Programs for Men | Coaching with Aditya, Kolkata",
-  /* [review] — description updated to the new lineup (old names removed) */
+  /* [review] — description repositioned around complete transformation + the new 3-program lineup */
   description:
-    "Lifestyle coaching, presence & personality coaching, a complete transformation program and personalized written plans for men — every path starts with a ₹2,000 Discovery Consultation. Kolkata or online.",
+    "Complete transformation coaching for men in Kolkata and online — lifestyle coaching, personality & presence coaching, or the complete transformation. Every path starts with a ₹2,000 Transformation Audit.",
   path: "/programs",
 });
 
 // ===== FAQ — single source of truth for visible copy AND FAQPage JSON-LD =====
-/* [review] — all 5 Q&A invented in Aditya's voice; JSON-LD mirrors this verbatim.
-   No answer names a specific program tier, so none needed editing for the new lineup. */
+/* [review] — Q&A in Aditya's voice; the edits below rename the old "Discovery Consultation"
+   to "Transformation Audit" and drop the standalone "written plan" reference (that scope now
+   folds into the coaching programs). The refund answer keeps its meaning. JSON-LD mirrors this. */
 const faqs: { q: string; a: string; aJsx?: ReactNode }[] = [
   {
     q: "Is this online, or do I have to be in Kolkata?",
-    a: "Both work. I'm based in Kolkata and coach men in person and worldwide online. The Discovery Consultation is a 45-minute call over WhatsApp, so it doesn't matter where you are.",
+    /* [review] — renamed Discovery Consultation → Transformation Audit */
+    a: "Both work. I'm based in Kolkata and coach men in person and worldwide online. The Transformation Audit is a 45-minute call over WhatsApp, so it doesn't matter where you are.",
   },
   {
     q: "Do you take international clients?",
-    a: "Yes. I coach men worldwide online. The call, the check-ins and your written plan all run remotely — nothing about the process needs you in the same city.",
+    /* [review] — "your written plan" → "your plan" (standalone written plans dropped) */
+    a: "Yes. I coach men worldwide online. The call, the check-ins and your plan all run remotely — nothing about the process needs you in the same city.",
   },
   {
     q: "What's your refund policy?",
-    a: "Clear terms, no surprises. The ₹2,000 consultation and coaching are covered by a written refund policy — read it in full on the refund page before you book.",
+    /* [review] — renamed to Transformation Audit; meaning unchanged */
+    a: "Clear terms, no surprises. The ₹2,000 Transformation Audit and coaching are covered by a written refund policy — read it in full on the refund page before you book.",
     aJsx: (
       <>
-        Clear terms, no surprises. The ₹2,000 consultation and coaching are
-        covered by a written refund policy — read it in full on the{" "}
+        Clear terms, no surprises. The ₹2,000 Transformation Audit and coaching
+        are covered by a written refund policy — read it in full on the{" "}
         <Link
           href="/refund"
           className="underline underline-offset-4 decoration-[var(--hairline-gold)] text-gold-300 hover:text-gold-200"
@@ -93,22 +95,23 @@ const faqSchema = {
   })),
 };
 
-/* [review] — Service schema descriptions for the four coaching/plan programs invented;
-   provider references the global Person node by @id (never redefined here). Discovery keeps
-   its priced Offer node — it is the entry consultation every program starts with. */
+/* [review] — Service schema descriptions for the audit + three programs invented;
+   provider references the global Person node by @id (never redefined here). The Transformation
+   Audit keeps its priced Offer node — it is the entry every program starts with. */
 const providerRef = { "@id": `${SITE_ORIGIN}/#person` };
 const areaServed = ["Kolkata", "Worldwide"];
 const serviceSchemas = [
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    serviceType: "Discovery Consultation",
+    serviceType: "Transformation Audit",
     provider: providerRef,
     areaServed,
     description:
-      "A 45-minute online consultation via WhatsApp covering your lifestyle, health, habits and goals, ending with a clear plan of what to change and in what order.",
+      "A 45-minute online audit via WhatsApp analysing your lifestyle, health, fitness, nutrition, energy, habits, confidence and presence — ending with what is actually holding you back and what needs to be fixed first." /* [review] */,
     offers: {
       "@type": "Offer",
+      name: "Transformation Audit",
       price: "2000",
       priceCurrency: "INR",
       url: `${SITE_ORIGIN}/book`,
@@ -121,62 +124,46 @@ const serviceSchemas = [
     provider: providerRef,
     areaServed,
     description:
-      "Ongoing one-to-one lifestyle transformation coaching for men — body, mind, confidence and health — with weekly check-ins, full accountability and complete guidance at every step. Pricing disclosed after a Discovery Consultation." /* [review] */,
+      "Monthly one-to-one lifestyle coaching for men — habit building, nutrition guidance, fat loss and muscle gain, workout and fitness protocols, better energy, sleep and recovery, stress management, supplement guidance and overall health optimisation. Pricing disclosed after a Transformation Audit." /* [review] */,
   },
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    serviceType: "Presence & Personality Coaching",
+    serviceType: "Personality & Presence Coaching",
     provider: providerRef,
     areaServed,
     description:
-      "Monthly one-to-one coaching in presence and personality for men — body language and executive presence, confidence, communication, grooming, dressing for your body type and the mindset underneath it all. Pricing disclosed after a Discovery Consultation." /* [review] */,
+      "Monthly one-to-one coaching in personality and presence for men — body language, social confidence, communication and networking, style, grooming, dressing for your body type and colours for Indian skin tones, plus the mindset and emotional intelligence underneath it. Pricing disclosed after a Transformation Audit." /* [review] */,
   },
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    serviceType: "Complete Transformation Program",
+    serviceType: "Complete Transformation",
     provider: providerRef,
     areaServed,
     description:
-      "The flagship program combining both pillars — the full lifestyle rebuild of body, health and training together with the full presence rebuild of style, grooming and communication. Pricing disclosed after a Discovery Consultation." /* [review] */,
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    serviceType: "Personalized Written Plans",
-    provider: providerRef,
-    areaServed,
-    description:
-      "A complete written lifestyle, nutrition and training plan built specifically for your body, your goals and your life. Pricing disclosed after a Discovery Consultation." /* [review] */,
+      "The flagship program for men who want a complete transformation — not just a better body or a better wardrobe. It combines both pillars: body, lifestyle, mindset, confidence, personality, presence, style and grooming. Pricing disclosed after a Transformation Audit." /* [review] */,
   },
 ];
 
-// ===== Comparison table data (the four programs; Discovery is the entry for all) =====
-const DASH = "__not_included__";
+// ===== Comparison table data (the three programs; the Transformation Audit is the entry for all) =====
 const CHECK = "__included__";
 const HIGHLIGHT = 2; // Complete Transformation column — flagship tint
-/* [review] — all comparison cells invented (row labels + values) */
+/* [review] — all comparison cells (row labels + values) reworked for the 3-program lineup */
 const compareRows: { label: string; cells: ReactNode[] }[] = [
   {
     label: "Focus",
-    cells: ["Body & lifestyle", "Presence & style", "Both pillars", "Written plan"],
+    cells: ["Body & lifestyle", "Personality & presence", "The complete system"],
   },
   {
     label: "Format",
-    cells: [
-      "Monthly coaching",
-      "Monthly coaching",
-      "Monthly coaching",
-      "One-time written plan",
-    ],
+    cells: ["Monthly coaching", "Monthly coaching", "Monthly coaching"],
   },
-  { label: "Weekly check-ins", cells: [CHECK, CHECK, CHECK, DASH] },
-  { label: "WhatsApp access", cells: [CHECK, CHECK, CHECK, DASH] },
-  { label: "Personalized plan", cells: [CHECK, CHECK, CHECK, CHECK] },
+  { label: "Weekly check-ins", cells: [CHECK, CHECK, CHECK] },
+  { label: "WhatsApp access", cells: [CHECK, CHECK, CHECK] },
   {
-    label: `Starts with ${PRICE_CONSULT} Discovery`,
-    cells: [CHECK, CHECK, CHECK, CHECK],
+    label: `Starts with the ${PRICE_CONSULT} Transformation Audit`,
+    cells: [CHECK, CHECK, CHECK],
   },
 ];
 
@@ -207,15 +194,6 @@ function OfferIcon({ src, alt }: { src: string; alt: string }) {
       variant="square"
       style={{ width: 64, height: 64, borderRadius: 12 }}
     />
-  );
-}
-
-function NotIncluded() {
-  return (
-    <>
-      <span aria-hidden="true">—</span>
-      <span className="sr-only">Not included</span>
-    </>
   );
 }
 
@@ -254,29 +232,29 @@ export default function ProgramsPage() {
               Work With Me.
             </h1>
             <Reveal delayMs={80}>
-              {/* [review] */}
+              {/* [review] — hero sub repositioned around the one complete-transformation system */}
               <p className="type-lead text-secondary mt-6">
-                Start with a conversation. Then we build — the body, the presence,
-                or the whole man you&apos;re capable of being.
+                Three ways in. One system — body, lifestyle, mindset,
+                personality, presence. Start with the audit, then we build.
               </p>
             </Reveal>
             <div className="gold-line max-w-[220px] mx-auto mt-8" aria-hidden="true" />
             <Reveal delayMs={140}>
               {/* [review] */}
               <p className="type-caption text-muted mt-6">
-                Kolkata · Coaching worldwide online · Every plan starts with the
-                Discovery Consultation.
+                Kolkata · Coaching worldwide online · Every transformation starts
+                with the Transformation Audit.
               </p>
             </Reveal>
             <Reveal delayMs={200} className="mt-10">
-              {/* [review] — optional hero CTA pair */}
+              {/* [review] — hero CTA pair */}
               <div className="flex flex-col items-center gap-5">
                 <CtaLink
                   href={BOOK_URL}
                   className="btn-gold shine-loop w-full sm:w-auto"
                   data={{ page: "programs", cta: "hero_book", target: BOOK_URL }}
                 >
-                  Book the {PRICE_CONSULT} Consultation
+                  Book Your Transformation Audit
                 </CtaLink>
                 <a
                   href="#compare"
@@ -290,20 +268,20 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      {/* Decorative ticker — the four program names, verbatim */}
+      {/* Decorative ticker — the three program names + the audit, verbatim */}
       <div className="border-y border-hairline-soft bg-void py-5 md:py-7">
         <Marquee
           items={[
             "Lifestyle Coaching",
-            "Presence & Personality Coaching",
-            "Complete Transformation Program",
-            "Personalized Written Plans",
+            "Personality & Presence Coaching",
+            "Complete Transformation",
+            "Transformation Audit",
           ]}
           speedS={38}
         />
       </div>
 
-      {/* ============ 2. THE OFFER — DISCOVERY BAND + FOUR PROGRAMS ============ */}
+      {/* ============ 2. THE OFFER — AUDIT BAND + THREE PROGRAMS ============ */}
       <section className="bg-base aurora relative overflow-hidden isolate">
         {/* Ghost watermark — reuses the hero word "Work", decorative, clipped
             to the section; drifts on scroll where supported. */}
@@ -315,11 +293,11 @@ export default function ProgramsPage() {
         </div>
         <div className="container-site section relative z-10">
           <Reveal>
-            {/* [review] */}
-            <p className="eyebrow text-center">Every Plan Starts Here</p>
+            {/* [review] — the audit band header */}
+            <p className="eyebrow text-center">Every Transformation Starts Here</p>
           </Reveal>
 
-          {/* --- Discovery Consultation — the entry gate, centered dominant band --- */}
+          {/* --- Transformation Audit — the entry gate, centered dominant band --- */}
           <div className="mt-10 max-w-[840px] mx-auto">
             <Reveal
               delayMs={80}
@@ -343,12 +321,12 @@ export default function ProgramsPage() {
                     <div className="flex flex-col">
                       <div className="float-idle self-start">
                         <OfferIcon
-                          src={IMG_OFFER_ICON_DISCOVERY}
-                          alt="Discovery Consultation"
+                          src={IMG_OFFER_ICON_AUDIT}
+                          alt="Transformation Audit"
                         />
                       </div>
                       <h2 className="type-h3 text-primary mt-5">
-                        Discovery Consultation
+                        Transformation Audit
                       </h2>
                       {/* the number the whole page exists to sell — let it carry weight */}
                       <p className="font-display text-gold-grad mt-3 text-[clamp(2.1rem,3.2vw,2.8rem)] leading-none">
@@ -357,10 +335,12 @@ export default function ProgramsPage() {
                       <p className="type-small text-muted mt-1">
                         45 minutes · online via WhatsApp
                       </p>
+                      {/* [review] — audit body copy */}
                       <p className="type-body text-secondary mt-5">
-                        We go through your current lifestyle, health, habits and
-                        goals. I tell you exactly what needs to change and in what
-                        order. You leave with complete clarity.
+                        We analyse your lifestyle, health, fitness, nutrition,
+                        energy, habits, confidence and presence — and identify
+                        what is actually holding you back and what needs to be
+                        fixed first.
                       </p>
                     </div>
                     {/* Right — what you leave with */}
@@ -368,38 +348,46 @@ export default function ProgramsPage() {
                       <p className="type-caption uppercase tracking-[0.12em] text-muted">
                         What you leave with
                       </p>
-                      {/* [review] — bullet list invented in Aditya's voice */}
+                      {/* [review] — bullets reframed to the audit (analysis areas + what to fix first) */}
                       <ul className="mt-4 flex flex-col gap-3">
                         {/* each takeaway lands on its own beat */}
                         <Reveal as="li" index={0} className="flex gap-3 type-small text-secondary">
                           <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                           <span>
-                            A clear read on where your lifestyle, health and habits
-                            actually stand
+                            A full analysis of your lifestyle, health, fitness and
+                            nutrition
                           </span>
                         </Reveal>
                         <Reveal as="li" index={1} className="flex gap-3 type-small text-secondary">
                           <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                          <span>The exact order of what to change first — no guessing</span>
+                          <span>
+                            A clear read on your energy, habits, confidence and
+                            presence
+                          </span>
                         </Reveal>
                         <Reveal as="li" index={2} className="flex gap-3 type-small text-secondary">
                           <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                          <span>
-                            Your biggest blocker named out loud, and how to move past it
-                          </span>
+                          <span>What is actually holding you back, named out loud</span>
                         </Reveal>
                         <Reveal as="li" index={3} className="flex gap-3 type-small text-secondary">
                           <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                           <span>
-                            A realistic picture of what&apos;s possible in the next 3–6
-                            months
+                            Exactly what needs to be fixed first — in the right
+                            order
                           </span>
                         </Reveal>
                         <Reveal as="li" index={4} className="flex gap-3 type-small text-secondary">
                           <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                           <span>
-                            Complete clarity on whether coaching is right for you — zero
-                            pressure
+                            A realistic picture of what&apos;s possible in the next
+                            3–6 months
+                          </span>
+                        </Reveal>
+                        <Reveal as="li" index={5} className="flex gap-3 type-small text-secondary">
+                          <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                          <span>
+                            Complete clarity on whether coaching is right for you —
+                            zero pressure
                           </span>
                         </Reveal>
                       </ul>
@@ -409,13 +397,13 @@ export default function ProgramsPage() {
                     <CtaLink
                       href={BOOK_URL}
                       className="btn-gold w-full"
-                      data={{ page: "programs", cta: "discovery_book_now", target: BOOK_URL }}
+                      data={{ page: "programs", cta: "audit_book_now", target: BOOK_URL }}
                     >
-                      Book Now
+                      Book Your Transformation Audit
                     </CtaLink>
                     {/* [review] */}
                     <p className="type-caption text-muted text-center mt-3">
-                      Every coaching path begins here. Refundable per our{" "}
+                      Every transformation begins here. Refundable per our{" "}
                       <Link
                         href="/refund"
                         className="underline underline-offset-4 decoration-[var(--hairline-gold)] hover:text-primary"
@@ -438,8 +426,8 @@ export default function ProgramsPage() {
             <p className="eyebrow text-center">Then We Build</p>
           </Reveal>
 
-          {/* --- The four programs: 2×2 (md) / 4-up (xl) --- */}
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 xl:gap-7 items-stretch">
+          {/* --- The three programs: stacked (mobile) / 3-up (nav ≥900px) --- */}
+          <div className="mt-10 grid grid-cols-1 nav:grid-cols-3 gap-6 nav:gap-7 items-stretch">
             {/* --- Lifestyle Coaching --- */}
             <Reveal delayMs={0} className="h-full">
               <TiltCard className="h-full">
@@ -450,7 +438,7 @@ export default function ProgramsPage() {
                     </div>
                     <h2 className="card-head type-h3 mt-5">Lifestyle Coaching</h2>
                     <p className="type-body font-medium text-secondary mt-3">
-                      Monthly · price disclosed after your consultation
+                      Monthly · price disclosed after your Transformation Audit
                     </p>
                     {/* verbatim body — do not reword */}
                     <p className="type-body text-secondary mt-5">
@@ -461,36 +449,36 @@ export default function ProgramsPage() {
                     <p className="type-caption uppercase tracking-[0.12em] text-muted mt-6">
                       What&apos;s included
                     </p>
-                    {/* [review] — bullet list invented, anchored to weekly check-ins /
-                        accountability / full guidance */}
+                    {/* [review] — scope bullets condensed from the lifestyle brief */}
                     <ul className="mt-4 flex flex-col gap-3">
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>Habit building and lifestyle improvement that holds</span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>Nutrition guidance built around how you actually eat</span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Weekly check-ins to keep you on track and adjust as you go
+                          Fat loss, muscle gain and the workout protocols to get
+                          there
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          Full accountability — you don&apos;t get to quietly drift
-                        </span>
+                        <span>Better energy, sleep and recovery</span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>Stress management and supplement guidance</span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Complete guidance at every step: lifestyle, nutrition,
-                          training
-                        </span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>Direct access to me between sessions on WhatsApp</span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          Your plan evolves month to month as your body and life change
+                          Overall health optimisation, tracked with weekly
+                          check-ins
                         </span>
                       </li>
                     </ul>
@@ -506,7 +494,7 @@ export default function ProgramsPage() {
                       </CtaLink>
                       {/* [review] */}
                       <p className="type-caption text-muted text-center mt-3">
-                        Starts after a Discovery Consultation so we both know
+                        Starts after a Transformation Audit so we both know
                         it&apos;s the right fit.
                       </p>
                     </div>
@@ -515,7 +503,7 @@ export default function ProgramsPage() {
               </TiltCard>
             </Reveal>
 
-            {/* --- Presence & Personality Coaching (NEW) --- */}
+            {/* --- Personality & Presence Coaching --- */}
             <Reveal delayMs={90} className="h-full">
               <TiltCard className="h-full">
                 <article className="card-dark-gold h-full">
@@ -523,14 +511,14 @@ export default function ProgramsPage() {
                     <div className="float-idle self-start" style={{ animationDelay: "0.9s" }}>
                       <OfferIcon
                         src={IMG_OFFER_ICON_PRESENCE}
-                        alt="Presence & Personality Coaching"
+                        alt="Personality & Presence Coaching"
                       />
                     </div>
                     <h2 className="card-head type-h3 mt-5">
-                      Presence &amp; Personality Coaching
+                      Personality &amp; Presence Coaching
                     </h2>
                     <p className="type-body font-medium text-secondary mt-3">
-                      Monthly · price disclosed after your consultation
+                      Monthly · price disclosed after your Transformation Audit
                     </p>
                     {/* [review] — punchy body line in Aditya's voice */}
                     <p className="type-body text-secondary mt-5">
@@ -540,42 +528,46 @@ export default function ProgramsPage() {
                     <p className="type-caption uppercase tracking-[0.12em] text-muted mt-6">
                       What we work on
                     </p>
-                    {/* [review] — bullets in Aditya's voice from his brief */}
+                    {/* [review] — bullets condensed from the personality & presence brief */}
                     <ul className="mt-4 flex flex-col gap-3">
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Body language and executive presence — how you carry
-                          yourself in any room
-                        </span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>Confidence in social situations, not just in the gym</span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>Communication and networking that actually lands</span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          Grooming done right — hairstyle and beard for your face
-                          shape, plus skincare fundamentals
+                          Body language and presence — how you carry yourself in any
+                          room
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Dressing for your body type, in colours that complement
-                          Indian skin tones
+                          Social confidence, communication and networking that lands
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Mindset and emotional intelligence underneath all of it
+                          Style and grooming: hairstyle, haircut and beard for your
+                          face
                         </span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>Skincare basics and personal presentation</span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>
+                          Dressing for your body type, in colours that suit Indian
+                          skin tones
+                        </span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>The psychology of attraction</span>
+                      </li>
+                      <li className="flex gap-3 type-small text-secondary">
+                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                        <span>Mindset and emotional intelligence underneath it all</span>
                       </li>
                     </ul>
                     <div className="mt-auto pt-8">
@@ -587,11 +579,11 @@ export default function ProgramsPage() {
                       >
                         <WhatsAppIcon className="w-5 h-5" />
                         Apply Now
-                        <span className="sr-only"> for Presence &amp; Personality Coaching</span>
+                        <span className="sr-only"> for Personality &amp; Presence Coaching</span>
                       </CtaLink>
                       {/* [review] */}
                       <p className="type-caption text-muted text-center mt-3">
-                        Starts after a Discovery Consultation, like every path here.
+                        Starts after a Transformation Audit, like every path here.
                       </p>
                     </div>
                   </div>
@@ -599,12 +591,19 @@ export default function ProgramsPage() {
               </TiltCard>
             </Reveal>
 
-            {/* --- Complete Transformation Program (NEW · flagship) --- */}
+            {/* --- Complete Transformation (flagship — strongest weight among the programs) --- */}
             <Reveal delayMs={180} className="h-full">
               <TiltCard className="h-full">
-                <article className="card-dark-gold h-full">
+                <article
+                  className="card-dark-gold h-full"
+                  style={{
+                    borderColor: "rgba(201,162,75,0.5)",
+                    borderTopWidth: 2,
+                    borderTopColor: "var(--gold-500)",
+                  }}
+                >
                   <div className="spot flex flex-col h-full">
-                    {/* [review] — flagship mini-eyebrow (no gold border; that stays on ₹2,000) */}
+                    {/* [review] — flagship eyebrow (the ₹2,000 Audit keeps the featured glow) */}
                     <p className="eyebrow text-gold-300">Flagship</p>
                     <div
                       className="float-idle self-start mt-2"
@@ -612,25 +611,25 @@ export default function ProgramsPage() {
                     >
                       <OfferIcon
                         src={IMG_OFFER_ICON_COMPLETE}
-                        alt="Complete Transformation Program"
+                        alt="Complete Transformation"
                       />
                     </div>
                     <h2 className="card-head type-h3 mt-5">
-                      Complete Transformation Program
+                      Complete Transformation
                     </h2>
                     <p className="type-body font-medium text-secondary mt-3">
-                      Both pillars · price disclosed after your consultation
+                      Both pillars · price disclosed after your Transformation Audit
                     </p>
-                    {/* [review] — his verbatim line kept: "A strong body should be matched with a strong presence." */}
+                    {/* verbatim flagship line — do not reword */}
                     <p className="type-body text-secondary mt-5">
-                      Both pillars in one program — the full lifestyle rebuild and the
-                      full presence rebuild. A strong body should be matched with a
-                      strong presence.
+                      For men who want a complete transformation — not just a better
+                      body or a better wardrobe. A strong body should be matched with
+                      a strong presence.
                     </p>
                     <p className="type-caption uppercase tracking-[0.12em] text-muted mt-6">
                       What&apos;s included
                     </p>
-                    {/* [review] — bullets in Aditya's voice */}
+                    {/* [review] — bullets combining both pillars */}
                     <ul className="mt-4 flex flex-col gap-3">
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
@@ -642,25 +641,26 @@ export default function ProgramsPage() {
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Everything in Presence &amp; Personality Coaching — style,
+                          Everything in Personality &amp; Presence Coaching — style,
                           grooming and communication
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          Weekly check-ins and full accountability across both pillars
+                          Mindset and confidence built alongside a stronger body
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
                         <span>
-                          One coach, one plan, both halves of the man moving together
+                          Weekly check-ins and full accountability across both
+                          pillars
                         </span>
                       </li>
                       <li className="flex gap-3 type-small text-secondary">
                         <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>Direct access to me between sessions on WhatsApp</span>
+                        <span>One coach, one plan, both halves of the man together</span>
                       </li>
                     </ul>
                     <div className="mt-auto pt-8">
@@ -672,89 +672,11 @@ export default function ProgramsPage() {
                       >
                         <WhatsAppIcon className="w-5 h-5" />
                         Apply Now
-                        <span className="sr-only"> for the Complete Transformation Program</span>
+                        <span className="sr-only"> for the Complete Transformation</span>
                       </CtaLink>
                       {/* [review] */}
                       <p className="type-caption text-muted text-center mt-3">
-                        The full rebuild. Still starts with a Discovery Consultation.
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </TiltCard>
-            </Reveal>
-
-            {/* --- Personalized Written Plans --- */}
-            <Reveal delayMs={270} className="h-full">
-              <TiltCard className="h-full">
-                <article className="card-dark-gold h-full">
-                  <div className="spot flex flex-col h-full">
-                    <div className="float-idle self-start" style={{ animationDelay: "1.5s" }}>
-                      <OfferIcon
-                        src={IMG_OFFER_ICON_WRITTEN}
-                        alt="Personalized Written Plans"
-                      />
-                    </div>
-                    {/* [review] — retitled from "Online Plan" */}
-                    <h2 className="card-head type-h3 mt-5">Personalized Written Plans</h2>
-                    <p className="type-body font-medium text-secondary mt-3">
-                      Online · price disclosed after your consultation
-                    </p>
-                    {/* verbatim body — do not reword */}
-                    <p className="type-body text-secondary mt-5">
-                      A complete written lifestyle, nutrition and training plan built
-                      specifically for your body, your goals and your life. No
-                      guesswork. Just execution.
-                    </p>
-                    <p className="type-caption uppercase tracking-[0.12em] text-muted mt-6">
-                      What you get
-                    </p>
-                    {/* [review] — bullet list invented in Aditya's voice */}
-                    <ul className="mt-4 flex flex-col gap-3">
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          A complete written lifestyle plan built around your real day
-                        </span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          Nutrition targets set for the body you want — not the one
-                          you have
-                        </span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          A training split matched to your goals and your schedule
-                        </span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>Built specifically for you — no templates, no guesswork</span>
-                      </li>
-                      <li className="flex gap-3 type-small text-secondary">
-                        <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
-                        <span>
-                          Yours to execute at your own pace, anywhere in the world
-                        </span>
-                      </li>
-                    </ul>
-                    <div className="mt-auto pt-8">
-                      <CtaLink
-                        external
-                        href={WA_WRITTEN}
-                        className="btn-wa w-full"
-                        data={{ page: "programs", cta: "written_learn_more", target: "whatsapp" }}
-                      >
-                        <WhatsAppIcon className="w-5 h-5" />
-                        Learn More<span className="sr-only"> about Personalized Written Plans</span>
-                      </CtaLink>
-                      {/* [review] */}
-                      <p className="type-caption text-muted text-center mt-3">
-                        Best for men who want the full plan and prefer to run it
-                        themselves.
+                        The full rebuild. Still starts with a Transformation Audit.
                       </p>
                     </div>
                   </div>
@@ -776,9 +698,9 @@ export default function ProgramsPage() {
               className="type-h2 text-primary"
             />
             <Reveal delayMs={80}>
-              {/* [review] — Discovery is the entry for all, said here instead of a column */}
+              {/* [review] — the audit is the entry for all, said here instead of a column */}
               <p className="type-small text-secondary mt-4">
-                Every program starts with the {PRICE_CONSULT} Discovery Consultation
+                Every program starts with the {PRICE_CONSULT} Transformation Audit
                 — it decides which of these is right for you.
               </p>
             </Reveal>
@@ -788,10 +710,10 @@ export default function ProgramsPage() {
               inside .table-scroll (never page-level horizontal scroll at 375px) */}
           <Reveal className="mt-10 reveal-scale">
             <div className="table-scroll rounded-2xl border border-hairline-soft bg-surface-1">
-              <table className="w-full min-w-[880px] border-collapse text-left">
+              <table className="w-full min-w-[720px] border-collapse text-left">
                 <caption className="sr-only">
                   {/* [review] */}
-                  Comparison of the four programs you can work with Aditya on
+                  Comparison of the three programs you can work with Aditya on
                 </caption>
                 <thead>
                   <tr>
@@ -805,7 +727,7 @@ export default function ProgramsPage() {
                     </th>
                     <th scope="col" className="p-4 border-b border-hairline align-bottom">
                       <span className="font-display text-[1.125rem] font-medium text-primary">
-                        Presence &amp; Personality Coaching
+                        Personality &amp; Presence Coaching
                       </span>
                     </th>
                     <th
@@ -816,12 +738,7 @@ export default function ProgramsPage() {
                         Flagship{/* [review] */}
                       </span>
                       <span className="font-display text-[1.125rem] font-medium text-gold-300">
-                        Complete Transformation Program
-                      </span>
-                    </th>
-                    <th scope="col" className="p-4 border-b border-hairline align-bottom">
-                      <span className="font-display text-[1.125rem] font-medium text-primary">
-                        Personalized Written Plans
+                        Complete Transformation
                       </span>
                     </th>
                   </tr>
@@ -845,18 +762,12 @@ export default function ProgramsPage() {
                           key={i}
                           className={`${cellBase} text-secondary ${i === HIGHLIGHT ? goldTint : ""}`}
                         >
-                          {cell === DASH ? (
-                            <NotIncluded />
-                          ) : cell === CHECK ? (
-                            <Included />
-                          ) : (
-                            cell
-                          )}
+                          {cell === CHECK ? <Included /> : cell}
                         </td>
                       ))}
                     </Reveal>
                   ))}
-                  {/* CTA row — second conversion surface, same four targets */}
+                  {/* CTA row — second conversion surface, same three targets */}
                   <tr>
                     <th scope="row" className="p-4 font-semibold text-primary align-middle type-small">
                       CTA
@@ -879,7 +790,7 @@ export default function ProgramsPage() {
                         data={{ page: "programs", cta: "compare_presence_apply", target: "whatsapp" }}
                       >
                         Apply Now
-                        <span className="sr-only"> for Presence &amp; Personality Coaching</span>
+                        <span className="sr-only"> for Personality &amp; Presence Coaching</span>
                       </CtaLink>
                     </td>
                     <td className={`p-4 ${goldTint}`}>
@@ -890,17 +801,7 @@ export default function ProgramsPage() {
                         data={{ page: "programs", cta: "compare_complete_apply", target: "whatsapp" }}
                       >
                         Apply Now
-                        <span className="sr-only"> for the Complete Transformation Program</span>
-                      </CtaLink>
-                    </td>
-                    <td className="p-4">
-                      <CtaLink
-                        external
-                        href={WA_WRITTEN}
-                        className="btn-wa"
-                        data={{ page: "programs", cta: "compare_written_learn", target: "whatsapp" }}
-                      >
-                        Learn More<span className="sr-only"> about Personalized Written Plans</span>
+                        <span className="sr-only"> for the Complete Transformation</span>
                       </CtaLink>
                     </td>
                   </tr>
@@ -919,14 +820,14 @@ export default function ProgramsPage() {
           <Reveal className="reveal-blur text-center">
             {/* [review] */}
             <p className="font-display text-[clamp(1.5rem,2.6vw,2.1rem)] leading-snug tracking-[-0.01em] text-primary max-w-[34ch] mx-auto">
-              The {PRICE_CONSULT} consultation is the only price you decide on
-              today.
+              The {PRICE_CONSULT} Transformation Audit is the only price you decide
+              on today.
             </p>
             {/* [review] */}
             <p className="type-small text-secondary mt-5 max-w-[62ch] mx-auto">
-              Coaching and plan pricing is shared after we talk — once I
-              understand your goals, I quote what actually fits. No packages
-              pushed on you. No pressure. Refundable per our{" "}
+              Coaching pricing is shared after we talk — once I understand your
+              goals, I quote what actually fits. No packages pushed on you. No
+              pressure. Refundable per our{" "}
               <Link
                 href="/refund"
                 className="underline underline-offset-4 decoration-[var(--hairline-gold)] hover:text-primary"
@@ -972,7 +873,7 @@ export default function ProgramsPage() {
 
       {/* ============ 6. CTA BAND ============ */}
       {/* Built in-page (not FinalCta) — spec adds a trust micro-line + bg-void
-          band + "Book Now" label + overshoot pop on the gold button. */}
+          band + overshoot pop on the gold button. */}
       <section className="bg-void aurora grain border-t border-hairline-soft relative overflow-hidden">
         <div
           className="container-site section flex flex-col items-center text-center"
@@ -984,9 +885,10 @@ export default function ProgramsPage() {
             className="type-h2 text-primary max-w-[18ch] mx-auto"
           />
           <Reveal delayMs={100}>
+            {/* [review] — "book a consultation" → "book your Transformation Audit" */}
             <p className="type-lead text-secondary mt-4 max-w-xl mx-auto">
-              Start with a free blueprint. Or book a consultation today. Either
-              way — start now.
+              Start with a free blueprint. Or book your Transformation Audit
+              today. Either way — start now.
             </p>
           </Reveal>
           <Reveal
@@ -1000,7 +902,7 @@ export default function ProgramsPage() {
                 className="btn-gold"
                 data={{ page: "programs", cta: "band_book_now", target: BOOK_URL }}
               >
-                Book Now
+                Book Your Transformation Audit
               </CtaLink>
               <CtaLink
                 href="/tools"

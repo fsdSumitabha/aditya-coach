@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 
 /**
- * The page's showpiece: a sticky-pinned scene where the Foundation Stack
- * assembles bottom-up (Lifestyle base first → Medical last) as the user
+ * The page's showpiece: a sticky-pinned scene where the Complete Rebuild
+ * assembles bottom-up (Lifestyle base first → Presence last) as the user
  * scrolls through the tall wrapper. Scroll-linked scrubbing so the motion
  * feels physical.
  *
@@ -16,31 +16,39 @@ import { useEffect, useRef } from "react";
  *   lives in the parent section. Caption + closing line stay readable.
  */
 
-// Visual stack order = DOM top→bottom (Medical on top, Lifestyle at the base).
+// Visual stack order = DOM top→bottom (Presence on top, Lifestyle at the base).
 const TIERS = [
   {
-    num: "04",
-    name: "MEDICAL",
-    label: "Last, if needed" /* [review] */,
-    width: "44%",
+    num: "05",
+    name: "PRESENCE",
+    label: "How you show up" /* [review] */,
+    width: "40%",
     bg: "var(--surface-1)",
     edge: "rgba(201, 162, 75, 0.25)",
   },
   {
-    num: "03",
-    name: "SUPPLEMENTS",
-    label: "Fills the gaps" /* [review] */,
-    width: "62%",
+    num: "04",
+    name: "PERFORMANCE",
+    label: "Sharpen everything" /* [review] */,
+    width: "55%",
     bg: "var(--surface-1)",
-    edge: "rgba(201, 162, 75, 0.45)",
+    edge: "rgba(201, 162, 75, 0.42)",
+  },
+  {
+    num: "03",
+    name: "NUTRITION",
+    label: "Fuel it right" /* [review] */,
+    width: "70%",
+    bg: "var(--surface-2)",
+    edge: "rgba(201, 162, 75, 0.6)",
   },
   {
     num: "02",
-    name: "NUTRITION",
-    label: "Built on top" /* [review] */,
-    width: "81%",
+    name: "BODY",
+    label: "Build the frame" /* [review] */,
+    width: "85%",
     bg: "var(--surface-2)",
-    edge: "rgba(201, 162, 75, 0.7)",
+    edge: "rgba(201, 162, 75, 0.8)",
   },
   {
     num: "01",
@@ -123,10 +131,10 @@ export default function FoundationStack() {
       <div className="pin-stage">
         <div className="container-site w-full">
           <div aria-hidden="true" className="mx-auto max-w-[560px]">
-            <p className="type-caption mb-6 text-center tracking-[0.16em] text-gold-500">
+            <p className="type-caption mb-4 text-center tracking-[0.16em] text-gold-500 md:mb-6">
               EVERYTHING SITS ON THIS ↓
             </p>{/* [review] */}
-            <div className="flex flex-col items-center gap-2.5">
+            <div className="flex flex-col items-center gap-1.5 md:gap-2.5">
               {TIERS.map((tier, i) => (
                 <div
                   key={tier.num}
@@ -136,7 +144,7 @@ export default function FoundationStack() {
                   style={{ width: tier.width, minWidth: "10.5rem" }}
                 >
                   <div
-                    className="flex flex-col items-center gap-0.5 rounded-md border border-hairline-soft px-4 py-4 text-center shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] md:py-5"
+                    className="flex flex-col items-center gap-0.5 rounded-md border border-hairline-soft px-4 py-2.5 text-center shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] md:py-5"
                     style={{
                       background: tier.bg,
                       borderLeft: `3px solid ${tier.edge}`,
@@ -152,7 +160,7 @@ export default function FoundationStack() {
               ))}
             </div>
           </div>
-          <p className="type-body mx-auto mt-10 max-w-[48ch] text-center text-secondary">
+          <p className="type-body mx-auto mt-5 max-w-[48ch] text-center text-secondary md:mt-10">
             Everyone wants to live at the top. But the top only holds if the
             bottom is built first.
           </p>{/* [review] */}

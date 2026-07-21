@@ -9,7 +9,7 @@ import Reveal from "@/components/Reveal";
 export default function FinalCta({
   heading = "The man you want to become is waiting for one decision.",
   sub,
-  primaryLabel = "Book a Consultation",
+  primaryLabel = "Book Your Transformation Audit",
   primaryHref = "/book",
   secondaryLabel = "Get My Free Blueprint",
   secondaryHref = "/tools#blueprint",

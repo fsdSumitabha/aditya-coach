@@ -4,19 +4,19 @@ import type { Metadata } from "next";
 export const SITE_ORIGIN =
   process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://adityakumarupadhyay.com"; // TODO: final domain
 
-export const SITE_NAME = "Aditya Kumar Upadhyay — Lifestyle & Personality Coach";
+export const SITE_NAME = "Aditya Kumar Upadhyay — Complete Transformation Coach for Men";
 export const BRAND_LINE =
   "Aditya Kumar Upadhyay — Lifestyle & Personality Coach. Become harder to ignore."; /* [review] */
 
 // Header nav — exact order per A5. [Book ₹2,000] is the pinned gold button, NOT a nav item.
+// Simplified per direction doc §10 (Blog lives under Resources + footer)
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Method", href: "/method" },
-  { label: "Programs", href: "/programs" },
+  { label: "The Method", href: "/method" },
+  { label: "Coaching", href: "/programs" },
   { label: "Results", href: "/results" },
-  { label: "Tools", href: "/tools" },
-  { label: "Blog", href: "/blog" },
+  { label: "Resources", href: "/tools" },
   { label: "Contact", href: "/contact" },
 ] as const;
 

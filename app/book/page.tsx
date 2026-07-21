@@ -11,9 +11,11 @@ import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 // pageMetadata defaults to index/follow; do NOT set noindex here.
 
 export const metadata: Metadata = pageMetadata({
-  title: "Book Your ₹2,000 Consultation | Aditya, Kolkata",
+  // [review] reframed to the Transformation Audit; supersedes the A6 sitemap title (≤60 chars)
+  title: "Book Your ₹2,000 Transformation Audit | Aditya",
+  // [review] description reframed to the audit scope (what we analyse → what to fix first)
   description:
-    "45 minutes, online via WhatsApp. We map your lifestyle, health and goals and you leave with complete clarity. Book your ₹2,000 consultation.",
+    "45 minutes, online via WhatsApp. We audit your lifestyle, health, fitness and habits — then pinpoint what to fix first. Book your ₹2,000 Transformation Audit.",
   path: "/book",
   ogType: "website",
 });
@@ -26,10 +28,10 @@ const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
   "@id": `${SITE_ORIGIN}/book#service`,
-  name: "Discovery Consultation",
-  serviceType: "Men's lifestyle coaching consultation",
+  name: "Transformation Audit",
+  serviceType: "Men's lifestyle transformation audit",
   description:
-    "A 45-minute one-to-one discovery consultation on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay.",
+    "A 45-minute one-to-one Transformation Audit on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay.",
   url: `${SITE_ORIGIN}/book`,
   provider: { "@id": `${SITE_ORIGIN}/#business` },
   areaServed: "Worldwide",
@@ -56,7 +58,7 @@ const breadcrumbSchema = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "Book Consultation",
+      name: "Book Transformation Audit",
       item: `${SITE_ORIGIN}/book`,
     },
   ],

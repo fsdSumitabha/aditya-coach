@@ -95,7 +95,7 @@ export default function NotFound() {
                       href="/book"
                       className="type-small inline-flex min-h-[48px] items-center px-3 text-secondary transition-colors hover:text-primary"
                     >
-                      <span className="link-draw">Book a Consultation</span>
+                      <span className="link-draw">Book Your Transformation Audit</span>
                     </Link>
                   </li>
                   <li>

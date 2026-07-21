@@ -217,7 +217,7 @@ export default function ContactPage() {
           <Reveal delayMs={180} className="mt-9 w-full sm:w-auto">
             <div className="cta-stack justify-center">
               <Link href="/book" className="btn-gold shine-loop">
-                Book a Consultation
+                Book Your Transformation Audit
               </Link>
               <a
                 href={WA_CONTACT_LINK}
@@ -450,7 +450,7 @@ export default function ContactPage() {
           <Reveal index={2} className="mt-8 w-full sm:w-auto">
             <div className="cta-stack justify-center">
               <Link href="/book" className="btn-gold">
-                Book a Consultation
+                Book Your Transformation Audit
               </Link>
               <a
                 href={WA_CONTACT_LINK}

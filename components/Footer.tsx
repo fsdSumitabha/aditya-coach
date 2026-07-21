@@ -19,15 +19,14 @@ const COLUMNS: {
     ],
   },
   {
-    heading: "Programs",
+    heading: "Coaching",
     links: [
-      /* [review] lineup per Aditya's brief 2026-07-14 */
-      { label: "Discovery Consultation ₹2,000", href: "/book" },
+      /* [review] lineup per direction doc 2026-07-21 */
+      { label: "Transformation Audit ₹2,000", href: "/book" },
       { label: "Lifestyle Coaching", href: "/programs" },
-      { label: "Presence & Personality Coaching", href: "/programs" },
+      { label: "Personality & Presence Coaching", href: "/programs" },
       { label: "Complete Transformation", href: "/programs" },
-      { label: "Personalized Written Plans", href: "/programs" },
-      { label: "Book Now", href: "/book" },
+      { label: "Book Your Transformation Audit", href: "/book" },
     ],
   },
   {

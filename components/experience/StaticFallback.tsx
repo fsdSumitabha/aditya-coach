@@ -12,12 +12,12 @@ export default function StaticFallback() {
     FACTS["order-2"],
     FACTS["order-3"],
     FACTS["order-4"],
+    FACTS["order-5"],
     FACTS["proof-client"],
-    FACTS["offer-discovery"],
+    FACTS["offer-audit"],
     FACTS["offer-lifestyle"],
     FACTS["offer-presence"],
     FACTS["offer-complete"],
-    FACTS["offer-written"],
     FACTS["blueprint"],
   ];
 
@@ -25,23 +25,23 @@ export default function StaticFallback() {
     <div className="bg-void grain">
       <section className="container-site section-lg text-center">
         <p className="eyebrow">
-          LIFESTYLE &amp; PERSONALITY COACH · COACHING WORLDWIDE
+          COMPLETE TRANSFORMATION COACH FOR MEN{/* [review] */}
         </p>
         {/* visually the hero headline — the page's real h1 is the permanent
             sr-only one in app/page.tsx (exactly one h1 in every mode) */}
-        <p className="type-h1 text-primary mx-auto mt-4 max-w-[19ch]">
-          Most men are living below their potential. This page changes that.
+        <p className="type-h1 text-primary mx-auto mt-4 max-w-[14ch]">
+          Become harder to ignore.
         </p>
         <p className="type-lead text-secondary mx-auto mt-5 max-w-xl">
-          Lifestyle &amp; Personality Coach helping men rebuild their body,
-          mind, presence and confidence. <span className="text-muted">|</span> Coaching worldwide
+          A complete transformation system for men who want to build a
+          stronger body, sharper mind, and undeniable presence.
         </p>
         <div className="cta-stack mt-8 justify-center">
           <Link href="/tools#blueprint" className="btn-gold">
             Get My Free Blueprint
           </Link>
           <Link href="/book" className="btn-outline">
-            Book a Consultation
+            Book Your Transformation Audit
           </Link>
         </div>
       </section>

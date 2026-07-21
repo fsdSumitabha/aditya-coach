@@ -162,7 +162,7 @@ export default function BlogIndexPage() {
                   href="/book"
                   className="type-small font-semibold text-gold-500 hover:text-gold-300"
                 >
-                  Book a Consultation →
+                  Book Your Transformation Audit →
                 </Link>
               </LeadMagnetForm>
             </Reveal>

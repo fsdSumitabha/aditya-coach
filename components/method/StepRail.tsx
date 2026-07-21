@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * Desktop-only sticky rail for the four step sections: the active step's
+ * Desktop-only sticky rail for the five step sections: the active step's
  * numeral lights gold as it enters view; clicking jumps to it. Progressive
  * enhancement — renders nothing until mounted, decorative for keyboard/AT
  * (the step headings remain the semantic structure).
@@ -13,6 +13,7 @@ const STEPS = [
   { id: "step-2", num: "02" },
   { id: "step-3", num: "03" },
   { id: "step-4", num: "04" },
+  { id: "step-5", num: "05" },
 ];
 
 export default function StepRail() {

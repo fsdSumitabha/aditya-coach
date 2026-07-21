@@ -191,7 +191,7 @@ export default function SleepHabitsDrive() {
           eyebrow="One Call" /* [review] */
           heading="Stop guessing. Get the full picture." /* [review] */
           body="We map your lifestyle, health and goals. You leave with complete clarity."
-          label="Book a Consultation"
+          label="Book Your Transformation Audit"
           href="/book"
         />
       </Reveal>

@@ -58,7 +58,7 @@ function BlobShadow({
 export function Arrival() {
   const outer = useRef<THREE.Mesh>(null);
   const mid = useRef<THREE.Mesh>(null);
-  const inner = useRef<THREE.Mesh>(null);
+  const inner = useRef<THREE.Group>(null);
   // landscape: seal lives right-of-frame so the headline owns the left;
   // portrait: seal centered high above the bottom text block
   const { size } = useThree();
@@ -92,17 +92,33 @@ export function Arrival() {
           <torusGeometry args={[0.86, 0.022, 12, 96]} />
           <meshStandardMaterial color={GOLD_LIGHT} metalness={1} roughness={0.18} />
         </mesh>
-        <mesh ref={inner}>
-          <icosahedronGeometry args={[0.42, 1]} />
-          <meshStandardMaterial
-            color={GOLD}
-            metalness={0.95}
-            roughness={0.25}
-            emissive={GOLD}
-            emissiveIntensity={0.55}
-            flatShading
-          />
-        </mesh>
+        {/* the centerpiece: a brilliant-cut diamond — a man, cut and polished */}
+        <group ref={inner}>
+          {/* crown (table → girdle) */}
+          <mesh position={[0, 0.16, 0]}>
+            <cylinderGeometry args={[0.17, 0.48, 0.28, 8, 1]} />
+            <meshStandardMaterial
+              color={GOLD}
+              metalness={0.95}
+              roughness={0.22}
+              emissive={GOLD}
+              emissiveIntensity={0.55}
+              flatShading
+            />
+          </mesh>
+          {/* pavilion (girdle → culet) */}
+          <mesh position={[0, -0.26, 0]} rotation={[Math.PI, 0, 0]}>
+            <coneGeometry args={[0.48, 0.56, 8]} />
+            <meshStandardMaterial
+              color={GOLD_LIGHT}
+              metalness={0.95}
+              roughness={0.18}
+              emissive={GOLD}
+              emissiveIntensity={0.4}
+              flatShading
+            />
+          </mesh>
+        </group>
       </Float>
       <BlobShadow position={[0, -1.53, 0]} scale={3.2} />
       <pointLight position={[0, 0.4, 1.6]} intensity={6} color={GOLD_LIGHT} distance={7} />
@@ -198,13 +214,15 @@ export function TheMan() {
 
 /* ====== CHAPTER 2 — THE ORDER: the foundation assembles itself ====== */
 
+// THE COMPLETE REBUILD (Aditya's framework, direction doc §6)
 const SLABS = [
-  { label: "LIFESTYLE FIRST", num: "01", w: 3.7, d: 2.5, id: "order-1" },
-  { label: "NUTRITION", num: "02", w: 3.0, d: 2.05, id: "order-2" },
-  { label: "SUPPLEMENTS", num: "03", w: 2.35, d: 1.6, id: "order-3" },
-  { label: "MEDICAL", num: "04", w: 1.7, d: 1.15, id: "order-4" },
+  { label: "LIFESTYLE", num: "01", w: 4.0, d: 2.6, id: "order-1" },
+  { label: "BODY", num: "02", w: 3.4, d: 2.25, id: "order-2" },
+  { label: "NUTRITION", num: "03", w: 2.8, d: 1.9, id: "order-3" },
+  { label: "PERFORMANCE", num: "04", w: 2.2, d: 1.55, id: "order-4" },
+  { label: "PRESENCE", num: "05", w: 1.6, d: 1.2, id: "order-5" },
 ];
-const SLAB_H = 0.52;
+const SLAB_H = 0.48;
 
 function Slab({ index }: { index: number }) {
   const group = useRef<THREE.Group>(null);
@@ -215,8 +233,8 @@ function Slab({ index }: { index: number }) {
   useFrame((_, delta) => {
     const { progress } = useExperience.getState();
     // staggered assembly window scrubbed by the journey
-    const a = 0.3 + index * 0.038;
-    const k = smooth(a, a + 0.1, progress);
+    const a = 0.3 + index * 0.032;
+    const k = smooth(a, a + 0.09, progress);
     if (!group.current) return;
     const targetY = finalY + (1 - k) * (5.5 + index * 1.6);
     const targetX = (1 - k) * side * 3.2;
@@ -512,42 +530,35 @@ export function Decision() {
 
   return (
     <group position={[0, 0, -70]}>
+      {/* the gate + the three programs (direction doc §4 + §9) */}
       <Stele
         position={[0, 0, 0]}
-        height={3.1}
+        height={3.05}
         featured
-        label="Discovery Consultation"
-        sub="45 MINUTES · ONLINE VIA WHATSAPP"
-        id="offer-discovery"
+        label="Transformation Audit"
+        sub="₹2,000 · 45 MINUTES · ONLINE"
+        id="offer-audit"
       />
-      {/* four-program lineup flanking the Discovery gate (Aditya's brief 2026-07-14) */}
       <Stele
-        position={[-3.5, 0, -1.1]}
-        height={2.2}
+        position={[-3.4, 0, -0.9]}
+        height={2.25}
         label="Lifestyle Coaching"
-        sub="MONTHLY · PRICE AFTER CONSULTATION"
+        sub="MONTHLY · PRICE AFTER YOUR AUDIT"
         id="offer-lifestyle"
       />
       <Stele
-        position={[-1.85, 0, -0.5]}
+        position={[-1.7, 0, -0.4]}
         height={2.45}
-        label="Presence & Personality"
-        sub="MONTHLY · PRICE AFTER CONSULTATION"
+        label="Personality & Presence"
+        sub="MONTHLY · PRICE AFTER YOUR AUDIT"
         id="offer-presence"
       />
       <Stele
-        position={[1.85, 0, -0.5]}
-        height={2.45}
+        position={[2.6, 0, -0.5]}
+        height={2.85}
         label="Complete Transformation"
-        sub="BOTH PILLARS · PRICE AFTER CONSULTATION"
+        sub="PREMIUM · THE FULL SYSTEM"
         id="offer-complete"
-      />
-      <Stele
-        position={[3.5, 0, -1.1]}
-        height={2.2}
-        label="Written Plans"
-        sub="ONLINE · PRICE AFTER CONSULTATION"
-        id="offer-written"
       />
 
       {/* the free blueprint — a floating golden folio off to the side */}

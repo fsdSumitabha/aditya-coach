@@ -148,7 +148,7 @@ export default function ContactForm({
         </p>
         <div className="cta-stack mt-6">
           <Link href="/book" className="btn-gold">
-            Book a Consultation
+            Book Your Transformation Audit
           </Link>
           <a
             href={waHref}

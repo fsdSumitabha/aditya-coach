@@ -1,6 +1,8 @@
 // /method page-scoped swappable assets (BUILD SPEC /method §9).
 // Server-safe module — no "use client". Icons are gold line-icons, inline SVG,
 // decorative (aria-hidden), explicit 48×48 so nothing shifts on load.
+// One icon per layer of THE COMPLETE REBUILD (Lifestyle → Body → Nutrition →
+// Performance → Presence).
 import type { SVGProps } from "react";
 
 // ---- Swappable asset constants (explicit dimensions protect CLS) ----
@@ -22,7 +24,7 @@ function baseProps(props: SVGProps<SVGSVGElement>): SVGProps<SVGSVGElement> {
   };
 }
 
-/** Step 01 — clock / sunrise */
+/** Step 01 — Lifestyle: clock / sunrise (sleep, waking, daily rhythm) */
 export function IconSunrise(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...baseProps(props)}>
@@ -35,7 +37,20 @@ export function IconSunrise(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Step 02 — plate / leaf */
+/** Step 02 — Body: dumbbell (strength, fitness, physical confidence) */
+export function IconDumbbell(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...baseProps(props)}>
+      <path d="M18 24h12" />
+      <rect x="10" y="15" width="8" height="18" rx="2" />
+      <rect x="30" y="15" width="8" height="18" rx="2" />
+      <path d="M8 20v8" />
+      <path d="M40 20v8" />
+    </svg>
+  );
+}
+
+/** Step 03 — Nutrition: plate / leaf (fuel) */
 export function IconPlate(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...baseProps(props)}>
@@ -46,29 +61,28 @@ export function IconPlate(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Step 03 — capsule */
-export function IconCapsule(props: SVGProps<SVGSVGElement>) {
+/** Step 04 — Performance: lightning bolt (energy, recovery, training quality) */
+export function IconBolt(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...baseProps(props)}>
-      <rect x="16.5" y="7" width="15" height="34" rx="7.5" transform="rotate(45 24 24)" />
-      <path d="M16.5 24h15" transform="rotate(45 24 24)" />
+      <path d="M28 5 13 27h10l-2 16 15-22H26l2-16Z" />
     </svg>
   );
 }
 
-/** Step 04 — shield / medical cross */
-export function IconShield(props: SVGProps<SVGSVGElement>) {
+/** Step 05 — Presence: head & shoulders (how you show up in a room) */
+export function IconPresence(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...baseProps(props)}>
-      <path d="M24 6l14 5v10c0 9.5-5.7 16.6-14 21-8.3-4.4-14-11.5-14-21V11l14-5Z" />
-      <path d="M24 18v12" />
-      <path d="M18 24h12" />
+      <circle cx="24" cy="13" r="6" />
+      <path d="M12 40c0-8 5.4-13 12-13s12 5 12 13" />
     </svg>
   );
 }
 
-// ---- Swappable icon constants (spec: ICON_STEP1…ICON_STEP4) ----
-export const ICON_STEP1 = IconSunrise;
-export const ICON_STEP2 = IconPlate;
-export const ICON_STEP3 = IconCapsule;
-export const ICON_STEP4 = IconShield;
+// ---- Swappable icon constants (spec: ICON_STEP1…ICON_STEP5) ----
+export const ICON_STEP1 = IconSunrise; // Lifestyle
+export const ICON_STEP2 = IconDumbbell; // Body
+export const ICON_STEP3 = IconPlate; // Nutrition
+export const ICON_STEP4 = IconBolt; // Performance
+export const ICON_STEP5 = IconPresence; // Presence

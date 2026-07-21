@@ -86,7 +86,7 @@ export default function LeadMagnetCard({
               around your life —{/* [review] */}
             </p>
             <Link href="/book" className="btn-gold w-full sm:w-auto sm:self-start">
-              Book My ₹2,000 Consultation
+              Book My ₹2,000 Transformation Audit
             </Link>
           </LeadMagnetForm>
           </div>

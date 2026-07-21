@@ -70,28 +70,29 @@ const BOOKING = {
 // app/book/page.tsx (Server Component) — not from this island.
 
 // ---------------------------------------------------------------------------
-// §2 copy — The Right Order of Change (Lifestyle → Nutrition → Supplements → Medical)
+// §2 copy — WHAT WE ANALYSE (audit scope) told in the Right Order voice
+// (Lifestyle → Nutrition → Supplements → Medical, always doctor-led)
 // ---------------------------------------------------------------------------
 
 const CALL_POINTS = [
   {
-    lead: "We start with your lifestyle." /* [review] */,
-    body: "How you sleep, wake, move and live right now — because that's the layer everything else is built on." /* [review] */,
+    lead: "We start with how you live." /* [review] */,
+    body: "Sleep, energy, daily habits, health — the layer everything else is built on. We map it first, always." /* [review] */,
     Icon: SunriseGlyph,
   },
   {
-    lead: "We look at food second, not first." /* [review] */,
-    body: "Only once the lifestyle is clear do we talk about what you eat. Never before." /* [review] */,
+    lead: "Then fitness and food — in that order." /* [review] */,
+    body: "How you train and what you eat, looked at only once the lifestyle is clear. Never before." /* [review] */,
     Icon: PlateGlyph,
   },
   {
     lead: "You get the order, not a crash plan." /* [review] */,
-    body: "I tell you exactly what to change and in what sequence — lifestyle, nutrition, supplements, and medical last, always under a doctor." /* [review] */,
+    body: "Exactly what to change and in what sequence — lifestyle, nutrition, then supplements and medical last, always under a doctor." /* [review] */,
     Icon: CapsuleGlyph,
   },
   {
-    lead: "You leave with complete clarity." /* [review] */,
-    body: "A clear picture of your starting point and the first moves. That's what the ₹2,000 buys you." /* [review] */,
+    lead: "And how you show up." /* [review] */,
+    body: "Confidence, presence, and the goals that matter to you — so you leave knowing your starting point and your first moves." /* [review] */,
     Icon: ShieldGlyph,
   },
 ];
@@ -307,7 +308,7 @@ export default function BookingFlow() {
         notifyCoach({ type: "booking_paid", ...values });
         setState("B");
         setLiveMsg(
-          "Payment received. Your consultation is booked — Aditya will contact you on WhatsApp within 24 hours.",
+          "Payment received. Your audit is booked — Aditya will contact you on WhatsApp within 24 hours.",
         );
       } else {
         setPayError(true); // Phase-2 real path: declined / closed checkout
@@ -376,12 +377,12 @@ export default function BookingFlow() {
                   --bg-void (spec allows); the H1 is the LCP element. */}
               {/* Hero H1 is NEVER animated — paints at final state frame 1 */}
               <h1 className="type-h1 text-primary">
-                Book Your Discovery Consultation.
+                Book Your Transformation Audit.
               </h1>
-              {/* [review] Sitemap lists the H1 as "Book Your ₹2,000 Consultation."
-                  — using the task's "Book Your Discovery Consultation." as the
-                  on-page H1 (price lives in the sub + button). Confirm which
-                  wording the owner prefers; keep only ONE H1. */}
+              {/* [review] Client direction doc (2026-07-21) reframes this route as
+                  the Transformation Audit and supersedes the A6 sitemap H1
+                  ("Book Your ₹2,000 Consultation.") — price lives in the sub +
+                  button. One H1 only. */}
               <Reveal delayMs={0}>
                 <p className="type-lead mt-5 text-secondary">
                   ₹2,000 · 45 minutes on WhatsApp. Tell me where you&apos;re
@@ -410,12 +411,13 @@ export default function BookingFlow() {
               </Reveal>
               <Reveal delayMs={120}>
                 <div className="mt-8">
+                  {/* [review] hero primary action label */}
                   <a
                     href="#intake"
                     onClick={scrollToIntake}
                     className="btn-gold w-full sm:w-auto"
                   >
-                    Start Booking
+                    Start Your Transformation
                   </a>
                 </div>
               </Reveal>
@@ -427,16 +429,18 @@ export default function BookingFlow() {
         <section className="section cv-auto">
           <div className="container-site">
             <div className="mx-auto max-w-[860px]">
+              {/* [review] §2 reframed as the audit scope — what we analyse */}
               <SplitHeading
                 as="h2"
-                text="What happens on the call"
+                text="What we analyse"
                 className="type-h2 text-primary"
               />
               <Reveal index={1}>
                 {/* [review] */}
                 <p className="type-lead mt-4 text-secondary">
-                  45 focused minutes. No pitch. We map where you are and the
-                  exact order things need to change.
+                  45 focused minutes. No pitch. We go through every layer — how
+                  you live, train, eat and carry yourself — and find the order
+                  things need to change in.
                 </p>
               </Reveal>
               {/* metallic gold gradient for the ordered step glyphs (decorative) */}
@@ -479,6 +483,13 @@ export default function BookingFlow() {
                 ))}
               </div>
               <Reveal index={6}>
+                {/* [review] goal line — the payoff of the audit */}
+                <p className="type-lead mt-8 text-primary">
+                  We identify what is actually holding you back — and what needs
+                  to be fixed first.
+                </p>
+              </Reveal>
+              <Reveal index={7}>
                 {/* contextual echo of the global medical disclaimer */}
                 <p className="type-caption mt-6 text-muted">
                   Aditya is a lifestyle coach, not a doctor or dietitian.
@@ -608,7 +619,7 @@ export default function BookingFlow() {
                       className="type-caption mt-2 text-muted"
                     >
                       We&apos;ll use your email and WhatsApp number only to
-                      arrange and run your consultation. No spam. See our{" "}
+                      arrange and run your audit. No spam. See our{" "}
                       <Link
                         href="/privacy"
                         className="underline underline-offset-2 hover:text-secondary"
@@ -700,8 +711,9 @@ export default function BookingFlow() {
                 <Reveal index={3}>
                   <div id="pay" className="card card-featured spot mt-8">
                     <p className="type-price text-gold-grad">₹2,000</p>
+                    {/* [review] */}
                     <p className="type-small mt-1 text-secondary">
-                      · 45-minute Discovery Consultation on WhatsApp
+                      · 45-minute Transformation Audit on WhatsApp
                     </p>
                     <button
                       type="submit"
@@ -718,7 +730,7 @@ export default function BookingFlow() {
                           Payment didn&apos;t go through. Try again or{" "}
                           <a
                             href={waLink(
-                              "Hi Aditya, my payment for the Discovery Consultation didn't go through.", /* [review] */
+                              "Hi Aditya, my payment for the Transformation Audit didn't go through.", /* [review] */
                               BOOKING.COACH_WHATSAPP,
                             )}
                             target="_blank"
@@ -862,7 +874,7 @@ export default function BookingFlow() {
                       No problem.{" "}
                       <a
                         href={waLink(
-                          "Hi Aditya, I booked the Discovery Consultation but need help with the time slot.", /* [review] */
+                          "Hi Aditya, I booked the Transformation Audit but need help with the time slot.", /* [review] */
                           BOOKING.COACH_WHATSAPP,
                         )}
                         target="_blank"
@@ -909,13 +921,14 @@ export default function BookingFlow() {
                     <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-300">
                       <DrawCheckIcon width={20} height={20} />
                     </span>
+                    {/* [review] confirmation copy — audit framing */}
                     <BannerHeading
                       ref={bannerHeadingRef}
                       tabIndex={-1}
                       className="type-h3 scroll-mt-24 text-primary outline-none"
                     >
-                      Payment received. Your consultation is booked — Aditya
-                      will contact you on WhatsApp within 24 hours.
+                      Payment received. Your audit is booked — Aditya will
+                      contact you on WhatsApp within 24 hours.
                     </BannerHeading>
                   </div>
                   {/* [review] */}
@@ -925,7 +938,7 @@ export default function BookingFlow() {
                   </p>
                   <a
                     href={waLink(
-                      "Hi Aditya, I just booked my Discovery Consultation.",
+                      "Hi Aditya, I just booked my Transformation Audit.",
                       BOOKING.COACH_WHATSAPP,
                     )}
                     target="_blank"
@@ -1090,7 +1103,7 @@ export default function BookingFlow() {
                     <div className="mt-6 flex justify-center">
                       <a
                         href={waLink(
-                          "Hi Aditya, I just booked my Discovery Consultation.",
+                          "Hi Aditya, I just booked my Transformation Audit.",
                           BOOKING.COACH_WHATSAPP,
                         )}
                         target="_blank"

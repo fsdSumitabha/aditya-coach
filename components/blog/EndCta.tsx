@@ -12,17 +12,17 @@ const CTA_MAP = {
   blueprint: {
     primaryLabel: "Get My Free Blueprint",
     primaryHref: "/tools#blueprint",
-    secondaryLabel: "Book a Consultation",
+    secondaryLabel: "Book Your Transformation Audit",
     secondaryHref: "/book",
   },
   calculator: {
     primaryLabel: "Try the Calorie Calculator",
     primaryHref: "/tools#calculator",
-    secondaryLabel: "Book a Consultation",
+    secondaryLabel: "Book Your Transformation Audit",
     secondaryHref: "/book",
   },
   book: {
-    primaryLabel: "Book a Consultation",
+    primaryLabel: "Book Your Transformation Audit",
     primaryHref: "/book",
     secondaryLabel: "Get My Free Blueprint",
     secondaryHref: "/tools#blueprint",
@@ -44,7 +44,7 @@ export default function EndCta({
         The man you want to become is waiting for one decision.
       </h2>
       <p className="type-lead mx-auto mt-4 max-w-xl text-secondary">
-        Start with a free blueprint. Or book a consultation today. Either way
+        Start with a free blueprint. Or book your Transformation Audit today. Either way
         — start now.
       </p>
       <div className="cta-stack mt-8 md:justify-center">

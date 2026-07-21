@@ -534,7 +534,7 @@ export default function ResultsPage() {
 
       {/* §3.5 FINAL CTA — shared deep-page closing band → /book (+ /tools) */}
       <FinalCta
-        sub="Start with a free blueprint. Or book a consultation today. Either way — start now."
+        sub="Start with a free blueprint. Or book your Transformation Audit today. Either way — start now."
         secondaryHref="/tools"
       />
     </>

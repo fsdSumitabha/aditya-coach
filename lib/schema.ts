@@ -15,7 +15,7 @@ export const personSchema = {
   "@type": "Person",
   "@id": `${SITE_ORIGIN}/#person`,
   name: "Aditya Kumar Upadhyay",
-  jobTitle: "Lifestyle & Personality Coach" /* [review] repositioned per Aditya's brief 2026-07-14 */,
+  jobTitle: "Complete Transformation Coach for Men" /* [review] direction doc 2026-07-21 */,
   url: SITE_ORIGIN,
   image: `${SITE_ORIGIN}/og-image.jpg`,
   address: {
@@ -40,7 +40,7 @@ export const businessSchema = {
   "@context": "https://schema.org",
   "@type": "HealthAndBeautyBusiness",
   "@id": `${SITE_ORIGIN}/#business`,
-  name: "Aditya Kumar Upadhyay — Lifestyle & Personality Coach",
+  name: "Aditya Kumar Upadhyay — Complete Transformation Coach for Men",
   url: SITE_ORIGIN,
   image: `${SITE_ORIGIN}/og-image.jpg`,
   founder: { "@id": `${SITE_ORIGIN}/#person` },

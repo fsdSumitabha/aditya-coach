@@ -17,16 +17,18 @@ import {
   ICON_STEP2,
   ICON_STEP3,
   ICON_STEP4,
+  ICON_STEP5,
 } from "@/components/method/method-assets";
 
 // ============================================================
-// BUILD SPEC — /method — "The Method" (The Right Order of Change)
+// BUILD SPEC — /method — "The Method" (The Complete Rebuild, in the Right Order)
 // ============================================================
 
 export const metadata: Metadata = pageMetadata({
   title: "The Right Order of Change | Method for Men",
   description:
-    "Lifestyle first. Then nutrition. Then supplements. Medical last. The exact order Aditya uses to build change in men that actually lasts.",
+    // [review] — natural men's-transformation keywords, five-step framing
+    "The Complete Rebuild for men: lifestyle, body, nutrition, performance, then presence — built in the exact order that makes change last. Aditya's men's transformation method.",
   path: "/method",
   ogImage: OG_METHOD_IMG,
 });
@@ -45,49 +47,61 @@ const STEPS: Step[] = [
   {
     id: "step-1",
     num: "01",
-    name: "Lifestyle First",
+    name: "Lifestyle",
     Icon: ICON_STEP1,
-    body: "Before anything else — we fix how you live. When you wake up. How you sleep. How much you move. Your daily habits. This alone starts changing your body.",
+    body: "Fix how you live.", // VERBATIM
     depth: [
-      { lead: "What we change:", text: "Your sleep window. Your wake time. Steps and daily movement. The small habits that run on autopilot." } /* [review] */,
-      { lead: "Why it's first:", text: "This is the foundation everything else stands on. Fix how a man lives and his body starts changing before he's touched his diet." } /* [review] */,
-      { lead: "Skip it and:", text: "every plan on top of it fails. You can't out-eat broken sleep. You can't out-train a life that's falling apart." } /* [review] */,
+      { lead: "What we change:", text: "When you sleep and when you wake. How much you move. The daily habits running on autopilot. How you handle stress and how you recover." } /* [review] */,
+      { lead: "Why it's first:", text: "This is the ground everything else stands on. Fix how a man lives and his body starts changing before he's touched a barbell or his diet." } /* [review] */,
+      { lead: "Skip it and:", text: "every layer above collapses. You can't out-train broken sleep. You can't out-eat a life that's falling apart." } /* [review] */,
     ],
   },
   {
     id: "step-2",
     num: "02",
-    name: "Nutrition",
+    name: "Body",
     Icon: ICON_STEP2,
-    body: "Only after your lifestyle is stable do we look at what you eat. Not before. Never before. Food changes that actually last.",
+    body: "Build strength, fitness, and physical confidence.", // VERBATIM
     depth: [
-      { lead: "What we change:", text: "How much you eat, how often, and the handful of foods doing the most damage. No crash diet. No banned list you'll quit in a week." } /* [review] */,
-      { lead: "Why it's second:", text: "Nutrition only sticks once the day around it is stable. A calm routine holds a new way of eating. A chaotic one spits it back out." } /* [review] */,
-      { lead: "Skip lifestyle and go here first, and:", text: "you get the same result you always got — three good weeks, then back to square one." } /* [review] */,
+      { lead: "What we build:", text: "Real strength. Everyday fitness. The training foundations that make hard work feel normal instead of punishment." } /* [review] */,
+      { lead: "Why it's second:", text: "Once the day around you is stable, the body can take load and actually adapt. Strength built on a solid life stays." } /* [review] */,
+      { lead: "What you get:", text: "A body that can do things — and the physical confidence that comes with it. That doesn't come from a mirror. It comes from what you can do." } /* [review] */,
     ],
   },
   {
     id: "step-3",
     num: "03",
-    name: "Supplements",
+    name: "Nutrition",
     Icon: ICON_STEP3,
-    body: "Once lifestyle and nutrition are working — supplements fill the remaining gaps. They support the foundation. They never replace it.",
+    body: "Fuel your body properly.", // VERBATIM
     depth: [
-      { lead: "What we change:", text: "We add only what's actually missing once the food is right — nothing more. A short, honest list. Not a cabinet full of tubs." } /* [review] */,
-      { lead: "Why it's third:", text: "Supplements are the finishing layer, not the fix. They work when there's already a foundation to support." } /* [review] */,
-      { lead: "Skip the first two and:", text: "you're paying money to patch a hole that food and sleep should have closed for free." } /* [review] */,
+      { lead: "What we change:", text: "How much you eat, how often, and the few foods doing the most damage. Eating for the body you actually want. No crash diet. No banned list you'll quit in a week." } /* [review] */,
+      { lead: "Why it comes here:", text: "Food only holds once the life and the training around it hold it in place. Not before. Never before." } /* [review] — reuses verbatim fragment "Not before. Never before." */,
+      { lead: "Skip the foundation and:", text: "you get the same result you always got — three good weeks, then back to square one." } /* [review] */,
     ],
   },
   {
     id: "step-4",
     num: "04",
-    name: "Medical",
+    name: "Performance",
     Icon: ICON_STEP4,
-    body: "If needed — always under a doctor. Always the last step. This is how sustainable change is built. One layer at a time.",
+    body: "Improve training, recovery, energy, and performance.", // VERBATIM
     depth: [
-      { lead: "What this is:", text: "Bloodwork, hormones, anything clinical — handled with a qualified doctor, never guessed at." } /* [review] */,
-      { lead: "Why it's last:", text: "Because most of what men think is a medical problem disappears once the first three layers are fixed. You only escalate here when the foundation is already solid." } /* [review] */,
-      { lead: "Skip to here first and:", text: "you medicalise a lifestyle problem — treating a symptom while the real cause is still running the show." } /* [review] */,
+      { lead: "What we sharpen:", text: "How you recover. Your energy across the day. The quality of every session — so the work you put in actually pays you back." } /* [review] */,
+      { lead: "Where supplements fit:", text: "Right here, as guidance — not a shortcut. A short, honest list that fills a real gap once the food is right. Never a cabinet full of tubs." } /* [review] */,
+      { lead: "Why it's this late:", text: "Performance is the finishing layer. It works because there's already a foundation under it to sharpen." } /* [review] */,
+    ],
+  },
+  {
+    id: "step-5",
+    num: "05",
+    name: "Presence",
+    Icon: ICON_STEP5,
+    body: "Improve how you communicate, carry yourself, and show up.", // VERBATIM
+    depth: [
+      { lead: "What we build:", text: "Body language. The way you communicate. Grooming and style that fit the man you've become. How you show up the moment you walk into a room." } /* [review] */,
+      { lead: "Why it's last:", text: "You earn it. Once the body is rebuilt, presence is what makes the change land on everyone who meets you. It's the finish, not the foundation." } /* [review] */,
+      { lead: "The full picture:", text: "This is the part most coaching never reaches — the part that decides how the world reads you before you've said a word." } /* [review] */,
     ],
   },
 ];
@@ -136,9 +150,9 @@ const MYTH_TRUTH: { myth: string; truth: ReactNode }[] = [
 const howToSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "The Right Order of Change",
+  name: "The Complete Rebuild — The Right Order of Change",
   description:
-    "Lifestyle first. Then nutrition. Then supplements. Medical last. The exact order Aditya uses to build change in men that actually lasts.",
+    "Lifestyle, then body, then nutrition, then performance, then presence — the exact order Aditya uses to build change in men that actually lasts.",
   step: STEPS.map((s, i) => ({
     "@type": "HowToStep",
     position: i + 1,
@@ -230,33 +244,50 @@ export default function MethodPage() {
         </div>
       </section>
 
-      {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle base → Medical top) ============ */}
+      {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle base → Presence top) ============ */}
       <section
         id="foundation-stack"
         className="border-y border-hairline-soft bg-alt"
       >
         {/* Real-text equivalent for assistive tech — the stack below is decorative */}
         <p className="sr-only">
-          Foundation stack: Lifestyle at the base, then Nutrition, then
-          Supplements, Medical at the top.
+          The Complete Rebuild, from the base up: Lifestyle at the foundation,
+          then Body, then Nutrition, then Performance, with Presence at the top.
         </p>
         {/* Showpiece: sticky-pinned scene, tiers assemble bottom-up on scroll */}
         <FoundationStack />
       </section>
 
-      {/* Decorative ticker — verbatim layer labels bridging into the four steps */}
+      {/* Decorative ticker — verbatim layer labels bridging into the five steps */}
       <div className="border-b border-hairline-soft bg-void py-6 md:py-8">
         <Marquee
-          items={["Lifestyle", "Nutrition", "Supplements", "Medical"]}
+          items={["Lifestyle", "Body", "Nutrition", "Performance", "Presence"]}
           speedS={34}
         />
       </div>
 
-      {/* ============ 4. FOUR EXPANDED STEP SECTIONS (01 → 04) ============ */}
+      {/* ============ 4. FIVE EXPANDED STEP SECTIONS (01 → 05) ============ */}
       {/* Sticky numeral rail (desktop) lights the active step as you read */}
       <StepRail />
       <section className="cv-auto bg-base">
         <div className="container-site section">
+          {/* THE COMPLETE REBUILD — the framework, rebranded (H1 above stays) */}
+          <Reveal className="mb-12 max-w-[720px] md:mb-16">
+            <div className="flex items-center gap-4">
+              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
+              <p className="eyebrow">THE COMPLETE REBUILD</p>
+            </div>
+            <SplitHeading
+              as="h2"
+              text="Five layers. One order."
+              className="type-h2 text-primary mt-4"
+            />
+            <p className="type-lead mt-5 text-secondary">
+              Most men attack one piece and wonder why nothing holds. The
+              complete rebuild runs all five — in the order that makes each one
+              stick.
+            </p>{/* [review] */}
+          </Reveal>
           <div className="relative">
             {/* the gold thread — draws itself down the steps as you scroll */}
             <div
@@ -336,7 +367,7 @@ export default function MethodPage() {
                             </Reveal>
                           ))}
                         </div>
-                        {step.id === "step-2" && (
+                        {step.id === "step-3" && (
                           <Link
                             href="/tools#calculator"
                             className="type-small mt-6 inline-flex min-h-[48px] items-center gap-2 rounded-full border border-hairline-gold px-5 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
@@ -346,9 +377,10 @@ export default function MethodPage() {
                         )}
                         {step.id === "step-4" && (
                           <p className="type-small mt-5 text-muted">
-                            Aditya is a lifestyle coach, not a doctor or
-                            dietitian. Any medical step is taken only under a
-                            qualified physician.
+                            {/* [review] — supplements are guidance; medical stays a doctor-led last resort */}
+                            Supplements are guidance, not a prescription. Any
+                            medical or clinical step is a last resort, taken only
+                            under a qualified doctor.
                           </p>
                         )}
                       </article>
@@ -434,33 +466,34 @@ export default function MethodPage() {
         </div>
       </section>
 
-      {/* ============ 5b. PILLAR TWO — PRESENCE (Aditya's brief, 2026-07-14) ============ */}
+      {/* ============ 5b. POSITIONING — WHO THE COMPLETE REBUILD IS FOR ============ */}
       <section className="cv-auto aurora grain relative overflow-hidden border-t border-hairline-soft bg-surface-warm">
         <div className="container-site section text-center">
           <Reveal>
-            <p className="eyebrow">PILLAR TWO · PRESENCE{/* [review] */}</p>
+            <p className="eyebrow">WHO THIS IS FOR{/* [review] */}</p>
           </Reveal>
+          {/* verbatim from Aditya's brief */}
           <SplitHeading
             as="h2"
             text="A strong body should be matched with a strong presence."
             className="type-h2 text-primary mx-auto mt-4 max-w-[24ch]"
           />
-          {/* verbatim from Aditya's brief */}
           <Reveal delayMs={150} className="reveal-blur mx-auto mt-6 max-w-[58ch]">
+            {/* verbatim from Aditya's brief (§1) */}
             <p className="type-lead text-secondary">
-              Because there is little value in having a great physique if you
-              still lack confidence when you walk into a room.
+              There is no point in having a six-pack if you still look at your
+              shoes when you enter a room.
             </p>
             <p className="type-body text-secondary mt-4">
-              {/* [review] — pillar-two summary in his voice */}
-              The order above rebuilds the body. The second pillar rebuilds how
-              you carry it — body language, grooming, style, communication.
-              That work lives in the programs.
+              {/* [review] — positioning, not a repeat of step 05 */}
+              This is for the man who&apos;s done with quick fixes — who wants
+              the whole thing rebuilt, in the right order, and built to last.
+              Not a workout plan. A different life.
             </p>
           </Reveal>
           <Reveal delayMs={250} className="mt-8">
             <Link href="/programs" className="btn-outline">
-              See Presence &amp; Personality Coaching
+              See Complete Transformation
             </Link>
           </Reveal>
         </div>
@@ -507,7 +540,7 @@ export default function MethodPage() {
               The man you want to become is waiting for one decision.
             </p>
             <p className="type-body mx-auto mt-3 max-w-xl text-secondary">
-              Start with a free blueprint. Or book a consultation today. Either
+              Start with a free blueprint. Or book your Transformation Audit today. Either
               way — start now.
             </p>
           </Reveal>
@@ -518,7 +551,7 @@ export default function MethodPage() {
               style={{ transitionTimingFunction: "var(--ease-overshoot)" }}
             >
               <Link href="/book" className="btn-gold shine-loop w-full md:w-auto">
-                Get your order mapped — ₹2,000
+                Book Your Transformation Audit
               </Link>{/* [review] */}
             </Reveal>
             <Reveal delayMs={300}>
