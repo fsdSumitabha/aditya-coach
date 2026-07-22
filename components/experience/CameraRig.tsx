@@ -24,6 +24,25 @@ const KEYS: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 2.0, -63.5), t: v(0, 1.4, -70) }, // the decision, front and centre
 ];
 
+// Portrait art direction: phones lose ~60% of the horizontal frustum, so the
+// widescreen path's lateral sweeps frame empty space and crop the subjects
+// (figures at x ±1.7, slabs 4 units wide, stelae spread ±3.4). These keys go
+// head-on and pull back so each chapter's full composition fits upright.
+const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
+  { p: v(0, 1.7, 10.5), t: v(0, 1.6, 0) }, // arrival — seal recentres via chapters.tsx
+  { p: v(0, 1.6, -6.5), t: v(0, 1.3, -16) }, // both figures, straight on
+  { p: v(0, 1.9, -22.5), t: v(0, 1.2, -34) }, // foundation approach, centred
+  { p: v(0, 2.9, -25.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
+  { p: v(0, 1.8, -41.0), t: v(0, 1.7, -52) }, // proof gallery, both frames visible
+  { p: v(0, 1.8, -57.5), t: v(0, 1.5, -70) }, // approach the offers
+  { p: v(0, 2.0, -59.6), t: v(0, 1.5, -70) }, // decision — audit centred, wings peek in
+];
+
+/** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */
+function portraitBlend(aspect: number) {
+  return THREE.MathUtils.clamp((1.05 - aspect) / 0.45, 0, 1);
+}
+
 function v(x: number, y: number, z: number) {
   return new THREE.Vector3(x, y, z);
 }
@@ -36,16 +55,32 @@ export default function CameraRig() {
   const lookOffset = useRef({ yaw: 0, pitch: 0 });
   const tmpP = useRef(new THREE.Vector3());
   const tmpT = useRef(new THREE.Vector3());
+  const tmpP2 = useRef(new THREE.Vector3());
+  const tmpT2 = useRef(new THREE.Vector3());
   const lookTarget = useRef(new THREE.Vector3());
 
   useFrame((state, delta) => {
     const { progress, focus } = useExperience.getState();
+    const aspect = state.size.width / state.size.height;
+    const pf = portraitBlend(aspect);
+
+    // widen the lens on portrait so pulled-back keys keep their subjects large
+    const cam = state.camera as THREE.PerspectiveCamera;
+    const targetFov = 42 + pf * 14;
+    if (Math.abs(cam.fov - targetFov) > 0.05) {
+      cam.fov = targetFov;
+      cam.updateProjectionMatrix();
+    }
 
     // -- 1. resolve the desired pose --
     if (focus && FACTS[focus]) {
       const f = FACTS[focus];
       tmpP.current.set(...f.cam);
       tmpT.current.set(...f.look);
+      if (pf > 0) {
+        // fact close-ups are framed for widescreen — dolly out on portrait
+        tmpP.current.sub(tmpT.current).multiplyScalar(1 + 0.45 * pf).add(tmpT.current);
+      }
     } else {
       const segs = KEYS.length - 1;
       const s = Math.min(progress * segs, segs - 1e-4);
@@ -53,6 +88,12 @@ export default function CameraRig() {
       const local = easeInOut(s - i);
       tmpP.current.lerpVectors(KEYS[i].p, KEYS[i + 1].p, local);
       tmpT.current.lerpVectors(KEYS[i].t, KEYS[i + 1].t, local);
+      if (pf > 0) {
+        tmpP2.current.lerpVectors(KEYS_PORTRAIT[i].p, KEYS_PORTRAIT[i + 1].p, local);
+        tmpT2.current.lerpVectors(KEYS_PORTRAIT[i].t, KEYS_PORTRAIT[i + 1].t, local);
+        tmpP.current.lerp(tmpP2.current, pf);
+        tmpT.current.lerp(tmpT2.current, pf);
+      }
     }
 
     // -- 2. damp toward it (slower while focusing for a cinematic settle) --
