@@ -6,7 +6,7 @@ export const SITE_ORIGIN =
 
 export const SITE_NAME = "Aditya Kumar Upadhyay — Complete Transformation Coach for Men";
 export const BRAND_LINE =
-  "Aditya Kumar Upadhyay — Lifestyle & Personality Coach. Become harder to ignore."; /* [review] */
+  "Aditya Kumar Upadhyay — Complete Transformation Coach for Men. Become harder to ignore."; /* [review] */
 
 // Header nav — exact order per A5. [Book ₹2,000] is the pinned gold button, NOT a nav item.
 // Simplified per direction doc §10 (Blog lives under Resources + footer)

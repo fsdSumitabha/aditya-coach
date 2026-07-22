@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 export default function manifest(): MetadataRoute.Manifest {
   const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
   return {
-    name: "Aditya Kumar Upadhyay — Lifestyle & Personality Coach",
+    name: "Aditya Kumar Upadhyay — Complete Transformation Coach for Men",
     short_name: "Aditya Coach",
     description:
       "Men's lifestyle and transformation coaching in Kolkata and worldwide online.",

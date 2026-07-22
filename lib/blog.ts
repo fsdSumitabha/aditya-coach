@@ -27,7 +27,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export const blogAuthor = {
   name: "Aditya Kumar Upadhyay",
   shortName: "Aditya",
-  role: "Lifestyle & Personality Coach" /* [review] */,
+  role: "Complete Transformation Coach for Men" /* [review] */,
   url: "/about",
   portrait: {
     src: `${BASE}/img/aditya-portrait.jpg`, /* TODO: replace */

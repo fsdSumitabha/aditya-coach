@@ -64,6 +64,29 @@ export default function Home3D() {
   const [mode, setMode] = useState<"loading" | "3d" | "fallback">("loading");
   const trackRef = useRef<HTMLDivElement>(null);
   const focusAnchor = useRef<number | null>(null);
+  const aliveRef = useRef(false);
+
+  // Mount watchdog: on devices/networks too slow to even load and boot the
+  // three.js chunk, the visitor would sit on the poster spinner forever —
+  // the in-canvas fps watchdog only exists once the canvas mounts. If no
+  // frame has been produced 12s after choosing 3D, serve the 2D journey.
+  useEffect(() => {
+    if (mode !== "3d") return;
+    let t = 0;
+    const arm = () => {
+      t = window.setTimeout(() => {
+        if (aliveRef.current || navigator.webdriver) return;
+        // background tabs pause rAF — don't punish them, check again later
+        if (document.visibilityState !== "visible") {
+          arm();
+          return;
+        }
+        setMode("fallback");
+      }, 12000);
+    };
+    arm();
+    return () => window.clearTimeout(t);
+  }, [mode]);
 
   useEffect(() => {
     // deferred a frame — avoids a sync setState-in-effect cascade
@@ -79,7 +102,9 @@ export default function Home3D() {
       ) {
         useExperience.getState().setQuality("low");
       }
-      setMode(!reduced && supportsWebGL() ? "3d" : "fallback");
+      // ?flat=1 — manual escape hatch to preview the 2D journey on any device
+      const forced = new URLSearchParams(window.location.search).has("flat");
+      setMode(!forced && !reduced && supportsWebGL() ? "3d" : "fallback");
     });
     return () => cancelAnimationFrame(raf);
   }, []);
@@ -148,7 +173,12 @@ export default function Home3D() {
           <Poster />
         ) : (
           <GLBoundary onFail={() => setMode("fallback")}>
-            <ExperienceCanvas />
+            <ExperienceCanvas
+              onPerfFail={() => setMode("fallback")}
+              onAlive={() => {
+                aliveRef.current = true;
+              }}
+            />
           </GLBoundary>
         )}
         {mode === "3d" && <Overlay />}

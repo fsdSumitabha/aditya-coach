@@ -1559,3 +1559,131 @@ h3,
     font-size: 1.75rem;
   }
 }
+
+/* ============================================================
+   2D JOURNEY (fb-*) — the animated no-WebGL / low-fps home.
+   CSS keyframes + IO reveals only; every motion rule sits behind
+   prefers-reduced-motion: no-preference. Base state = final state.
+   ============================================================ */
+.fb-diamond {
+  position: relative;
+  width: clamp(160px, 40vw, 230px);
+  aspect-ratio: 1;
+}
+.fb-diamond-glow {
+  position: absolute;
+  inset: -24%;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 50% at 50% 52%,
+    rgba(201, 162, 75, 0.22),
+    transparent 70%
+  );
+  filter: blur(4px);
+}
+.fb-orbit,
+.fb-gem,
+.fb-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.fb-slab {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: min(100%, 300px);
+  padding: 14px 22px;
+  border: 1px solid rgba(201, 162, 75, 0.22);
+  border-left: 3px solid var(--gold-500);
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(201, 162, 75, 0.05),
+    rgba(8, 8, 10, 0.6)
+  );
+  text-align: left;
+}
+.fb-slab-num {
+  font: 500 1.35rem/1 var(--font-fraunces);
+  color: var(--gold-300);
+  opacity: 0.85;
+}
+.fb-featured {
+  border-color: rgba(201, 162, 75, 0.55);
+  box-shadow: 0 0 42px rgba(201, 162, 75, 0.09);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fb-enter {
+    opacity: 0;
+    animation: fb-enter 0.9s var(--ease-standard) forwards;
+    animation-delay: var(--fb-delay, 0ms);
+  }
+  .fb-orbit {
+    animation: fb-orbit-spin 26s linear infinite;
+  }
+  .fb-orbit--rev {
+    animation-direction: reverse;
+    animation-duration: 34s;
+  }
+  .fb-gem {
+    animation: fb-gem-float 3.6s ease-in-out infinite alternate;
+  }
+  .fb-spark {
+    animation: fb-spark-pulse 2.8s ease-in-out infinite;
+  }
+}
+@keyframes fb-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fb-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fb-gem-float {
+  from {
+    transform: translateY(-4px);
+  }
+  to {
+    transform: translateY(5px);
+  }
+}
+@keyframes fb-spark-pulse {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- sdjs: scroll-driven-animation fallback for engines without
+   animation-timeline (iOS < 26). FxController tags <html> and marks
+   .sd-draw threads .is-in via IntersectionObserver; the transition
+   replays the signature gold-thread draw. Base (no .sdjs) = static. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  html.sdjs .thread-v.sd-draw {
+    transform: scaleY(0);
+    transition: transform 1100ms var(--ease-standard);
+  }
+  html.sdjs .thread-h.sd-draw {
+    transform: scaleX(0);
+    transition: transform 1100ms var(--ease-standard);
+  }
+  html.sdjs .thread-v.sd-draw.is-in {
+    transform: scaleY(1);
+  }
+  html.sdjs .thread-h.sd-draw.is-in {
+    transform: scaleX(1);
+  }
+}
