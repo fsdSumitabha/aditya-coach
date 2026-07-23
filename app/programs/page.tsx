@@ -13,10 +13,11 @@ import CtaLink from "@/components/programs/CtaLink";
 import FaqItem from "@/components/programs/FaqItem";
 import { waLink } from "@/lib/config";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
+import { LEGAL } from "@/lib/legal";
 
 // ===== Page-level config (swappable constants) =====
 // PHASE-2 STUBS — waLink/track come from the ONE global config block (lib/config.ts).
-const PRICE_CONSULT = "₹2,000"; // reused in the Transformation Audit card, comparison table + reassurance line
+const PRICE_CONSULT = LEGAL.CONSULT_PRICE; // single source of truth (lib/legal.ts); reused in the Audit card, comparison table + reassurance line
 const BOOK_URL = "/book";
 // One WhatsApp prefill per program (the Transformation Audit uses /book, not WhatsApp).
 const WA_LIFESTYLE = waLink("Hi Aditya, I'd like to apply for Lifestyle Coaching.");
@@ -37,7 +38,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Programs for Men | Coaching with Aditya, Kolkata",
   /* [review] — description repositioned around complete transformation + the new 3-program lineup */
   description:
-    "Complete transformation coaching for men in Kolkata and online — lifestyle coaching, personality & presence coaching, or the complete transformation. Every path starts with a ₹2,000 Transformation Audit.",
+    `Complete transformation coaching for men in Kolkata and online — lifestyle coaching, personality & presence coaching, or the complete transformation. Every path starts with a ${PRICE_CONSULT} Transformation Audit.`,
   path: "/programs",
 });
 
@@ -59,10 +60,10 @@ const faqs: { q: string; a: string; aJsx?: ReactNode }[] = [
   {
     q: "What's your refund policy?",
     /* [review] — renamed to Transformation Audit; meaning unchanged */
-    a: "Clear terms, no surprises. The ₹2,000 Transformation Audit and coaching are covered by a written refund policy — read it in full on the refund page before you book.",
+    a: `Clear terms, no surprises. The ${PRICE_CONSULT} Transformation Audit and coaching are covered by a written refund policy — read it in full on the refund page before you book.`,
     aJsx: (
       <>
-        Clear terms, no surprises. The ₹2,000 Transformation Audit and coaching
+        Clear terms, no surprises. The {PRICE_CONSULT} Transformation Audit and coaching
         are covered by a written refund policy — read it in full on the{" "}
         <Link
           href="/refund"
@@ -112,7 +113,7 @@ const serviceSchemas = [
     offers: {
       "@type": "Offer",
       name: "Transformation Audit",
-      price: "2000",
+      price: String(LEGAL.CONSULT_PRICE_INR),
       priceCurrency: "INR",
       url: `${SITE_ORIGIN}/book`,
     },
@@ -330,7 +331,7 @@ export default function ProgramsPage() {
                       </h2>
                       {/* the number the whole page exists to sell — let it carry weight */}
                       <p className="font-display text-gold-grad mt-3 text-[clamp(2.1rem,3.2vw,2.8rem)] leading-none">
-                        <PriceTicker value={2000} />
+                        <PriceTicker value={LEGAL.CONSULT_PRICE_INR} />
                       </p>
                       <p className="type-small text-muted mt-1">
                         45 minutes · online via WhatsApp
@@ -603,7 +604,7 @@ export default function ProgramsPage() {
                   }}
                 >
                   <div className="spot flex flex-col h-full">
-                    {/* [review] — flagship eyebrow (the ₹2,000 Audit keeps the featured glow) */}
+                    {/* [review] — flagship eyebrow (the Transformation Audit keeps the featured glow) */}
                     <p className="eyebrow text-gold-300">Flagship</p>
                     <div
                       className="float-idle self-start mt-2"

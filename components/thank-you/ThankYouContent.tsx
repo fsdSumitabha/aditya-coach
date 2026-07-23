@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import { WhatsAppIcon } from "@/components/icons";
 import { track, waLink } from "@/lib/config";
+import { LEGAL } from "@/lib/legal";
 
 /**
  * /thank-you client island.
@@ -45,8 +46,7 @@ const COPY: Record<
     h1: "You're in. Your consultation is booked.",
     subline:
       "Payment received. Check your WhatsApp and email — that's where we'll confirm your time and next steps. The decision was the hardest part.",
-    waText:
-      "Hi Aditya, I just booked my ₹2,000 consultation. Looking forward to it.",
+    waText: `Hi Aditya, I just booked my ${LEGAL.CONSULT_PRICE} consultation. Looking forward to it.`,
   },
 };
 
@@ -163,8 +163,8 @@ function ThankYouView({ type }: { type: ThankYouType }) {
                 href="/book"
                 className="underline decoration-[rgba(201,162,75,0.4)] underline-offset-4 transition-colors hover:text-primary"
               >
-                When you&apos;re ready for the full picture, book your ₹2,000
-                consultation.
+                When you&apos;re ready for the full picture, book your{" "}
+                {LEGAL.CONSULT_PRICE} consultation.
               </Link>
             </Reveal>
           )}

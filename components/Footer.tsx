@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BRAND_LINE } from "@/lib/site";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
+import { LEGAL } from "@/lib/legal";
 import { InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 
 const COLUMNS: {
@@ -22,7 +23,7 @@ const COLUMNS: {
     heading: "Coaching",
     links: [
       /* [review] lineup per direction doc 2026-07-21 */
-      { label: "Transformation Audit ₹2,000", href: "/book" },
+      { label: `Transformation Audit ${LEGAL.CONSULT_PRICE}`, href: "/book" },
       { label: "Lifestyle Coaching", href: "/programs" },
       { label: "Personality & Presence Coaching", href: "/programs" },
       { label: "Complete Transformation", href: "/programs" },

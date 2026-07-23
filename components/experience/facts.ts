@@ -3,6 +3,8 @@
 // Transformation Coach for Men — "harder to ignore". His verbatim lines are
 // used untouched; copy written in his voice is marked [review].
 
+import { LEGAL } from "@/lib/legal";
+
 export type Fact = {
   id: string;
   eyebrow: string;
@@ -104,7 +106,7 @@ export const FACTS: Record<string, Fact> = {
   // ---- THE OFFERS (§4 + §9): Transformation Audit gate + three programs ----
   "offer-audit": {
     id: "offer-audit",
-    eyebrow: "Transformation Audit · ₹2,000 · 45 minutes · online via WhatsApp",
+    eyebrow: `Transformation Audit · ${LEGAL.CONSULT_PRICE} · 45 minutes · online via WhatsApp`,
     title: "Transformation Audit",
     body: "We analyse your lifestyle, health, fitness, nutrition, energy, habits, confidence and presence — and identify what is actually holding you back and what needs to be fixed first." /* [review] built from §9 */,
     cta: { label: "Book Your Transformation Audit", href: "/book" },

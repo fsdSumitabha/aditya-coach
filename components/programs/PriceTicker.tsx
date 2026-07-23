@@ -2,8 +2,9 @@
 
 import CountUp from "@/components/CountUp";
 
-/** ₹2,000 counts up when it scrolls into view (client island — the format
-    function can't cross the server boundary). Reduced motion → static. */
+/** The consultation fee counts up when it scrolls into view (client island — the
+    format function can't cross the server boundary). Reduced motion → static.
+    The number comes from the caller (LEGAL.CONSULT_PRICE_INR). */
 export default function PriceTicker({ value }: { value: number }) {
   return (
     <CountUp
