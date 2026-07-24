@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useId, useRef, useState, type FormEvent } from "react";
-import { notifyCoach, sendToEmailProvider, track } from "@/lib/config";
+import { sendEnquiry, track } from "@/lib/config";
 import { WhatsAppIcon } from "@/components/icons";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -13,10 +13,11 @@ const MESSAGE_MAX = 1000; // maxlength ≈1000 per spec
 type Errors = { name?: string; email?: string; message?: string };
 
 /**
- * /contact enquiry form island (Phase 1).
+ * /contact enquiry form island.
  * Client-side validation (submit + per-field blur), honeypot anti-spam,
- * stubbed submit (sendToEmailProvider / notifyCoach / track are no-ops),
- * in-place success state — no page reload, no real email sent in Phase 1.
+ * submits to app/api/contact/route.ts — which emails the coach over SMTP and
+ * auto-replies to the enquirer — then shows an in-place success state.
+ * The server re-validates everything; the client checks are UX, not a gate.
  */
 export default function ContactForm({
   waHref,
@@ -98,14 +99,26 @@ export default function ContactForm({
 
     setPending(true);
     try {
-      const payload = {
+      const result = await sendEnquiry({
         name: name.trim(),
         email: email.trim(),
         message: message.trim(),
         source: "contact",
-      };
-      await sendToEmailProvider(payload); // Phase-1 stub — resolves { ok: true }, no real email sent
-      notifyCoach(payload); // no-op stub
+      });
+
+      if (!result.ok) {
+        // Server-side validation disagreed — show its messages on the fields.
+        if (result.errors) {
+          setErrors(result.errors);
+          if (result.errors.name) nameRef.current?.focus();
+          else if (result.errors.email) emailRef.current?.focus();
+          else messageRef.current?.focus();
+          return;
+        }
+        setSubmitError(true);
+        return;
+      }
+
       track("Lead", { source: "contact" });
       track("contact_form_submit", { source: "contact" }); // no-op stub
       setDone(true);
@@ -113,7 +126,7 @@ export default function ContactForm({
       // thank-you page instead of the in-place success state:
       // window.location.assign("/thank-you?type=enquiry");
     } catch {
-      // Defensive — the Phase-1 stub always resolves.
+      // sendEnquiry() already swallows network errors; this is belt-and-braces.
       setSubmitError(true);
     } finally {
       setPending(false);
@@ -297,7 +310,6 @@ export default function ContactForm({
       <div aria-live="polite">
         {submitError && (
           <p className="field-error mt-3">
-            {/* [review] — defensive fallback copy (stub always resolves in Phase 1) */}
             {"Something broke and your message didn't send. Reach me directly on "}
             <a
               href={waHref}
