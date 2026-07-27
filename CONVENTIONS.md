@@ -41,6 +41,7 @@ import {
   startPayment,           // Promise<{ok:true}> stub — falls through to success
   sendToEmailProvider,    // ({email, source, ...}) => Promise<{ok:true}> stub
   notifyCoach,            // no-op stub
+  sendEnquiry,            // LIVE — POSTs /contact enquiries to app/api/contact (SMTP mail)
   track,                  // (event, data?) no-op until IDs exist
 } from "@/lib/config";
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import Home3D from "@/components/experience/Home3D";
+import Positioning from "@/components/home/Positioning";
 import { FACTS } from "@/components/experience/facts";
 import { businessSchema, personSchema } from "@/lib/schema";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
@@ -90,6 +91,11 @@ export default function Home() {
           </article>
         ))}
       </section>
+
+      {/* Positioning block — brief §1. Real HTML below the journey: what the
+          work is NOT (gym/nutrition) and what it actually is (grooming,
+          presence, communication, confidence). Ends with the conversion band. */}
+      <Positioning />
 
       {/* Crawlable funnel map (visually hidden). */}
       <nav aria-label="Explore the site" className="sr-only">

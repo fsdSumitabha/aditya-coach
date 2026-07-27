@@ -60,8 +60,47 @@ export function sendToEmailProvider(payload: LeadPayload): Promise<{ ok: boolean
 }
 
 export function notifyCoach(payload: Record<string, unknown>): void {
-  /* PHASE 2: Twilio WhatsApp Business API (wa.me CANNOT auto-send). */
+  /* PHASE 2: Twilio WhatsApp Business API (wa.me CANNOT auto-send).
+     Note: /contact enquiries no longer need this — sendEnquiry() posts to
+     app/api/contact/route.ts, which emails the coach over SMTP. */
   console.log("stub notifyCoach", payload);
+}
+
+// ===== LIVE: /contact enquiry submission =====
+
+export type EnquiryPayload = {
+  name: string;
+  email: string;
+  message: string;
+  source: string;
+};
+
+export type EnquiryResult = {
+  ok: boolean;
+  /** Per-field messages from server-side validation (422). */
+  errors?: Partial<Record<"name" | "email" | "message", string>>;
+  /** Human-readable failure reason for everything else. */
+  error?: string;
+};
+
+/**
+ * POST an enquiry to the contact Route Handler, which sends the coach
+ * notification + the enquirer auto-reply via SMTP (nodemailer).
+ * `basePath` is not applied to fetch() by Next, so prefix it manually.
+ */
+export async function sendEnquiry(payload: EnquiryPayload): Promise<EnquiryResult> {
+  try {
+    const res = await fetch(`${BASE_PATH}/api/contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => ({}))) as EnquiryResult;
+    return { ...data, ok: res.ok && data.ok !== false };
+  } catch {
+    // Network/offline — surface the fallback channels rather than a fake success.
+    return { ok: false, error: "network" };
+  }
 }
 
 export function track(event: string, data?: Record<string, unknown>): void {
