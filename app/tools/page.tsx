@@ -4,7 +4,8 @@ import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import Calculator from "@/components/tools/Calculator";
 import LeadMagnetCard from "@/components/tools/LeadMagnetCard";
-import { BLUEPRINT_PDF, SPLIT_PDF, PERSONALITY_PDF, OG_IMAGE } from "@/lib/config";
+import BlueprintFeatureCard from "@/components/tools/BlueprintFeatureCard";
+import { SPLIT_PDF, PERSONALITY_PDF, OG_IMAGE } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
 const TITLE = "Free Tools for Men | Calorie Calculator & Blueprint";
@@ -124,25 +125,25 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* ---- 2. LEAD MAGNET 1 — The Lifestyle Blueprint ---- */}
+      {/* ---- 2. THE LIFESTYLE BLUEPRINT — bespoke card → full on-site read ----
+          Unlike the two email-gated PDF magnets below, the Blueprint opens as a
+          rich reading experience at /tools/the-lifestyle-blueprint. The card is
+          a single Link and wears `card-featured` so it reads as the one premium,
+          unique tool on the page. */}
       <section
         id="blueprint"
         className="bg-alt cv-auto border-t border-hairline-soft"
       >
         <div className="container-site section">
-          <Reveal className="max-w-[720px] mx-auto">
-            <LeadMagnetCard
+          <Reveal className="max-w-[720px] mx-auto reveal-scale">
+            <BlueprintFeatureCard
+              href="/tools/the-lifestyle-blueprint"
+              eyebrow={"READ THE FULL BLUEPRINT" /* [review] */}
               title="The Lifestyle Blueprint"
               description="10 lifestyle changes that rebuild a man completely — body, mind and hormones. Start tonight."
-              imageLabel="IMG-BLUEPRINT"
-              imageAlt="Cover of the free Lifestyle Blueprint PDF"
+              imageAlt="The Lifestyle Blueprint — Aditya Kumar Upadhyay"
               source="aditya/aditya_01.jpg"
-              pdfHref={BLUEPRINT_PDF}
-              pdfLabel={"Open the Blueprint now" /* [review] */}
-              buttonLabel={"Send Me the Blueprint" /* [review] */}
-              successBody={
-                "Your Lifestyle Blueprint has been emailed to you." /* [review] */
-              }
+              ctaLabel={"Read the Lifestyle Blueprint" /* [review] */}
             />
           </Reveal>
         </div>
