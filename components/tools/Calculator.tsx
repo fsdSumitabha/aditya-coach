@@ -5,6 +5,7 @@ import { useId, useState, type FormEvent } from "react";
 import CountUp from "@/components/CountUp";
 import Reveal from "@/components/Reveal";
 import { track } from "@/lib/config";
+import { LEGAL } from "@/lib/legal";
 
 // ---- calculator tuning constants (spec CONFIG BLOCK — do not alter) ----
 const KG_TO_LB = 2.20462;
@@ -372,7 +373,7 @@ export default function Calculator() {
         </p>
         <div className="cta-stack justify-center mt-6">
           <Link href="/book" className="btn-gold shine-loop">
-            Book My Call — ₹2,000
+            Book My Call — {LEGAL.CONSULT_PRICE}
           </Link>
         </div>
         <p className="type-small mt-5">

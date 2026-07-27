@@ -434,7 +434,7 @@ export default function ResultsPage() {
             </div>
           </Reveal>
           {/* No hero CTA — the gallery is the proof; conversion lives at the
-              bottom. Persistent header [Book ₹2,000] covers intent. */}
+              bottom. Persistent header [Book] gold button covers intent. */}
         </div>
       </section>
 

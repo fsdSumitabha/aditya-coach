@@ -2,6 +2,7 @@ import Link from "next/link";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import LeadMagnetForm from "@/components/LeadMagnetForm";
 import TiltCard from "@/components/TiltCard";
+import { LEGAL } from "@/lib/legal";
 
 /**
  * /tools lead-magnet card (spec §2 + §3) — one parametrised card rendered
@@ -86,7 +87,7 @@ export default function LeadMagnetCard({
               around your life —{/* [review] */}
             </p>
             <Link href="/book" className="btn-gold w-full sm:w-auto sm:self-start">
-              Book My ₹2,000 Transformation Audit
+              Book My {LEGAL.CONSULT_PRICE} Transformation Audit
             </Link>
           </LeadMagnetForm>
           </div>

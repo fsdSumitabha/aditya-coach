@@ -8,10 +8,10 @@ import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 
 /**
- * Sticky header (A5): wordmark · 8 nav links · pinned [Book ₹2,000] gold button.
- * ≤900px the links collapse into a hamburger; the gold button stays visible
- * (compact "₹2,000" pill ≤480px). Full-screen overlay menu with staggered
- * reveal, scroll lock, focus trap, Escape-to-close.
+ * Sticky header (A5): wordmark · 8 nav links · pinned [Book] gold button.
+ * ≤900px the links collapse into a hamburger; the gold button stays visible.
+ * Full-screen overlay menu with staggered reveal, scroll lock, focus trap,
+ * Escape-to-close.
  */
 export default function Header() {
   const pathname = usePathname();
@@ -101,8 +101,7 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <Link href="/book" className="btn-gold btn-compact">
-              <span className="book-label-full">Book ₹2,000</span>
-              <span className="book-label-short">₹2,000</span>
+              Book
             </Link>
             <button
               ref={hamburgerRef}
@@ -182,7 +181,7 @@ export default function Header() {
             } as React.CSSProperties}
           >
             <Link href="/book" className="btn-gold w-full" onClick={close}>
-              Book ₹2,000
+              Book
             </Link>
             <a
               href={waLink()}

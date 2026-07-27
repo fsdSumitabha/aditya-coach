@@ -6,6 +6,7 @@ import { Float, Text } from "@react-three/drei";
 import * as THREE from "three";
 import Hotspot from "./Hotspot";
 import { useExperience } from "./store";
+import { LEGAL } from "@/lib/legal";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const FRAUNCES = `${BASE}/fonts/fraunces-500.ttf`;
@@ -536,7 +537,7 @@ export function Decision() {
         height={3.05}
         featured
         label="Transformation Audit"
-        sub="₹2,000 · 45 MINUTES · ONLINE"
+        sub={`${LEGAL.CONSULT_PRICE} · 45 MINUTES · ONLINE`}
         id="offer-audit"
       />
       <Stele

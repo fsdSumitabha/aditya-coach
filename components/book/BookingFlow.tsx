@@ -54,10 +54,11 @@ import {
   track,
   waLink,
 } from "@/lib/config";
+import { LEGAL } from "@/lib/legal";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
 const BOOKING = {
-  PRICE_INR: 2000,
+  PRICE_INR: LEGAL.CONSULT_PRICE_INR, // consultation fee — single source of truth in lib/legal.ts
   CURRENCY: "INR",
   DURATION_MIN: 45,
   COACH_WHATSAPP, // [review] Aditya's WhatsApp (same number as global FAB — set once in lib/config)
@@ -385,8 +386,8 @@ export default function BookingFlow() {
                   button. One H1 only. */}
               <Reveal delayMs={0}>
                 <p className="type-lead mt-5 text-secondary">
-                  ₹2,000 · 45 minutes on WhatsApp. Tell me where you&apos;re
-                  starting from.
+                  45 minutes on WhatsApp. Tell me where you&apos;re starting
+                  from.
                 </p>
               </Reveal>
               {/* [review] micro-trust row */}
@@ -710,7 +711,7 @@ export default function BookingFlow() {
                 {/* ---------- §4 PAYMENT BLOCK ---------- */}
                 <Reveal index={3}>
                   <div id="pay" className="card card-featured spot mt-8">
-                    <p className="type-price text-gold-grad">₹2,000</p>
+                    <p className="type-price text-gold-grad">{LEGAL.CONSULT_PRICE}</p>
                     {/* [review] */}
                     <p className="type-small mt-1 text-secondary">
                       · 45-minute Transformation Audit on WhatsApp
@@ -721,7 +722,7 @@ export default function BookingFlow() {
                       disabled={paying}
                       aria-busy={paying || undefined}
                     >
-                      {paying ? "Processing…" : "Pay ₹2,000 & Book"}
+                      {paying ? "Processing…" : `Pay ${LEGAL.CONSULT_PRICE} & Book`}
                     </button>
                     <div aria-live="polite">
                       {payError && (

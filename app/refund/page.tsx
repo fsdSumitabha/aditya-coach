@@ -6,13 +6,12 @@ import { pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Refund Policy | Consultations & Coaching",
-  description:
-    "Our refund policy for the ₹2,000 consultation and monthly coaching. Clear terms, no surprises.",
+  description: `Our refund policy for the ${LEGAL.CONSULT_PRICE} consultation and monthly coaching. Clear terms, no surprises.`,
   path: "/refund",
 });
 
 /*
- * ALIGNMENT NOTE (spec 3.2): the on-page promise around the ₹2,000 discovery
+ * ALIGNMENT NOTE (spec 3.2): the on-page promise around the discovery
  * consultation is "You leave with complete clarity." This policy must honor
  * that exact promise — the consultation fee is refundable if you leave
  * without clarity. Keep the guarantee wording consistent with whatever the
@@ -21,7 +20,7 @@ export const metadata: Metadata = pageMetadata({
  */
 
 const TOC = [
-  { id: "consultation", label: "The ₹2,000 discovery consultation — clarity guarantee" },
+  { id: "consultation", label: `The ${LEGAL.CONSULT_PRICE} discovery consultation — clarity guarantee` },
   { id: "how", label: "How, when and where to request a refund" },
   { id: "method-timeline", label: "Refund method and timeline" },
   { id: "reschedule", label: "Rescheduling and cancellation" },
@@ -44,7 +43,7 @@ export default function RefundPage() {
       </p>
 
       <h2 id="consultation" className="scroll-mt-28">
-        1. The ₹2,000 discovery consultation — clarity guarantee
+        1. The {LEGAL.CONSULT_PRICE} discovery consultation — clarity guarantee
       </h2>
       <p>
         The consultation exists to give you one thing:{" "}
