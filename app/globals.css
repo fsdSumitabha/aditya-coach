@@ -513,7 +513,7 @@ h3,
   }
 }
 
-/* Featured card — the ₹2,000 Discovery offer */
+/* Featured card — the featured Discovery offer */
 .card-featured {
   border-color: rgba(201, 162, 75, 0.45);
   box-shadow: var(--shadow-card), var(--glow-gold);
@@ -586,7 +586,7 @@ h3,
   text-transform: uppercase;
   white-space: nowrap;
 }
-/* keep wordmark + ₹2,000 pill + hamburger inside 375px viewports */
+/* keep wordmark + Book pill + hamburger inside 375px viewports */
 @media (max-width: 560px) {
   .wordmark {
     font-size: 0.65rem;
@@ -626,16 +626,7 @@ h3,
   font-size: 0.9375rem;
   white-space: nowrap;
 }
-.book-label-short {
-  display: none;
-}
 @media (max-width: 480px) {
-  .book-label-full {
-    display: none;
-  }
-  .book-label-short {
-    display: inline;
-  }
   .btn-compact {
     padding: 10px 14px;
   }

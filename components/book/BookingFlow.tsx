@@ -382,7 +382,7 @@ export default function BookingFlow() {
               </h1>
               {/* [review] Client direction doc (2026-07-21) reframes this route as
                   the Transformation Audit and supersedes the A6 sitemap H1
-                  ("Book Your ₹2,000 Consultation.") — price lives in the sub +
+                  ("Book Your Consultation.") — price lives in the sub +
                   button. One H1 only. */}
               <Reveal delayMs={0}>
                 <p className="type-lead mt-5 text-secondary">
