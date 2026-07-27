@@ -72,13 +72,13 @@ const IMG = {
     label: "ADITYA AFTER",
   },
   t2_before: {
-    src: "/client/client-02-before.jpg",
+    src: "/client/client-01-before.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 BEFORE",
   },
   t2_after: {
-    src: "/client/client-02-after.jpg",
+    src: "/client/client-01-after.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 AFTER",
