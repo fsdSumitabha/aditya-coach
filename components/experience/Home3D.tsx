@@ -1,13 +1,7 @@
 "use client";
-
+import Image from "next/image";
 import dynamic from "next/dynamic";
-import {
-  Component,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { Component, useEffect, useRef, useState, type ReactNode, } from "react";
 import { useExperience } from "./store";
 import Overlay from "./Overlay";
 import StaticFallback from "./StaticFallback";

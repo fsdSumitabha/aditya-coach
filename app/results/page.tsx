@@ -62,13 +62,13 @@ const IMG = {
   t1_before: {
     src: "/aditya/before/before_transformation.jpg",
     w: 800,
-    h: 1000,
+    h: 800,
     label: "ADITYA BEFORE",
   },
   t1_after: {
-    src: "/aditya/after/after_transformation.jpg",
+    src: "/aditya/after_transformation_01.jpg",
     w: 800,
-    h: 1000,
+    h: 800,
     label: "ADITYA AFTER",
   },
   t2_before: {
@@ -236,14 +236,15 @@ function TxDiptych({ t }: { t: Transformation }) {
   return (
     <div className="tx-diptych grid grid-cols-[1fr_1px_1fr] overflow-hidden rounded-xl">
       <figure className="tx-half tx-before relative m-0">
-        <div className="tx-frame aspect-[4/5] overflow-hidden">
+        {/* square viewport over a 4:5 source — center-crop, never squash */}
+        <div className="tx-frame relative aspect-square overflow-hidden">
           <Image
             src={t.before.src}
             width={t.before.w}
             height={t.before.h}
             alt={t.beforeAlt}
-            className="sd-wipe"
-            style={{ borderRadius: 0, height: "100%" }}
+            className="sd-wipe absolute inset-0 h-full w-full object-cover object-center"
+            style={{ borderRadius: 0 }}
           />
         </div>
         <Reveal as="figcaption" index={0} className={`${chipBase} text-muted`}>
@@ -253,14 +254,15 @@ function TxDiptych({ t }: { t: Transformation }) {
       {/* gold thread split — scale-draws top→bottom as the card enters view */}
       <span className="tx-split thread-v sd-draw" aria-hidden="true" />
       <figure className="tx-half tx-after relative m-0">
-        <div className="tx-frame aspect-[4/5] overflow-hidden">
+        {/* same square center-crop as BEFORE — identical framing both halves */}
+        <div className="tx-frame relative aspect-square overflow-hidden">
           <Image
             src={t.after.src}
             width={t.after.w}
             height={t.after.h}
             alt={t.afterAlt}
-            className="sd-wipe"
-            style={{ borderRadius: 0, height: "100%" }}
+            className="sd-wipe absolute inset-0 h-full w-full object-cover object-center"
+            style={{ borderRadius: 0 }}
           />
         </div>
         {/* AFTER tinted gold to signal the win; offset from BEFORE via index */}
