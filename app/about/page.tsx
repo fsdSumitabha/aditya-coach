@@ -3,6 +3,7 @@
 // Book a Consultation (→ /book) with the free Blueprint fallback (→ /tools).
 
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import FadeIn from "@/components/about/FadeIn";
@@ -18,8 +19,9 @@ import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
 // ---- Per-page SEO (A6 verbatim) ----
-// og:image stays the default OG placeholder until the real IMG_ABOUT_HERO
-// asset exists — swap via pageMetadata({ ogImage }) then.
+// og:image stays the default OG card: the hero portrait is a 3:4 upright and
+// social cards want 1.91:1 — swap via pageMetadata({ ogImage }) once a
+// landscape cut exists.
 export const metadata: Metadata = pageMetadata({
   title: "About Aditya | Men's Transformation Coach Kolkata",
   // [review] description refreshed 2026-07-21 — complete-transformation keywords
@@ -37,11 +39,44 @@ const WHATSAPP_URL = waLink(
   "Hi Aditya, I read your story on your site and want to talk.",
 );
 
-// ---- Image placeholder constants (top-level, swappable; explicit dims reserve aspect-ratio → CLS < 0.1) ----
-const IMG_ABOUT_HERO = { label: "IMG_ABOUT_HERO", w: 720, h: 900 } as const;
-const IMG_TL_BEFORE = { label: "IMG_TL_BEFORE", w: 480, h: 360 } as const;
-const IMG_ABOUT_BEFORE = { label: "IMG_ABOUT_BEFORE", w: 640, h: 800 } as const;
-const IMG_ABOUT_AFTER = { label: "IMG_ABOUT_AFTER", w: 640, h: 800 } as const;
+// ---- Image constants (top-level, swappable; explicit dims reserve aspect-ratio → CLS < 0.1) ----
+// Hero is the real portrait now (public/aditya/img_about_hero.jpg — 840×1120,
+// downscaled from the 2873×3831 original because next.config sets
+// images.unoptimized, so whatever ships here is what the browser downloads).
+const IMG_ABOUT_HERO = {
+  src: "/aditya/img_about_hero.jpg",
+  w: 840,
+  h: 1120,
+  // 10px JPEG, inlined — covers the gap before the preloaded portrait paints.
+  blurDataURL:
+    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAQMEBf/EAB8QAAICAgIDAQAAAAAAAAAAAAECAxEABBIhBRMxcf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAMAwEAAhEDEQA/ADt7EuqF5RtIK7awB+Yldssoa1Fi6JHWWza0cvkTFKOSBAQPneZ8mlH7G4l1FmhfzC7IAv/Z",
+} as const;
+const IMG_TL_BEFORE = { 
+    src: "/aditya/before/before_transformation.jpg",
+     w: 480,
+     h: 360,
+    blurDataURL:
+      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
+ } as const;
+// The before shot is the real one (public/aditya/before/before_transformation.jpg —
+// 800×1000, side-trimmed from a 1650×1788 original to the same 4:5 the AFTER
+// slot reserves, so the pair sits square in the grid). Same unoptimized caveat
+// as the hero: what ships is what downloads.
+const IMG_ABOUT_BEFORE = {
+  src: "/aditya/before/before_transformation.jpg",
+  w: 400,
+  h: 1000,
+  blurDataURL:
+    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
+} as const;
+    
+const IMG_ABOUT_AFTER = {
+  src: "/aditya/after/after_transformation.jpg",
+  w: 640,
+  h: 800,
+  blurDataURL:
+    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
+} as const;
 
 // ---- §5 audience checklist ("This is for men who want to…") ----
 // [review] Aditya's voice, from the 2026-07-21 direction (complete transformation,
@@ -112,7 +147,7 @@ const aboutPersonJsonLd = {
   name: "Aditya Kumar Upadhyay",
   jobTitle: "Complete Transformation Coach for Men" /* [review] repositioned 2026-07-21 */,
   url: `${SITE_ORIGIN}/about`,
-  image: `${SITE_ORIGIN}/og-image.jpg`, // TODO: swap for the real IMG_ABOUT_HERO portrait URL
+  image: `${SITE_ORIGIN}/aditya/img_about_hero.jpg`, // real portrait — Person.image wants the man, not the OG card
   address: KOLKATA_ADDRESS,
   homeLocation: {
     "@type": "Place",
@@ -231,13 +266,15 @@ export default function AboutPage() {
                   Inner clip lets the portrait settle-zoom on scroll (transform
                   only — the LCP still paints frame 1). */}
               <div className="overflow-hidden rounded-[16px] p-1.5">
-                <PlaceholderImage
-                  label={IMG_ABOUT_HERO.label}
-                  w={IMG_ABOUT_HERO.w}
-                  h={IMG_ABOUT_HERO.h}
+                <Image
+                  src={IMG_ABOUT_HERO.src}
+                  width={IMG_ABOUT_HERO.w}
+                  height={IMG_ABOUT_HERO.h}
                   alt="Aditya Kumar Upadhyay, men's lifestyle coach, Kolkata — present-day portrait, composed and direct to camera"
-                  variant="portrait"
-                  className="sd-zoom"
+                  placeholder="blur"
+                  blurDataURL={IMG_ABOUT_HERO.blurDataURL}
+                  preload
+                  className="sd-zoom block h-auto w-full max-w-full rounded-[16px]"
                 />
               </div>
             </div>
@@ -390,12 +427,14 @@ export default function AboutPage() {
                 {/* wipes itself open as the node scrolls in (sd-wipe on the
                     frame — the Reveal owns the parent li, never this element) */}
                 <div className="sd-wipe mt-5 max-w-[280px]">
-                  <PlaceholderImage
-                    label={IMG_TL_BEFORE.label}
-                    w={IMG_TL_BEFORE.w}
-                    h={IMG_TL_BEFORE.h}
+                  <Image
+                    src={IMG_TL_BEFORE.src}
+                    width={IMG_TL_BEFORE.w}
+                    height={IMG_TL_BEFORE.h}
                     alt="Aditya at his 100kg starting point, before the transformation"
-                    variant="photo"
+                    placeholder="blur"
+                    blurDataURL={IMG_TL_BEFORE.blurDataURL}
+                    className="rounded-2xl"
                   />
                 </div>
               </Reveal>
@@ -640,24 +679,26 @@ export default function AboutPage() {
               {/* sd-wipe reveals the photo bottom-up as it scrolls in (not wrapped
                   in Reveal — an sd-* entrance never shares an element with one). */}
               <div className="sd-wipe">
-                <PlaceholderImage
-                  label={IMG_ABOUT_BEFORE.label}
-                  w={IMG_ABOUT_BEFORE.w}
-                  h={IMG_ABOUT_BEFORE.h}
+                <Image
+                  src={IMG_ABOUT_BEFORE.src}
+                  width={IMG_ABOUT_BEFORE.w}
+                  height={IMG_ABOUT_BEFORE.h}
                   alt="Before — Aditya at 100kg, his starting point"
-                  variant="portrait"
+                  placeholder="blur"
+                  blurDataURL={IMG_ABOUT_BEFORE.blurDataURL}
+                  className="block h-auto w-full max-w-full rounded-[16px]"
                 />
               </div>
             </div>
             <div>
               <Reveal as="p" className="eyebrow mb-3">AFTER</Reveal>
               <div className="sd-wipe">
-                <PlaceholderImage
-                  label={IMG_ABOUT_AFTER.label}
-                  w={IMG_ABOUT_AFTER.w}
-                  h={IMG_ABOUT_AFTER.h}
+                <Image
+                  src={IMG_ABOUT_AFTER.src}
+                  width={IMG_ABOUT_AFTER.w}
+                  height={IMG_ABOUT_AFTER.h}
                   alt="After — Aditya today, rebuilt through his own lifestyle-first method"
-                  variant="portrait"
+                  
                 />
               </div>
             </div>
