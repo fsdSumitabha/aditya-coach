@@ -212,7 +212,7 @@ export default function AboutPage() {
                 <PinIcon className="h-4 w-4 shrink-0 text-gold-500" />
                 Kolkata · Coaching worldwide online
               </FadeIn>
-              {/* No hero buttons — the persistent header [Book ₹2,000] covers instant conversion. */}
+              {/* No hero buttons — the persistent header [Book] gold button covers instant conversion. */}
             </div>
 
             {/* Portrait — mobile: leads (face builds trust fastest); desktop: right column.

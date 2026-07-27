@@ -8,7 +8,7 @@ export const SITE_NAME = "Aditya Kumar Upadhyay — Complete Transformation Coac
 export const BRAND_LINE =
   "Aditya Kumar Upadhyay — Complete Transformation Coach for Men. Become harder to ignore."; /* [review] */
 
-// Header nav — exact order per A5. [Book ₹2,000] is the pinned gold button, NOT a nav item.
+// Header nav — exact order per A5. The [Book <price>] gold button is pinned, NOT a nav item.
 // Simplified per direction doc §10 (Blog lives under Resources + footer)
 export const NAV_LINKS = [
   { label: "Home", href: "/" },

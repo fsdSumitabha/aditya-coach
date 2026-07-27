@@ -47,8 +47,8 @@ export type LeadPayload = {
 };
 
 export function startPayment(payload: Record<string, unknown>): Promise<{ ok: boolean }> {
-  /* PHASE 2: Razorpay checkout (₹2000 = 200000 paise) → verify signature
-     server-side → submit form + notifyCoach. */
+  /* PHASE 2: Razorpay checkout (amount = LEGAL.CONSULT_PRICE_INR × 100 paise) → verify
+     signature server-side → submit form + notifyCoach. */
   void payload;
   return Promise.resolve({ ok: true }); // no-op → falls through to success
 }

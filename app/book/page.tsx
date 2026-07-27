@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import BookingFlow from "@/components/book/BookingFlow";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
+import { LEGAL } from "@/lib/legal";
 
 // /book — the single terminal conversion node. The entire body between header
 // and footer is the 3-state booking machine (client island). This page links
@@ -12,10 +13,9 @@ import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   // [review] reframed to the Transformation Audit; supersedes the A6 sitemap title (≤60 chars)
-  title: "Book Your ₹2,000 Transformation Audit | Aditya",
+  title: `Book Your ${LEGAL.CONSULT_PRICE} Transformation Audit | Aditya`,
   // [review] description reframed to the audit scope (what we analyse → what to fix first)
-  description:
-    "45 minutes, online via WhatsApp. We audit your lifestyle, health, fitness and habits — then pinpoint what to fix first. Book your ₹2,000 Transformation Audit.",
+  description: `45 minutes, online via WhatsApp. We audit your lifestyle, health, fitness and habits — then pinpoint what to fix first. Book your ${LEGAL.CONSULT_PRICE} Transformation Audit.`,
   path: "/book",
   ogType: "website",
 });
@@ -38,7 +38,7 @@ const serviceSchema = {
   duration: "PT45M",
   offers: {
     "@type": "Offer",
-    price: "2000",
+    price: String(LEGAL.CONSULT_PRICE_INR),
     priceCurrency: "INR",
     availability: "https://schema.org/InStock",
     url: `${SITE_ORIGIN}/book`,

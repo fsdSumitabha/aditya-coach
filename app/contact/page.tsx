@@ -21,6 +21,7 @@ import {
   waLink,
 } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
+import { LEGAL } from "@/lib/legal";
 
 // ---- Contact page constants (swap before launch) ----
 // Razorpay note [review]: Razorpay's Contact-Us / merchant policy review
@@ -443,7 +444,7 @@ export default function ContactPage() {
           />
           <Reveal index={1}>
             <p className="type-lead text-secondary mx-auto mt-4 max-w-xl">
-              {"Book the ₹2,000 consultation. 45 minutes, and you'll leave knowing exactly what to change and in what order."}
+              {`Book the ${LEGAL.CONSULT_PRICE} consultation. 45 minutes, and you'll leave knowing exactly what to change and in what order.`}
               {/* [review] — echoes /book copy */}
             </p>
           </Reveal>

@@ -6,6 +6,7 @@ import Positioning from "@/components/home/Positioning";
 import { FACTS } from "@/components/experience/facts";
 import { businessSchema, personSchema } from "@/lib/schema";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
+import { LEGAL } from "@/lib/legal";
 
 // ============================================================
 // HOME (/) — the immersive atelier. One explorable 3D space:
@@ -18,7 +19,7 @@ import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 export const metadata: Metadata = pageMetadata({
   title: "Complete Transformation Coach for Men | Aditya Upadhyay" /* [review] §3 */,
   description:
-    "Become harder to ignore. Complete transformation for men — body, lifestyle, mindset, personality, presence. Kolkata & worldwide. Book a ₹2,000 Transformation Audit." /* [review] 154 chars */,
+    `Become harder to ignore. Complete transformation for men — body, lifestyle, mindset, personality, presence. Kolkata & worldwide. Book a ${LEGAL.CONSULT_PRICE} Transformation Audit.` /* [review] */,
   path: "/",
 });
 
@@ -51,7 +52,7 @@ const HOME_SCHEMA = [
     offers: {
       "@type": "Offer",
       name: "Transformation Audit",
-      price: "2000",
+      price: String(LEGAL.CONSULT_PRICE_INR),
       priceCurrency: "INR",
       url: `${SITE_ORIGIN}/book`,
     },
@@ -113,10 +114,10 @@ export default function Home() {
             <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
           </li>
           <li>
-            <Link href="/programs">Coaching — Transformation Audit ₹2,000, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>
+            <Link href="/programs">Coaching — Transformation Audit {LEGAL.CONSULT_PRICE}, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>
           </li>
           <li>
-            <Link href="/book">Book your ₹2,000 Transformation Audit</Link>
+            <Link href="/book">Book your {LEGAL.CONSULT_PRICE} Transformation Audit</Link>
           </li>
           <li>
             <Link href="/blog">Articles for men who want more</Link>
