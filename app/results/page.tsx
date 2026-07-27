@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import FinalCta from "@/components/FinalCta";
@@ -59,37 +60,37 @@ type TxImage = {
 
 const IMG = {
   t1_before: {
-    src: "/images/transformations/aditya-before.jpg",
+    src: "/aditya/before/before_transformation.jpg",
     w: 800,
     h: 1000,
     label: "ADITYA BEFORE",
   },
   t1_after: {
-    src: "/images/transformations/aditya-after.jpg",
+    src: "/aditya/after/after_transformation.jpg",
     w: 800,
     h: 1000,
     label: "ADITYA AFTER",
   },
   t2_before: {
-    src: "/images/transformations/client-02-before.jpg",
+    src: "/client/client-02-before.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 BEFORE",
   },
   t2_after: {
-    src: "/images/transformations/client-02-after.jpg",
+    src: "/client/client-02-after.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 AFTER",
   },
   t3_before: {
-    src: "/images/transformations/client-03-before.jpg",
+    src: "/client/client-02-before.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 03 BEFORE",
   },
   t3_after: {
-    src: "/images/transformations/client-03-after.jpg",
+    src: "/client/client-02-after.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 03 AFTER",
@@ -236,12 +237,11 @@ function TxDiptych({ t }: { t: Transformation }) {
     <div className="tx-diptych grid grid-cols-[1fr_1px_1fr] overflow-hidden rounded-xl">
       <figure className="tx-half tx-before relative m-0">
         <div className="tx-frame aspect-[4/5] overflow-hidden">
-          <PlaceholderImage
-            label={t.before.label}
-            w={t.before.w}
-            h={t.before.h}
+          <Image
+            src={t.before.src}
+            width={t.before.w}
+            height={t.before.h}
             alt={t.beforeAlt}
-            variant="portrait"
             className="sd-wipe"
             style={{ borderRadius: 0, height: "100%" }}
           />
@@ -254,12 +254,11 @@ function TxDiptych({ t }: { t: Transformation }) {
       <span className="tx-split thread-v sd-draw" aria-hidden="true" />
       <figure className="tx-half tx-after relative m-0">
         <div className="tx-frame aspect-[4/5] overflow-hidden">
-          <PlaceholderImage
-            label={t.after.label}
-            w={t.after.w}
-            h={t.after.h}
+          <Image
+            src={t.after.src}
+            width={t.after.w}
+            height={t.after.h}
             alt={t.afterAlt}
-            variant="portrait"
             className="sd-wipe"
             style={{ borderRadius: 0, height: "100%" }}
           />
