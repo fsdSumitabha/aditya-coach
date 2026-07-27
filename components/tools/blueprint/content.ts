@@ -27,7 +27,9 @@ export type Change = {
   short: string;
   title: string;
   lead: string;
-  image: { label: string; alt: string };
+  /** `src` is set once the real artwork lands in /public; until then the
+   *  renderer falls back to the branded placeholder built from `label`. */
+  image: { src?: string; label: string; alt: string };
   blocks: Block[];
 };
 
@@ -38,6 +40,7 @@ export const META = {
   coverTag:
     "Free Digital Product · Men's Lifestyle & Personality Coach · Kolkata, India",
   coverImage: {
+    src: "/the-lifestyle-blueprint/cover-image.png",
     label: "BLUEPRINT COVER",
     alt: "Cover of The Lifestyle Blueprint — a premium, dark charcoal and gold digital guide for men, with the title 'The Lifestyle Blueprint' and author name Aditya Kumar Upadhyay in an elegant editorial layout",
   },
@@ -102,6 +105,7 @@ export const CHANGES: Change[] = [
     title: "Fix Your Morning",
     lead: "What you do in the first 30 minutes of waking up either builds your body or slowly destroys it. Most men are destroying it without realizing it.",
     image: {
+      src: "/the-lifestyle-blueprint/morning-ritual.png",
       label: "MORNING RITUAL",
       alt: "A man's calm morning routine at dawn — a bottle of green-tea-infused water on a bedside table, warm sunlight coming through a window, phone left face-down, quiet and disciplined",
     },
@@ -153,6 +157,7 @@ export const CHANGES: Change[] = [
     title: "Fix Your Sleep",
     lead: "Sleep is not rest. Sleep done right is the most powerful recovery tool your body has. And most men are wasting it completely.",
     image: {
+      src: "/the-lifestyle-blueprint/deep-sleep.png",
       label: "DEEP SLEEP",
       alt: "A dark, cool bedroom at night with a man sleeping deeply, faint moonlight, no screens — the picture of restorative, fasted sleep",
     },
@@ -226,6 +231,7 @@ export const CHANGES: Change[] = [
     title: "Fix Your Protein",
     lead: "Most Indian men eat 30 to 40 grams of protein per day. They need 100 to 150 grams minimum.",
     image: {
+      src: "/the-lifestyle-blueprint/protein-plate.png",
       label: "PROTEIN PLATE",
       alt: "A high-protein Indian meal spread — paneer, eggs, curd, dal, chickpeas and grilled chicken arranged cleanly on dark stoneware",
     },
@@ -305,6 +311,7 @@ export const CHANGES: Change[] = [
     title: "Cut The Sugar",
     lead: "Sugar is not just making you fat. It is quietly destroying your hormones every single day.",
     image: {
+      src: "/the-lifestyle-blueprint/sugar-vs-fruit.png",
       label: "SUGAR VS FRUIT",
       alt: "A visual contrast — packaged biscuits, cola and white bread on one side, fresh bananas, apples and dates on the other, showing what to swap out",
     },
@@ -350,8 +357,9 @@ export const CHANGES: Change[] = [
     title: "Move Every Day",
     lead: "You do not need a gym membership to start. You need your body and 30 minutes.",
     image: {
+      src: "/the-lifestyle-blueprint/daily-movement.png",
       label: "DAILY MOVEMENT",
-      alt: "A man walking briskly outdoors after dinner at dusk, and a second frame of him lifting weights — everyday movement and strength training",
+      alt: "A man walking briskly outdoors on a tree-lined path at sunset, representing daily movement and healthy habits",
     },
     blocks: [
       {
@@ -421,6 +429,7 @@ export const CHANGES: Change[] = [
     title: "Drink More Water",
     lead: "Most men are chronically dehydrated. They think they are hungry. They are thirsty.",
     image: {
+      src: "/the-lifestyle-blueprint/hydration.png",
       label: "HYDRATION",
       alt: "A large glass bottle of water beside a fresh coconut and a glass of buttermilk, with cucumber and watermelon slices — natural hydration and cooling",
     },

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
@@ -99,9 +100,10 @@ export default function LifestyleBlueprintPage() {
 
             {/* cover artwork — branded placeholder, swap for the real cover */}
             <Reveal delayMs={240} className="reveal-scale mx-auto mt-10 max-w-[300px]">
-              <DocImage
-                variant="cover"
-                label={META.coverImage.label}
+              <Image
+                src={META.coverImage.src}
+                width={900}
+                height={1200}
                 alt={META.coverImage.alt}
               />
             </Reveal>
@@ -216,12 +218,22 @@ export default function LifestyleBlueprintPage() {
                   <Reveal
                     className={`${imageLeft ? "reveal-left" : "reveal-right"} md:sticky md:top-[calc(var(--header-h)+2rem)]`}
                   >
-                    <DocImage
-                      variant="portrait"
-                      label={change.image.label}
-                      alt={change.image.alt}
-                      className="mx-auto max-w-[420px]"
-                    />
+                    {change.image.src ? (
+                      <Image
+                        src={change.image.src}
+                        width={900}
+                        height={1200}
+                        alt={change.image.alt}
+                        className="mx-auto max-w-[420px] rounded-tl-4xl rounded-bl-3xl"
+                      />
+                    ) : (
+                      <DocImage
+                        label={change.image.label}
+                        alt={change.image.alt}
+                        variant="cover"
+                        className="mx-auto max-w-[420px]"
+                      />
+                    )}
                   </Reveal>
                 </div>
 
