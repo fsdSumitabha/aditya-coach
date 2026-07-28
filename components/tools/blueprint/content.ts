@@ -470,6 +470,7 @@ export const CHANGES: Change[] = [
     title: "Manage Your Stress",
     lead: "Stress is not a personality trait. It is a hormonal problem. And it is destroying your body silently.",
     image: {
+      src: "/the-lifestyle-blueprint/calm-under-stress.png",
       label: "CALM UNDER STRESS",
       alt: "A composed man doing slow breathing by a window in soft daylight — a calm, grounded picture of managed stress and lowered cortisol",
     },
@@ -527,6 +528,7 @@ export const CHANGES: Change[] = [
     title: "Fix Your Gut",
     lead: "Your mood, your energy, your skin, your sleep and your confidence all start in one place. Your gut.",
     image: {
+      src: "/the-lifestyle-blueprint/gut-health.png",
       label: "GUT HEALTH",
       alt: "Gut-friendly foods on a clean surface — a bowl of curd, a glass of buttermilk, fermented foods, carrots and cucumber sticks",
     },
@@ -575,6 +577,7 @@ export const CHANGES: Change[] = [
     title: "The Basic Supplement Stack",
     lead: "You do not need expensive supplements. You need the right ones at the right time.",
     image: {
+      src: "/the-lifestyle-blueprint/supplement-stack.png",
       label: "SUPPLEMENT STACK",
       alt: "A clean flat-lay of essential supplement bottles — Vitamin C, D3, Omega 3 fish oil, multivitamin, creatine, collagen and zinc — on a dark surface",
     },
@@ -655,6 +658,7 @@ export const CHANGES: Change[] = [
     title: "Build Identity Not Habits",
     lead: "Motivated men quit. Identity-driven men do not.",
     image: {
+      src: "/the-lifestyle-blueprint/identity.png",
       label: "IDENTITY",
       alt: "A strong, composed man looking at his reflection with quiet resolve — the image of a decided identity rather than fleeting motivation",
     },
@@ -760,6 +764,7 @@ export const START = {
 export const FINAL = {
   kicker: "Final Note From Aditya",
   image: {
+    src: "/aditya/aditya_04.jpg",
     label: "ADITYA PORTRAIT",
     alt: "Portrait of Aditya Kumar Upadhyay, men's lifestyle and personality coach in Kolkata, confident and composed in premium dark editorial styling",
   },

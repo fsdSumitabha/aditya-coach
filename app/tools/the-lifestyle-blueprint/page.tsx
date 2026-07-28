@@ -326,11 +326,12 @@ export default function LifestyleBlueprintPage() {
         <div className="container-site section">
           <div className="grid items-center gap-10 md:grid-cols-[340px_minmax(0,1fr)] md:gap-16">
             <Reveal className="reveal-scale order-1">
-              <DocImage
-                variant="portrait"
-                label={FINAL.image.label}
+              <Image
+               src={FINAL.image.src}
+                width={900}
+                height={1200}
                 alt={FINAL.image.alt}
-                className="mx-auto max-w-[340px]"
+                className="mx-auto max-w-[340px] rounded-tl-4xl rounded-bl-3xl"
               />
             </Reveal>
             <div className="order-2">
