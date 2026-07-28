@@ -32,7 +32,7 @@ export const RESOURCES: Record<ResourceId, Resource> = {
     title: "The Lifestyle Blueprint",
     summary:
       "10 lifestyle changes that rebuild a man completely — body, mind and hormones.",
-    file: "resources/docs/the-lifestyle-blueprint-aditya-kumar-upadhyay.pdf",
+    file: "downloads/lifestyle-blueprint.pdf",
     downloadName: "The Lifestyle Blueprint — Aditya Kumar Upadhyay.pdf",
   },
   "fat-loss-training-split": {
