@@ -4,8 +4,7 @@ import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import Calculator from "@/components/tools/Calculator";
 import LeadMagnetCard from "@/components/tools/LeadMagnetCard";
-import BlueprintFeatureCard from "@/components/tools/BlueprintFeatureCard";
-import { SPLIT_PDF, PERSONALITY_PDF, OG_IMAGE } from "@/lib/config";
+import { BLUEPRINT_PDF, SPLIT_PDF, PERSONALITY_PDF, OG_IMAGE } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
 const TITLE = "Free Tools for Men | Calorie Calculator & Blueprint";
@@ -125,25 +124,25 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* ---- 2. THE LIFESTYLE BLUEPRINT — bespoke card → full on-site read ----
-          Unlike the two email-gated PDF magnets below, the Blueprint opens as a
-          rich reading experience at /tools/the-lifestyle-blueprint. The card is
-          a single Link and wears `card-featured` so it reads as the one premium,
-          unique tool on the page. */}
+      {/* ---- 2. LEAD MAGNET 1 — The Lifestyle Blueprint ---- */}
       <section
         id="blueprint"
         className="bg-alt cv-auto border-t border-hairline-soft"
       >
         <div className="container-site section">
-          <Reveal className="max-w-[720px] mx-auto reveal-scale">
-            <BlueprintFeatureCard
-              href="/tools/the-lifestyle-blueprint"
-              eyebrow={"READ THE FULL BLUEPRINT" /* [review] */}
+          <Reveal className="max-w-[720px] mx-auto">
+            <LeadMagnetCard
               title="The Lifestyle Blueprint"
               description="10 lifestyle changes that rebuild a man completely — body, mind and hormones. Start tonight."
-              imageAlt="The Lifestyle Blueprint — Aditya Kumar Upadhyay"
+              imageLabel="IMG-BLUEPRINT"
+              imageAlt="Cover of the free Lifestyle Blueprint PDF"
               source="aditya/aditya_01.jpg"
-              ctaLabel={"Read the Lifestyle Blueprint" /* [review] */}
+              pdfHref={BLUEPRINT_PDF}
+              pdfLabel={"Open the Blueprint now" /* [review] */}
+              buttonLabel={"Send Me the Blueprint" /* [review] */}
+              successBody={
+                "Your Lifestyle Blueprint has been emailed to you." /* [review] */
+              }
             />
           </Reveal>
         </div>
