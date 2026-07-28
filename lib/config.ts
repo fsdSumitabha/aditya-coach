@@ -54,9 +54,49 @@ export function startPayment(payload: Record<string, unknown>): Promise<{ ok: bo
 }
 
 export function sendToEmailProvider(payload: LeadPayload): Promise<{ ok: boolean }> {
-  /* PHASE 2: POST to Brevo; auto-send lead-magnet PDF; welcome email w/ founder story. */
+  /* Legacy stub kept for any remaining callers (e.g. BookingFlow intake).
+     Lead-magnet forms now use sendLeadMagnet() → app/api/lead-magnet. */
   console.log("stub sendToEmailProvider", payload);
   return Promise.resolve({ ok: true });
+}
+
+// ===== LIVE: lead-magnet submission (email capture → PDF delivery) =====
+
+export type LeadMagnetPayload = {
+  email: string;
+  /** analytics/source tag, e.g. "tools-blueprint" */
+  source: string;
+  /** optional explicit resource id (else the server resolves from source) */
+  resource?: string;
+  /** on-site PDF href, forwarded so the email can link an online copy */
+  pdfHref?: string;
+};
+
+export type LeadMagnetResult = {
+  ok: boolean;
+  errors?: { email?: string };
+  error?: string;
+};
+
+/**
+ * POST a lead-magnet capture to the route handler, which emails the guide
+ * (PDF attached) to the subscriber and notifies the admin of the new lead.
+ * The API path stays behind this helper so components never hardcode it.
+ */
+export async function sendLeadMagnet(
+  payload: LeadMagnetPayload,
+): Promise<LeadMagnetResult> {
+  try {
+    const res = await fetch(`${BASE_PATH}/api/lead-magnet`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => ({}))) as LeadMagnetResult;
+    return { ...data, ok: res.ok && data.ok !== false };
+  } catch {
+    return { ok: false, error: "network" };
+  }
 }
 
 export function notifyCoach(payload: Record<string, unknown>): void {

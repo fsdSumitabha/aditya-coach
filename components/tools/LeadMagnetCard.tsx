@@ -17,6 +17,7 @@ export default function LeadMagnetCard({
   imageLabel,
   imageAlt,
   source,
+  resource,
   imageSrc,
   pdfHref,
   pdfLabel,
@@ -30,6 +31,8 @@ export default function LeadMagnetCard({
   imageAlt: string;
   /** lead identifier passed to the capture form (analytics/source tag) */
   source: string;
+  /** explicit resource id delivered on submit (else resolved from source) */
+  resource?: string;
   /** real cover image path (must start with "/" or "http"); falls back to the
    *  branded PlaceholderImage when absent or not yet supplied */
   imageSrc?: string;
@@ -78,6 +81,7 @@ export default function LeadMagnetCard({
           <LeadMagnetForm
             className="mt-7 min-h-[220px]"
             source={source}
+            resource={resource}
             buttonLabel={buttonLabel}
             pdfHref={pdfHref}
             pdfLabel={pdfLabel}

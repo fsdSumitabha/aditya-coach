@@ -2,6 +2,15 @@ import "server-only";
 
 import { getTransporter } from "./transporter";
 
+interface MailAttachment {
+  filename: string;
+  /** absolute filesystem path (nodemailer streams it — no need to read it in) */
+  path?: string;
+  /** or inline content, if not reading from disk */
+  content?: Buffer | string;
+  contentType?: string;
+}
+
 interface SendMailOptions {
   to: string;
   subject: string;
@@ -10,6 +19,8 @@ interface SendMailOptions {
   replyTo?: string;
   /** Plain-text alternative — improves deliverability and spam scoring. */
   text?: string;
+  /** File attachments (e.g. a lead-magnet PDF). */
+  attachments?: MailAttachment[];
 }
 
 /** Sender identity — a mailbox the SMTP account is allowed to send as. */
