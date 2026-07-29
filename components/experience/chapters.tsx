@@ -313,9 +313,15 @@ export function TheOrder() {
 
 /* ========= CHAPTER 3 — THE PROOF: floating gallery frames ========= */
 
+// Served through the image optimizer — the raw AFTER source is a 2.3MB
+// 2887×3608 JPEG, and this loader bypasses <Image>. w must be one of the
+// optimizer's allowed widths (750 is in the default deviceSizes list).
+function optimized(path: string) {
+  return `${BASE}/_next/image?url=${encodeURIComponent(path)}&w=750&q=75`;
+}
 const PORTRAIT_SRC = {
-  before: `${BASE}/aditya/before/before_transformation.jpg`,
-  after: `${BASE}/aditya/after/after_transformation.jpg`,
+  before: optimized("/aditya/before/before_transformation.jpg"),
+  after: optimized("/aditya/after/after_transformation.jpg"),
 };
 
 /** canvas plane is 1.32 × 1.72 — portraits are cover-cropped to match it */
