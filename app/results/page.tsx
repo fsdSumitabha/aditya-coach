@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import FinalCta from "@/components/FinalCta";
@@ -59,37 +60,37 @@ type TxImage = {
 
 const IMG = {
   t1_before: {
-    src: "/images/transformations/aditya-before.jpg",
+    src: "/aditya/before/before_transformation.jpg",
     w: 800,
-    h: 1000,
+    h: 800,
     label: "ADITYA BEFORE",
   },
   t1_after: {
-    src: "/images/transformations/aditya-after.jpg",
+    src: "/aditya/after_transformation_01.jpg",
     w: 800,
-    h: 1000,
+    h: 800,
     label: "ADITYA AFTER",
   },
   t2_before: {
-    src: "/images/transformations/client-02-before.jpg",
+    src: "/client/client-01-before.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 BEFORE",
   },
   t2_after: {
-    src: "/images/transformations/client-02-after.jpg",
+    src: "/client/client-01-after.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 02 AFTER",
   },
   t3_before: {
-    src: "/images/transformations/client-03-before.jpg",
+    src: "/client/client-02-before.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 03 BEFORE",
   },
   t3_after: {
-    src: "/images/transformations/client-03-after.jpg",
+    src: "/client/client-02-after.jpg",
     w: 800,
     h: 1000,
     label: "CLIENT 03 AFTER",
@@ -235,15 +236,15 @@ function TxDiptych({ t }: { t: Transformation }) {
   return (
     <div className="tx-diptych grid grid-cols-[1fr_1px_1fr] overflow-hidden rounded-xl">
       <figure className="tx-half tx-before relative m-0">
-        <div className="tx-frame aspect-[4/5] overflow-hidden">
-          <PlaceholderImage
-            label={t.before.label}
-            w={t.before.w}
-            h={t.before.h}
+        {/* square viewport over a 4:5 source — center-crop, never squash */}
+        <div className="tx-frame relative aspect-square overflow-hidden">
+          <Image
+            src={t.before.src}
+            width={t.before.w}
+            height={t.before.h}
             alt={t.beforeAlt}
-            variant="portrait"
-            className="sd-wipe"
-            style={{ borderRadius: 0, height: "100%" }}
+            className="sd-wipe absolute inset-0 h-full w-full object-cover object-center"
+            style={{ borderRadius: 0 }}
           />
         </div>
         <Reveal as="figcaption" index={0} className={`${chipBase} text-muted`}>
@@ -253,15 +254,15 @@ function TxDiptych({ t }: { t: Transformation }) {
       {/* gold thread split — scale-draws top→bottom as the card enters view */}
       <span className="tx-split thread-v sd-draw" aria-hidden="true" />
       <figure className="tx-half tx-after relative m-0">
-        <div className="tx-frame aspect-[4/5] overflow-hidden">
-          <PlaceholderImage
-            label={t.after.label}
-            w={t.after.w}
-            h={t.after.h}
+        {/* same square center-crop as BEFORE — identical framing both halves */}
+        <div className="tx-frame relative aspect-square overflow-hidden">
+          <Image
+            src={t.after.src}
+            width={t.after.w}
+            height={t.after.h}
             alt={t.afterAlt}
-            variant="portrait"
-            className="sd-wipe"
-            style={{ borderRadius: 0, height: "100%" }}
+            className="sd-wipe absolute inset-0 h-full w-full object-cover object-center"
+            style={{ borderRadius: 0 }}
           />
         </div>
         {/* AFTER tinted gold to signal the win; offset from BEFORE via index */}

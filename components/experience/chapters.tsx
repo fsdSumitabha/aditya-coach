@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float, Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -313,31 +313,89 @@ export function TheOrder() {
 
 /* ========= CHAPTER 3 — THE PROOF: floating gallery frames ========= */
 
+const PORTRAIT_SRC = {
+  before: `${BASE}/aditya/before/before_transformation.jpg`,
+  after: `${BASE}/aditya/after/after_transformation.jpg`,
+};
+
+/** canvas plane is 1.32 × 1.72 — portraits are cover-cropped to match it */
+const PORTRAIT_ASPECT = 1.32 / 1.72;
+
+/** Shown until the photo decodes, and kept as the floor if it never does. */
+function makeSilhouette(after: boolean) {
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 320;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createLinearGradient(0, 0, 256, 320);
+  g.addColorStop(0, "#1a1712");
+  g.addColorStop(1, "#0e0d0b");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 320);
+  ctx.fillStyle = after ? "rgba(201,162,75,0.34)" : "rgba(201,162,75,0.14)";
+  // head
+  ctx.beginPath();
+  ctx.arc(128, 118, after ? 40 : 46, 0, Math.PI * 2);
+  ctx.fill();
+  // shoulders
+  ctx.beginPath();
+  ctx.moveTo(30, 320);
+  ctx.quadraticCurveTo(128, after ? 168 : 186, 226, 320);
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Real proof portrait, baked to a cover-cropped, downscaled CanvasTexture.
+ * The source files are up to 2887×3608 — uploaded raw that is ~40MB of VRAM
+ * per frame, which is exactly what tips a mid-range phone into the perf
+ * watchdog. Decode failure leaves the silhouette in place rather than a
+ * black panel.
+ */
 function usePortraitTexture(after: boolean) {
-  return useMemo(() => {
-    const c = document.createElement("canvas");
-    c.width = 256;
-    c.height = 320;
-    const ctx = c.getContext("2d")!;
-    const g = ctx.createLinearGradient(0, 0, 256, 320);
-    g.addColorStop(0, "#1a1712");
-    g.addColorStop(1, "#0e0d0b");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 256, 320);
-    ctx.fillStyle = after ? "rgba(201,162,75,0.34)" : "rgba(201,162,75,0.14)";
-    // head
-    ctx.beginPath();
-    ctx.arc(128, 118, after ? 40 : 46, 0, Math.PI * 2);
-    ctx.fill();
-    // shoulders
-    ctx.beginPath();
-    ctx.moveTo(30, 320);
-    ctx.quadraticCurveTo(128, after ? 168 : 186, 226, 320);
-    ctx.fill();
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-  }, [after]);
+  const gl = useThree((s) => s.gl);
+  const [tex, setTex] = useState<THREE.Texture>(() => makeSilhouette(after));
+  const live = useRef<THREE.Texture | null>(null);
+  if (live.current === null) live.current = tex;
+
+  useEffect(() => () => live.current?.dispose(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const img = new window.Image();
+    img.decoding = "async";
+    img.onload = () => {
+      if (cancelled) return;
+      const w = useExperience.getState().quality === "low" ? 512 : 768;
+      const h = Math.round(w / PORTRAIT_ASPECT);
+      const c = document.createElement("canvas");
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext("2d")!;
+      // cover fit — crop the long axis, never letterbox inside the gold frame
+      const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+      const dw = img.naturalWidth * s;
+      const dh = img.naturalHeight * s;
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      const next = new THREE.CanvasTexture(c);
+      next.colorSpace = THREE.SRGBColorSpace;
+      // frames sit at ±0.32rad — without this the grazing angle smears
+      next.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+      const prev = live.current;
+      live.current = next;
+      setTex(next);
+      prev?.dispose();
+    };
+    img.src = PORTRAIT_SRC[after ? "after" : "before"];
+    return () => {
+      cancelled = true;
+      img.onload = null;
+    };
+  }, [after, gl]);
+
+  return tex;
 }
 
 function GalleryFrame({

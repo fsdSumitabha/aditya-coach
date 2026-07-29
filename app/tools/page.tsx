@@ -137,6 +137,8 @@ export default function ToolsPage() {
               imageLabel="IMG-BLUEPRINT"
               imageAlt="Cover of the free Lifestyle Blueprint PDF"
               source="tools-blueprint"
+              resource="lifestyle-blueprint"
+              imageSrc="/aditya/aditya_01.jpg"
               pdfHref={BLUEPRINT_PDF}
               pdfLabel={"Open the Blueprint now" /* [review] */}
               buttonLabel={"Send Me the Blueprint" /* [review] */}
@@ -160,7 +162,9 @@ export default function ToolsPage() {
               description="The exact 3 day training plan I use with every client for fat loss and muscle building together."
               imageLabel="IMG-SPLIT"
               imageAlt="Cover of the free 3-day Fat Loss Training Split PDF"
-              source="tools-split"
+              source="tools-training-split"
+              resource="fat-loss-training-split"
+              imageSrc="/aditya/aditya_02.jpg"
               pdfHref={SPLIT_PDF}
               pdfLabel={"Open the Training Split now" /* [review] */}
               buttonLabel={"Send Me the Split" /* [review] */}
@@ -188,7 +192,9 @@ export default function ToolsPage() {
               imageAlt={
                 "Cover of the free Personality Audit Blueprint PDF" /* [review] */
               }
-              source="tools-personality"
+              source="tools-personality-audit"
+              resource="personality-audit"
+              imageSrc="/aditya/aditya_03.jpg"
               pdfHref={PERSONALITY_PDF}
               pdfLabel={"Open the Personality Audit now" /* [review] */}
               buttonLabel={"Send Me the Audit" /* [review] */}

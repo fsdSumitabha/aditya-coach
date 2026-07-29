@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { useId, useState, type FormEvent, type ReactNode } from "react";
-import { sendToEmailProvider, track } from "@/lib/config";
+import { sendLeadMagnet, track } from "@/lib/config";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
  * Shared lead-magnet email capture (Home #blueprint, /tools guides, /blog index).
- * Phase 1: validates client-side, calls the sendToEmailProvider() stub, swaps
- * to a success state (no reload) with an on-screen PDF link. Fires
- * track('Lead') — a no-op until analytics IDs exist.
+ * Validates client-side, then posts via sendLeadMagnet() → app/api/lead-magnet,
+ * which emails the guide (PDF attached) to the subscriber and notifies the
+ * admin. Swaps to a success state (no reload) with an on-screen PDF fallback
+ * link. Fires track('Lead') — a no-op until analytics IDs exist.
  */
 export default function LeadMagnetForm({
   source,
+  resource,
   buttonLabel,
   pdfHref,
   pdfLabel = "Download the PDF",
@@ -26,6 +28,8 @@ export default function LeadMagnetForm({
 }: {
   /** analytics/source tag, e.g. "home-blueprint" */
   source: string;
+  /** explicit resource id (else the server resolves from source) */
+  resource?: string;
   buttonLabel: string;
   /** placeholder PDF constant (BLUEPRINT_PDF / SPLIT_PDF) */
   pdfHref?: string;
@@ -42,12 +46,15 @@ export default function LeadMagnetForm({
 }) {
   const id = useId();
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    setSubmitError(null);
     const value = email.trim();
     if (!value) {
       setError("Please enter your email address.");
@@ -58,13 +65,34 @@ export default function LeadMagnetForm({
       return;
     }
     setError(null);
+
+    // Honeypot tripped → show success without sending anything.
+    if (honeypot) {
+      setDone(true);
+      return;
+    }
+
     setPending(true);
     try {
-      await sendToEmailProvider({ email: value, source });
+      const result = await sendLeadMagnet({
+        email: value,
+        source,
+        resource,
+        pdfHref,
+      });
+      if (!result.ok) {
+        if (result.errors?.email) {
+          setError(result.errors.email);
+        } else {
+          setSubmitError(
+            "Something went wrong sending your guide. Please try again in a moment.",
+          );
+        }
+        return;
+      }
       track("Lead", { source });
       track("lead_magnet_submit", { source });
       setDone(true);
-      // Phase 2: could redirect to /thank-you?type=lead instead.
     } finally {
       setPending(false);
     }
@@ -98,6 +126,20 @@ export default function LeadMagnetForm({
 
   return (
     <form className={className} onSubmit={onSubmit} noValidate>
+      {/* Honeypot — hidden from real users; bots that fill it get silent success. */}
+      <div style={{ display: "none" }} aria-hidden="true">
+        <label htmlFor={`${id}-company`}>Company</label>
+        <input
+          id={`${id}-company`}
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label htmlFor={id} className="field-label">
@@ -128,6 +170,7 @@ export default function LeadMagnetForm({
             {error}
           </p>
         )}
+        {submitError && <p className="field-error">{submitError}</p>}
       </div>
       {consent ?? (
         <p className="type-caption text-muted mt-3">

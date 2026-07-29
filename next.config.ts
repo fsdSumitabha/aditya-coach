@@ -10,8 +10,8 @@ const nextConfig: NextConfig = {
   // server runtime is used and the site needs a Node host (Vercel/Render/VPS),
   // not a plain static host like GitHub Pages.
   images: {
-    // Images are inline SVG placeholders; no optimizer needed.
-    unoptimized: true,
+    formats: ["image/webp"],
+    contentDispositionType: "inline",
   },
   experimental: {
     // Inline the (small) global stylesheet — removes a render-blocking
