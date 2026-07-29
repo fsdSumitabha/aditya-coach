@@ -5,7 +5,6 @@ import CountUp from "@/components/CountUp";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import Marquee from "@/components/Marquee";
-import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
@@ -62,7 +61,7 @@ const IMG = {
   t1_before: {
     src: "/aditya/before/before_transformation.jpg",
     w: 800,
-    h: 800,
+    h: 1000,
     label: "ADITYA BEFORE",
   },
   t1_after: {

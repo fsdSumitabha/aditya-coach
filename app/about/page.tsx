@@ -9,7 +9,6 @@ import Link from "next/link";
 import FadeIn from "@/components/about/FadeIn";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
-import PlaceholderImage from "@/components/PlaceholderImage";
 import Reveal from "@/components/Reveal";
 import Marquee from "@/components/Marquee";
 import SplitHeading from "@/components/SplitHeading";
@@ -41,8 +40,8 @@ const WHATSAPP_URL = waLink(
 
 // ---- Image constants (top-level, swappable; explicit dims reserve aspect-ratio → CLS < 0.1) ----
 // Hero is the real portrait now (public/aditya/img_about_hero.jpg — 840×1120,
-// downscaled from the 2873×3831 original because next.config sets
-// images.unoptimized, so whatever ships here is what the browser downloads).
+// downscaled from the 2873×3831 original; the image optimizer serves
+// resized WebP variants on demand).
 const IMG_ABOUT_HERO = {
   src: "/aditya/img_about_hero.jpg",
   w: 840,
@@ -51,20 +50,21 @@ const IMG_ABOUT_HERO = {
   blurDataURL:
     "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAQMEBf/EAB8QAAICAgIDAQAAAAAAAAAAAAECAxEABBIhBRMxcf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAMAwEAAhEDEQA/ADt7EuqF5RtIK7awB+Yldssoa1Fi6JHWWza0cvkTFKOSBAQPneZ8mlH7G4l1FmhfzC7IAv/Z",
 } as const;
-const IMG_TL_BEFORE = { 
-    src: "/aditya/before/before_transformation.jpg",
-     w: 480,
-     h: 360,
+const IMG_TL_BEFORE = {
+  src: "/aditya/before/before_transformation.jpg",
+  // true file ratio is 4:5 (800×1000) — declared dims must match or the
+  // reserved box has the wrong shape and the layout jumps when it loads
+  w: 480,
+  h: 600,
     blurDataURL:
       "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
  } as const;
 // The before shot is the real one (public/aditya/before/before_transformation.jpg —
 // 800×1000, side-trimmed from a 1650×1788 original to the same 4:5 the AFTER
-// slot reserves, so the pair sits square in the grid). Same unoptimized caveat
-// as the hero: what ships is what downloads.
+// slot reserves, so the pair sits square in the grid).
 const IMG_ABOUT_BEFORE = {
   src: "/aditya/before/before_transformation.jpg",
-  w: 400,
+  w: 800,
   h: 1000,
   blurDataURL:
     "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
@@ -698,7 +698,9 @@ export default function AboutPage() {
                   width={IMG_ABOUT_AFTER.w}
                   height={IMG_ABOUT_AFTER.h}
                   alt="After — Aditya today, rebuilt through his own lifestyle-first method"
-                  
+                  placeholder="blur"
+                  blurDataURL={IMG_ABOUT_AFTER.blurDataURL}
+                  className="block h-auto w-full max-w-full rounded-[16px]"
                 />
               </div>
             </div>
