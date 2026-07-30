@@ -77,7 +77,7 @@ Present visually, not as long prose. The takeaway: *we fix the right things in t
 
 | # | Program | Notes |
 |---|---------|-------|
-| 1 | Discovery Consultation | Paid, 45 minutes. **Price unconfirmed** — see below |
+| 1 | Discovery Consultation | Paid, 45 minutes. **₹500, confirmed** — see below |
 | 2 | Lifestyle Coaching | health, energy, sleep, nutrition, fat loss, training, habits |
 | 3 | Personality & Presence Coaching | body language, confidence, communication, style, grooming, mindset |
 | 4 | **Complete Transformation** | **Flagship.** Must read visually as the premium tier |
@@ -85,14 +85,14 @@ Present visually, not as long prose. The takeaway: *we fix the right things in t
 
 Only the consultation price is ever public. Every other price is disclosed after consultation — never put a number on them.
 
-## Price — ₹2,000 is dead, no number is confirmed
+## Price — ₹500, confirmed
 
-**Do not write ₹2,000 anywhere.** It is superseded and wrong.
+**Confirmed 29 Jul 2026 (Karthik, relaying Aditya): the consultation price is ₹500.**
+₹2,000 remains dead — do not write it anywhere.
 
-The new price is ₹500 or ₹1,000. Aditya has not chosen. Until he does:
-
-- Never hardcode a price string in JSX. Read `CONSULT_PRICE` from `lib/legal.ts`.
-- If a layout needs a price to exist, use the constant and leave it unset — do not invent a placeholder number that could ship.
+- Never hardcode a price string in JSX. Read `CONSULT_PRICE` from `lib/legal.ts`
+  (display) / `CONSULT_PRICE_INR` (numeric — schema, CountUp, payment paise ×100).
+  A future price change is a one-line edit there.
 - This overrides the CONVENTIONS.md line saying to write `₹2,000` in copy.
 
 **The consultation fee is credited.** When a client joins any coaching program, the consultation fee is deducted from the program price as a flat discount. This must be stated on the site wherever the consultation is sold.
@@ -149,6 +149,10 @@ Case studies follow **problem → what we changed → result**. Never a bare cla
 
 Every real client photo, screenshot, or quote needs written consent on file. No confirmed consent → labelled placeholder, do not publish.
 
+Consent status: the client-01 and client-02 before/after photos on /results are
+**cleared** — consent confirmed 29 Jul 2026 (Karthik, relaying Aditya). Any NEW
+client photo still needs its own consent before it ships.
+
 ## About page
 
 Not a biography. It answers *why should this man trust Aditya?* — where he started, his own transformation, what he learned coaching, why most men fix things in the wrong order, why he built this system. Every section returns focus to the reader.
@@ -159,7 +163,7 @@ More resources, products, courses, blog posts, assessments and email sequences a
 
 ## Never
 
-- Never write ₹2,000, or any consultation price, until confirmed
+- Never write ₹2,000 — the price is ₹500, and only via `CONSULT_PRICE`
 - Never write or edit refund copy until the amount is confirmed
 - Never invent a testimonial, client name, result, or statistic
 - Never publish a client photo or screenshot without confirmed consent
@@ -170,7 +174,7 @@ More resources, products, courses, blog posts, assessments and email sequences a
 
 **Blocking:**
 
-1. Consultation price — ₹500 or ₹1,000?
+1. ~~Consultation price — ₹500 or ₹1,000?~~ **Resolved 29 Jul 2026: ₹500.**
 2. Refund amount — is it 50%, and 50% of what? One month's fee? The full program?
 3. Audio 2 removes the consultation refund. Audio 3 asks to rewrite that same line. Which is right?
 
