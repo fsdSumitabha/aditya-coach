@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import CategoryChip from "@/components/blog/CategoryChip";
 import { ArrowRightIcon } from "@/components/icons";
@@ -30,12 +31,11 @@ export default function ArticleCard({
         {/* Cover placeholder — 16:9, explicit w/h (zero CLS); sd-zoom settles
             it 1.06→1 on scroll, clipped by the figure so nothing overflows */}
         <figure className="overflow-hidden rounded-[12px]">
-          <PlaceholderImage
-            label="BLOG COVER"
-            w={post.cover.w}
-            h={post.cover.h}
+          <Image
+            src={post.cover.src}
+            width={post.cover.w}
+            height={post.cover.h}
             alt={post.cover.alt}
-            variant="cover"
             className="sd-zoom"
             style={{
               aspectRatio: "16 / 9",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import PlaceholderImage from "@/components/PlaceholderImage";
@@ -235,12 +236,11 @@ export default async function BlogPostPage({ params }: Params) {
                    explicit w/h, zero CLS (swap for a real eager +
                    fetchpriority="high" <img> of the same w/h). */}
             <figure className="mt-8 overflow-hidden rounded-[16px]">
-              <PlaceholderImage
-                label="ARTICLE COVER"
-                w={post.cover.w}
-                h={post.cover.h}
+              <Image
+                src={post.cover.src}
+                width={post.cover.w}
+                height={post.cover.h}
                 alt={post.cover.alt}
-                variant="cover"
                 className="sd-zoom"
               />
             </figure>

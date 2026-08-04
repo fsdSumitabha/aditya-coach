@@ -7,9 +7,9 @@ import Marquee from "@/components/Marquee";
 import PriceTicker from "@/components/programs/PriceTicker";
 import TiltCard from "@/components/TiltCard";
 import JsonLd from "@/components/JsonLd";
-import PlaceholderImage from "@/components/PlaceholderImage";
 import { CheckIcon, WhatsAppIcon } from "@/components/icons";
 import CtaLink from "@/components/programs/CtaLink";
+import OfferGlyph from "@/components/programs/OfferGlyph";
 import FaqItem from "@/components/programs/FaqItem";
 import { waLink } from "@/lib/config";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
@@ -28,11 +28,10 @@ const WA_COMPLETE = waLink(
   "Hi Aditya, I'd like to apply for the Complete Transformation."
 );
 
-// ---- Swappable emblem placeholders (~64×64) — set to a real asset path to swap ----
-const IMG_OFFER_ICON_AUDIT = ""; /* TODO: real 64×64 emblem — audit/clarity motif */
-const IMG_OFFER_ICON_LIFESTYLE = ""; /* TODO: real 64×64 emblem — recurring/loop motif */
-const IMG_OFFER_ICON_PRESENCE = ""; /* TODO: real 64×64 emblem — presence/style motif */
-const IMG_OFFER_ICON_COMPLETE = ""; /* TODO: real 64×64 emblem — two-pillars/union motif */
+// ---- Offer emblems (64×64) ----
+// Inline gold line-work (components/programs/OfferGlyph.tsx),
+// not photography — a portrait cropped to 64px read as an error, and the art
+// direction wants tailoring marks here.
 
 export const metadata: Metadata = pageMetadata({
   title: "Programs for Men | Coaching with Aditya, Kolkata",
@@ -171,33 +170,6 @@ const compareRows: { label: string; cells: ReactNode[] }[] = [
 const cellBase = "p-4 border-b border-hairline-soft align-top type-small";
 const goldTint = "bg-[rgba(201,162,75,0.06)]";
 
-function OfferIcon({ src, alt }: { src: string; alt: string }) {
-  if (src) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt}
-        width={64}
-        height={64}
-        loading="lazy"
-        decoding="async"
-        className="rounded-xl"
-      />
-    );
-  }
-  return (
-    <PlaceholderImage
-      label="ICON"
-      w={64}
-      h={64}
-      alt={alt}
-      variant="square"
-      style={{ width: 64, height: 64, borderRadius: 12 }}
-    />
-  );
-}
-
 function Included() {
   return (
     <>
@@ -321,10 +293,7 @@ export default function ProgramsPage() {
                     {/* Left — identity + body */}
                     <div className="flex flex-col">
                       <div className="float-idle self-start">
-                        <OfferIcon
-                          src={IMG_OFFER_ICON_AUDIT}
-                          alt="Transformation Audit"
-                        />
+                        <OfferGlyph kind="audit" />
                       </div>
                       <h2 className="type-h3 text-primary mt-5">
                         Transformation Audit
@@ -435,7 +404,7 @@ export default function ProgramsPage() {
                 <article className="card-dark-gold h-full">
                   <div className="spot flex flex-col h-full">
                     <div className="float-idle self-start" style={{ animationDelay: "0.6s" }}>
-                      <OfferIcon src={IMG_OFFER_ICON_LIFESTYLE} alt="Lifestyle Coaching" />
+                      <OfferGlyph kind="lifestyle" />
                     </div>
                     <h2 className="card-head type-h3 mt-5">Lifestyle Coaching</h2>
                     <p className="type-body font-medium text-secondary mt-3">
@@ -510,10 +479,7 @@ export default function ProgramsPage() {
                 <article className="card-dark-gold h-full">
                   <div className="spot flex flex-col h-full">
                     <div className="float-idle self-start" style={{ animationDelay: "0.9s" }}>
-                      <OfferIcon
-                        src={IMG_OFFER_ICON_PRESENCE}
-                        alt="Personality & Presence Coaching"
-                      />
+                      <OfferGlyph kind="presence" />
                     </div>
                     <h2 className="card-head type-h3 mt-5">
                       Personality &amp; Presence Coaching
@@ -610,10 +576,7 @@ export default function ProgramsPage() {
                       className="float-idle self-start mt-2"
                       style={{ animationDelay: "1.2s" }}
                     >
-                      <OfferIcon
-                        src={IMG_OFFER_ICON_COMPLETE}
-                        alt="Complete Transformation"
-                      />
+                      <OfferGlyph kind="complete" />
                     </div>
                     <h2 className="card-head type-h3 mt-5">
                       Complete Transformation

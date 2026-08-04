@@ -51,7 +51,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-06-10", // [review]
     dateModified: "2026-06-10", // [review — "reviewed" date]
     cover: {
-      src: `${BASE}/img/blog/lifestyle-first-cover.jpg`, /* TODO: replace */
+      src: `${BASE}/aditya/aditya_05.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "Sunrise over a made bed and running shoes — a man's morning routine" /* [review] */,
@@ -71,7 +71,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-06-24", // [review]
     dateModified: "2026-06-24", // [review]
     cover: {
-      src: `${BASE}/img/blog/how-much-to-eat-cover.jpg`, /* TODO: replace */
+      src: `${BASE}/aditya/aditya_02.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "A balanced plate and a set of kitchen scales on a dark counter" /* [review] */,
@@ -91,7 +91,7 @@ export const posts: PostMeta[] = [
     datePublished: "2026-07-01", // [review]
     dateModified: "2026-07-01", // [review]
     cover: {
-      src: `${BASE}/img/blog/sleep-drive-cover.jpg`, /* TODO: replace */
+      src: `${BASE}/aditya/aditya_04.jpg`, /* TODO: replace */
       w: 1200,
       h: 675,
       alt: "A composed man in his forties at a window at dusk, city lights behind" /* [review] */,
