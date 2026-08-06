@@ -21,7 +21,13 @@ import {
   waLink,
 } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
-import { LEGAL } from "@/lib/legal";
+import {
+  ADDRESS,
+  ADDRESS_FULL,
+  LEGAL,
+  MAP_DIRECTIONS_LINK,
+  MAP_EMBED_SRC,
+} from "@/lib/legal";
 
 // ---- Contact page constants (swap before launch) ----
 // Razorpay note [review]: Razorpay's Contact-Us / merchant policy review
@@ -35,10 +41,6 @@ const CITY = "Kolkata, India";
 const SERVICE_AREA = "Coaching worldwide";
 const RESPONSE_TIME = "within 24 hours";
 const HOURS = "Mon–Sat, 10:00 AM – 7:00 PM IST"; // [review] — confirm actual hours
-// Static map image (~1200×480, no live embed). Set to the real asset path
-// (e.g. "/img/placeholder/kolkata-map-static.png") once supplied — the styled
-// CSS placeholder below renders while this is empty.  [review]
-const MAP_IMAGE_SRC: string = "";
 
 // Social (reuses global social constants; platforms without a real URL are
 // hidden in Section 4 rather than linked to "#")
@@ -73,17 +75,24 @@ const localBusinessSchema = {
   url: `${SITE_ORIGIN}/contact`,
   email: EMAIL,
   // [review] — confirm the WhatsApp number is a callable telephone number, and
-  // keep openingHours aligned with the HOURS constant. If Razorpay requires a
-  // full street address, extend `address` with streetAddress + postalCode.
+  // keep openingHours aligned with the HOURS constant.
   telephone: `+${WHATSAPP_NUMBER}`,
   priceRange: "₹₹",
   founder: { "@type": "Person", name: COACH_NAME },
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Kolkata",
-    addressRegion: "West Bengal",
-    addressCountry: "IN",
+    streetAddress: `${ADDRESS.STREET}, ${ADDRESS.LOCALITY}`,
+    addressLocality: ADDRESS.CITY,
+    postalCode: ADDRESS.POSTAL_CODE,
+    addressRegion: ADDRESS.REGION,
+    addressCountry: ADDRESS.COUNTRY_CODE,
   },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: ADDRESS.LAT,
+    longitude: ADDRESS.LNG,
+  },
+  hasMap: MAP_DIRECTIONS_LINK,
   areaServed: [
     { "@type": "City", name: "Kolkata" },
     { "@type": "AdministrativeArea", name: "Worldwide (online coaching)" },
@@ -287,7 +296,14 @@ export default function ContactPage() {
                 </p>
               </ContactRow>
               <ContactRow label="Location" icon={<PinIcon width={15} height={15} />}>
-                <p className="type-body text-primary">{CITY}</p>
+                {/* Full operational address as selectable text — Razorpay
+                    merchant review asks for exactly this. */}
+                <address className="type-body text-primary not-italic">
+                  {ADDRESS.STREET}, {ADDRESS.LOCALITY}
+                  <br />
+                  {ADDRESS.CITY} {ADDRESS.POSTAL_CODE}, {ADDRESS.REGION},{" "}
+                  {ADDRESS.COUNTRY}
+                </address>
               </ContactRow>
               <ContactRow label="Availability" icon={<GlobeIcon width={15} height={15} />}>
                 <p className="type-body text-primary">{SERVICE_AREA}</p>
@@ -383,7 +399,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 5) MAP — static placeholder, no live embed / third-party requests */}
+      {/* 5) MAP — live Google Maps embed pinned to the operational address.
+          Keyless (output=embed), lazy-loaded so it costs nothing above the
+          fold. Address stays selectable text beneath the frame for Razorpay
+          merchant review — never trapped inside the image. */}
       <section className="bg-void cv-auto">
         <div className="container-site section">
           <Reveal as="h3" className="type-h3 text-primary text-center">
@@ -391,33 +410,44 @@ export default function ContactPage() {
           </Reveal>
           <Reveal index={1} className="mx-auto mt-8 max-w-4xl">
             <div className="card spot overflow-hidden" style={{ padding: 0 }}>
-              {MAP_IMAGE_SRC ? (
-                // eslint-disable-next-line @next/next/no-img-element -- static export; plain <img> with explicit dimensions (CLS-safe)
-                <img
-                  src={MAP_IMAGE_SRC}
-                  width={1200}
-                  height={480}
+              <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] md:aspect-[1200/480]">
+                <iframe
+                  src={MAP_EMBED_SRC}
+                  title={`Map showing ${ADDRESS_FULL}`}
                   loading="lazy"
-                  decoding="async"
-                  alt="Map showing Kolkata, India — Aditya coaches locally and worldwide online"
-                  className="block h-auto w-full max-w-full"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full border-0"
                 />
-              ) : (
-                <div
-                  role="img"
-                  aria-label="Map showing Kolkata, India — Aditya coaches locally and worldwide online"
-                  className="flex min-h-[280px] w-full flex-col items-center justify-center px-6 py-12 text-center md:aspect-[1200/480] md:min-h-0"
-                >
+              </div>
+              {/* Address block — selectable, and the tap target that opens Maps. */}
+              <div className="border-t border-hairline-soft flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex gap-3">
                   <PinIcon
-                    width={40}
-                    height={40}
-                    className="text-gold-500 motion-safe:animate-[wa-breathe_2600ms_ease-in-out_infinite]"
+                    width={20}
+                    height={20}
+                    className="text-gold-500 mt-0.5 shrink-0"
                   />
-                  <p className="type-h3 text-primary mt-3">Kolkata, India</p>
-                  <p className="type-small text-muted mt-1">Coaching worldwide online</p>
-                  <p className="eyebrow mt-5">Placeholder — swap via MAP_IMAGE_SRC</p>
+                  <address className="type-small text-secondary not-italic">
+                    <span className="text-primary block font-semibold">
+                      {ADDRESS.STREET}
+                    </span>
+                    {ADDRESS.LOCALITY}, {ADDRESS.CITY} {ADDRESS.POSTAL_CODE}
+                    <br />
+                    {ADDRESS.REGION}, {ADDRESS.COUNTRY}
+                  </address>
                 </div>
-              )}
+                {/* Text link, not a button — the CTA vocabulary is reserved
+                    for funnel actions and this is wayfinding. [review] */}
+                <a
+                  href={MAP_DIRECTIONS_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-draw type-small text-gold-500 hover:text-gold-300 inline-flex shrink-0 items-center gap-1 self-start font-semibold sm:self-auto"
+                >
+                  Open in Google Maps <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
           </Reveal>
           <Reveal index={2}>

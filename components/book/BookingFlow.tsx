@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 /**
  * /book — 3-state conversion machine (client island).
@@ -789,12 +790,11 @@ export default function BookingFlow() {
                         the real Razorpay / secure-payments lockup (180×40) in
                         Phase 2. Purely reassurance; safe to omit. */}
                     <div className="mt-5 max-w-[180px] opacity-80">
-                      <PlaceholderImage
-                        label="RAZORPAY BADGE"
-                        w={180}
-                        h={40}
+                      <Image
+                       src="/razorpay.webp"
+                        width={180}
+                        height={40}
                         alt="Secured by Razorpay"
-                        variant="photo"
                         style={{ borderRadius: 8 }}
                       />
                     </div>

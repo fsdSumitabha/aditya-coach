@@ -30,7 +30,7 @@ export const blogAuthor = {
   role: "Complete Transformation Coach for Men" /* [review] */,
   url: "/about",
   portrait: {
-    src: `${BASE}/img/aditya-portrait.jpg`, /* TODO: replace */
+    src: `${BASE}/aditya/aditya_portrait.jpg`, /* TODO: replace */
     w: 160,
     h: 160,
     alt: "Aditya Kumar Upadhyay, men's lifestyle coach in Kolkata" /* [review] */,

@@ -1,4 +1,5 @@
 import { IG_URL, YOUTUBE_URL, WHATSAPP_NUMBER } from "@/lib/config";
+import { ADDRESS, MAP_DIRECTIONS_LINK } from "@/lib/legal";
 import { SITE_ORIGIN } from "@/lib/site";
 
 // ---- Site-wide JSON-LD (A7): Person + LocalBusiness, geo Kolkata, serviceArea worldwide ----
@@ -46,15 +47,18 @@ export const businessSchema = {
   founder: { "@id": `${SITE_ORIGIN}/#person` },
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Kolkata",
-    addressRegion: "West Bengal",
-    addressCountry: "IN",
+    streetAddress: `${ADDRESS.STREET}, ${ADDRESS.LOCALITY}`,
+    addressLocality: ADDRESS.CITY,
+    postalCode: ADDRESS.POSTAL_CODE,
+    addressRegion: ADDRESS.REGION,
+    addressCountry: ADDRESS.COUNTRY_CODE,
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 22.5726,
-    longitude: 88.3639,
+    latitude: ADDRESS.LAT,
+    longitude: ADDRESS.LNG,
   },
+  hasMap: MAP_DIRECTIONS_LINK,
   areaServed: "Worldwide",
   priceRange: "₹₹",
   sameAs: sameAsLinks,

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import PlaceholderImage from "@/components/PlaceholderImage";
 import { blogAuthor } from "@/lib/blog";
 
@@ -13,12 +14,11 @@ export default function AuthorBox() {
       className="card spot mt-10 flex flex-col items-start gap-6 min-[600px]:flex-row min-[600px]:items-center"
     >
       <div className="float-idle w-[120px] shrink-0 min-[600px]:w-[160px]">
-        <PlaceholderImage
-          label="AUTHOR"
-          w={blogAuthor.portrait.w}
-          h={blogAuthor.portrait.h}
+        <Image
+          src={blogAuthor.portrait.src}
+          width={blogAuthor.portrait.w}
+          height={blogAuthor.portrait.h}
           alt={blogAuthor.portrait.alt}
-          variant="portrait"
           style={{ borderRadius: "9999px" }}
         />
       </div>

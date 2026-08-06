@@ -1,5 +1,33 @@
 import { WHATSAPP_NUMBER } from "@/lib/config";
 
+// ---- Operational address (confirmed 6 Aug 2026) ----
+// One string, reused for the DPDP grievance address, the /contact block and
+// the LocalBusiness JSON-LD. Razorpay's merchant review wants this as
+// selectable text, not baked into an image.
+export const ADDRESS = {
+  STREET: "23/A Bankim Mukherjee Sarani",
+  LOCALITY: "New Alipore",
+  CITY: "Kolkata",
+  POSTAL_CODE: "700053",
+  REGION: "West Bengal",
+  COUNTRY: "India",
+  COUNTRY_CODE: "IN",
+  // Owner-supplied pin. Drives the /contact map embed and the schema geo.
+  LAT: 22.5123171,
+  LNG: 88.3260714,
+};
+
+export const ADDRESS_FULL = `${ADDRESS.STREET}, ${ADDRESS.LOCALITY}, ${ADDRESS.CITY} ${ADDRESS.POSTAL_CODE}, ${ADDRESS.REGION}, ${ADDRESS.COUNTRY}`;
+
+/** Google Maps deep link — opens the pin in the user's Maps app. */
+export const MAP_LINK = `https://www.google.com/maps/search/?api=1&query=${ADDRESS.LAT},${ADDRESS.LNG}`;
+
+/** Turn-by-turn directions to the pin. */
+export const MAP_DIRECTIONS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${ADDRESS.LAT},${ADDRESS.LNG}`;
+
+/** Keyless Google Maps embed (no API key, no billing account needed). */
+export const MAP_EMBED_SRC = `https://www.google.com/maps?q=${ADDRESS.LAT},${ADDRESS.LNG}&z=16&output=embed`;
+
 // Swappable legal facts (0.5) — edit once, propagates through all legal prose.
 // All owner-supplied facts below CONFIRMED 6 Aug 2026 (Karthik, relaying Aditya).
 export const LEGAL = {
@@ -10,8 +38,7 @@ export const LEGAL = {
   CONTACT_EMAIL: "adityau78@gmail.com",
   GRIEVANCE_NAME: "Aditya Kumar Upadhyay", // Grievance Officer
   GRIEVANCE_EMAIL: "adityau78@gmail.com",
-  GRIEVANCE_ADDRESS:
-    "23/A Bankim Mukherjee Sarani, New Alipore, Kolkata 700053, West Bengal, India",
+  GRIEVANCE_ADDRESS: ADDRESS_FULL,
   WHATSAPP_E164: `+${WHATSAPP_NUMBER}`,
   WHATSAPP_WA_LINK: `https://wa.me/${WHATSAPP_NUMBER}`,
   JURISDICTION_CITY: "Kolkata",
