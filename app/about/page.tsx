@@ -32,8 +32,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 // ---- Social / WhatsApp URL constants (top-level, swappable) ----
-const SOCIAL_INSTAGRAM_URL = IG_URL; // [review] real handle
-const SOCIAL_YOUTUBE_URL = YOUTUBE_URL || "https://youtube.com/@__REPLACE__"; // [review] real handle
+const SOCIAL_INSTAGRAM_URL = IG_URL; // confirmed handle (lib/config.ts)
+const SOCIAL_YOUTUBE_URL = YOUTUBE_URL; // confirmed channel (lib/config.ts)
 const WHATSAPP_URL = waLink(
   "Hi Aditya, I read your story on your site and want to talk.",
 );

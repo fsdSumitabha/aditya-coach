@@ -6,7 +6,7 @@ import { SITE_ORIGIN } from "@/lib/site";
 
 export const sameAsLinks = [
   IG_URL,
-  YOUTUBE_URL, // placeholder handle until the real channel exists (lib/config.ts)
+  YOUTUBE_URL,
   `https://wa.me/${WHATSAPP_NUMBER}`,
 ];
 

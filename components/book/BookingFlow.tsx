@@ -45,6 +45,7 @@ import {
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import PlaceholderImage from "@/components/PlaceholderImage";
+import { CheckIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
   RAZORPAY_KEY,
@@ -54,7 +55,7 @@ import {
   track,
   waLink,
 } from "@/lib/config";
-import { LEGAL } from "@/lib/legal";
+import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
 const BOOKING = {
@@ -715,6 +716,21 @@ export default function BookingFlow() {
                     {/* [review] */}
                     <p className="type-small mt-1 text-secondary">
                       · 45-minute Transformation Audit on WhatsApp
+                    </p>
+                    {/* Confirmed inclusions 6 Aug 2026 — copy lives in
+                        lib/legal.ts (CONSULT_INCLUDES), not here. */}
+                    <ul className="mt-4 grid gap-2">
+                      <li className="type-small flex gap-2.5 text-secondary">
+                        <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
+                        <span>{CONSULT_INCLUDES.GIFT_CARD}</span>
+                      </li>
+                      <li className="type-small flex gap-2.5 text-secondary">
+                        <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
+                        <span>{CONSULT_INCLUDES.BLUEPRINT}</span>
+                      </li>
+                    </ul>
+                    <p className="type-small text-gold-300 border-l border-hairline-gold mt-4 pl-4">
+                      {CONSULT_INCLUDES.CREDIT}
                     </p>
                     <button
                       type="submit"

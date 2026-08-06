@@ -85,10 +85,11 @@ Present visually, not as long prose. The takeaway: *we fix the right things in t
 
 Only the consultation price is ever public. Every other price is disclosed after consultation — never put a number on them.
 
-## Price — ₹500, confirmed
+## Price — ₹999, confirmed
 
-**Confirmed 29 Jul 2026 (Karthik, relaying Aditya): the consultation price is ₹500.**
-₹2,000 remains dead — do not write it anywhere.
+**Confirmed 6 Aug 2026 (Karthik, relaying Aditya): the consultation price is ₹999.**
+This supersedes ₹500 (29 Jul) and ₹2,000 (original brief). Both are dead — do
+not write either anywhere.
 
 - Never hardcode a price string in JSX. Read `CONSULT_PRICE` from `lib/legal.ts`
   (display) / `CONSULT_PRICE_INR` (numeric — schema, CountUp, payment paise ×100).
@@ -96,6 +97,16 @@ Only the consultation price is ever public. Every other price is disclosed after
 - This overrides the CONVENTIONS.md line saying to write `₹2,000` in copy.
 
 **The consultation fee is credited.** When a client joins any coaching program, the consultation fee is deducted from the program price as a flat discount. This must be stated on the site wherever the consultation is sold.
+
+**What the consultation includes** — confirmed 6 Aug 2026, stated wherever the
+consultation is sold. Copy lives in `CONSULT_INCLUDES` in `lib/legal.ts`, never
+hardcoded in JSX:
+
+1. The fee credited as an instant discount on the program price
+2. An instant gift card, handed over at the end of the call
+3. The long-form Lifestyle Blueprint, free
+
+The gift card has no stated value or issuer yet — do not invent one.
 
 ## Refund — applies to coaching, not the consultation
 
@@ -163,7 +174,7 @@ More resources, products, courses, blog posts, assessments and email sequences a
 
 ## Never
 
-- Never write ₹2,000 — the price is ₹500, and only via `CONSULT_PRICE`
+- Never write ₹2,000 or ₹500 — the price is ₹999, and only via `CONSULT_PRICE`
 - Never write or edit refund copy until the amount is confirmed
 - Never invent a testimonial, client name, result, or statistic
 - Never publish a client photo or screenshot without confirmed consent
@@ -174,7 +185,7 @@ More resources, products, courses, blog posts, assessments and email sequences a
 
 **Blocking:**
 
-1. ~~Consultation price — ₹500 or ₹1,000?~~ **Resolved 29 Jul 2026: ₹500.**
+1. ~~Consultation price?~~ **Resolved 6 Aug 2026: ₹999.**
 2. Refund amount — is it 50%, and 50% of what? One month's fee? The full program?
 3. Audio 2 removes the consultation refund. Audio 3 asks to rewrite that same line. Which is right?
 

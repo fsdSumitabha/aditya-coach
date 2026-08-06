@@ -44,7 +44,9 @@ export default function TermsPage() {
         Straight talk before we work together. These terms govern this website,
         the {LEGAL.CONSULT_PRICE} discovery consultation, and any coaching
         program you buy from {LEGAL.OWNER_NAME} (&quot;I&quot;, &quot;me&quot;,
-        &quot;{LEGAL.BUSINESS_NAME}&quot;). By using this site or booking a
+        &quot;we&quot;), a {LEGAL.LEGAL_BASIS_NOTE} based in{" "}
+        {LEGAL.JURISDICTION_CITY}, {LEGAL.JURISDICTION_STATE}. By using this
+        site or booking a
         consultation, you agree to them. If you don&apos;t, please don&apos;t
         use the site or book.
       </p>

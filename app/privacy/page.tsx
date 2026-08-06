@@ -52,8 +52,8 @@ export default function PrivacyPage() {
       <p>
         This website and coaching service are operated by{" "}
         <strong>{LEGAL.OWNER_NAME}</strong> (&quot;I&quot;, &quot;me&quot;,
-        &quot;we&quot;, &quot;{LEGAL.BUSINESS_NAME}&quot;), based in{" "}
-        {LEGAL.JURISDICTION_CITY}, {LEGAL.JURISDICTION_STATE}. For the purposes
+        &quot;we&quot;), a {LEGAL.LEGAL_BASIS_NOTE} trading under that name and
+        based in {LEGAL.JURISDICTION_CITY}, {LEGAL.JURISDICTION_STATE}. For the purposes
         of the DPDP Act, I am the <strong>Data Fiduciary</strong> &mdash; the
         person who decides why and how your personal data is handled. You are
         the <strong>Data Principal</strong>. If you have any question about

@@ -13,7 +13,7 @@ import OfferGlyph from "@/components/programs/OfferGlyph";
 import FaqItem from "@/components/programs/FaqItem";
 import { waLink } from "@/lib/config";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
-import { LEGAL } from "@/lib/legal";
+import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
 
 // ===== Page-level config (swappable constants) =====
 // PHASE-2 STUBS — waLink/track come from the ONE global config block (lib/config.ts).
@@ -360,7 +360,22 @@ export default function ProgramsPage() {
                             zero pressure
                           </span>
                         </Reveal>
+                        {/* Confirmed inclusions 6 Aug 2026 — copy lives in
+                            lib/legal.ts (CONSULT_INCLUDES), not here. */}
+                        <Reveal as="li" index={6} className="flex gap-3 type-small text-secondary">
+                          <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                          <span>{CONSULT_INCLUDES.GIFT_CARD}</span>
+                        </Reveal>
+                        <Reveal as="li" index={7} className="flex gap-3 type-small text-secondary">
+                          <CheckIcon className="w-4 h-4 mt-1 shrink-0 text-gold-500" />
+                          <span>{CONSULT_INCLUDES.BLUEPRINT}</span>
+                        </Reveal>
                       </ul>
+                      {/* The fee credit — set apart from the takeaways because
+                          it is the money argument, not a deliverable. */}
+                      <p className="type-small text-gold-300 border-l border-hairline-gold mt-5 pl-4">
+                        {CONSULT_INCLUDES.CREDIT}
+                      </p>
                     </div>
                   </div>
                   <div className="mt-8 w-full max-w-[440px] md:mx-auto">

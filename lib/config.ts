@@ -3,16 +3,20 @@
 // Phase 2 turns startPayment / sendToEmailProvider / notifyCoach into app/api/*/route.ts
 // Route Handlers. Do NOT install payment/email SDKs or add server code in Phase 1.
 
+// Contact + social truth. All CONFIRMED 6 Aug 2026 (Karthik, relaying Aditya).
+// Fallbacks are the real values so a missing env var can never ship a broken link.
 export const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "91XXXXXXXXXX"; // TODO real number, digits only, no + / spaces / dashes
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918420707031"; // digits only, no + / spaces / dashes
 export const COACH_WHATSAPP =
-  process.env.NEXT_PUBLIC_COACH_WHATSAPP || "91XXXXXXXXXX"; // TODO
-export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || ""; // TODO
+  process.env.NEXT_PUBLIC_COACH_WHATSAPP || "918420707031"; // same number for booking notifications
+export const CONTACT_EMAIL =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "adityau78@gmail.com";
 export const IG_URL =
   process.env.NEXT_PUBLIC_IG_URL ||
   "https://www.instagram.com/adityakumarupadhyay_"; // confirmed handle (trailing underscore)
 export const YOUTUBE_URL =
-  process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://youtube.com/@__REPLACE__"; // TODO [review] real handle — single placeholder shared by footer/header/about/schema
+  process.env.NEXT_PUBLIC_YOUTUBE_URL ||
+  "https://youtube.com/@Adityakumarupadhyaymindset"; // confirmed channel
 export const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY || ""; // TODO Phase 2
 export const EMAIL_API_KEY = process.env.NEXT_PUBLIC_EMAIL_API_KEY || ""; // TODO Phase 2
 export const LEAD_ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT || ""; // empty => skip network, just show success
