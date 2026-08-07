@@ -12,6 +12,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const TOC = [
+  { id: "who", label: "Who you are contracting with" },
   { id: "what-this-is", label: "What you're getting — coaching, not medical care" },
   { id: "no-guarantee", label: "No guaranteed results" },
   { id: "eligibility", label: "Eligibility" },
@@ -51,8 +52,49 @@ export default function TermsPage() {
         use the site or book.
       </p>
 
+      <h2 id="who" className="scroll-mt-28">
+        1. Who you are contracting with
+      </h2>
+      {/* Razorpay merchant review: the T&C must identify the legal entity —
+          the owner's legal name (as on PAN), the entity type, and the
+          operational address. Brand name alone is rejected. All values come
+          from lib/legal.ts. */}
+      <p>
+        This website and every service sold on it are operated by{" "}
+        <strong>{LEGAL.OWNER_NAME}</strong>, an individual trading as a{" "}
+        {LEGAL.LEGAL_BASIS_NOTE} under his own legal name. There is no separate
+        company or firm name.
+      </p>
+      <ul>
+        <li>
+          <strong>Legal name:</strong> {LEGAL.OWNER_NAME}
+        </li>
+        <li>
+          <strong>Entity type:</strong> {LEGAL.LEGAL_BASIS_NOTE} (India)
+        </li>
+        <li>
+          <strong>Operational address:</strong> {LEGAL.GRIEVANCE_ADDRESS}
+        </li>
+        <li>
+          <strong>Email:</strong>{" "}
+          <a href={`mailto:${LEGAL.CONTACT_EMAIL}`}>{LEGAL.CONTACT_EMAIL}</a>
+        </li>
+        <li>
+          <strong>Phone / WhatsApp:</strong>{" "}
+          <a href={`tel:${LEGAL.WHATSAPP_E164}`}>{LEGAL.WHATSAPP_E164}</a>
+        </li>
+      </ul>
+      <p className="type-small text-muted">
+        Full contact details, hours and location are on the{" "}
+        <Link href="/contact">Contact</Link> page. Prices are on the{" "}
+        <Link href="/pricing">Pricing</Link> page, delivery on the{" "}
+        <Link href="/shipping">Shipping &amp; Delivery Policy</Link>, and how
+        your data is handled in the standalone{" "}
+        <Link href="/privacy">Privacy Policy</Link>.
+      </p>
+
       <h2 id="what-this-is" className="scroll-mt-28">
-        1. What you&apos;re getting — coaching, not medical care
+        2. What you&apos;re getting — coaching, not medical care
       </h2>
       <p>
         I am a <strong>men&apos;s lifestyle coach</strong>. I am{" "}
@@ -73,7 +115,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="no-guarantee" className="scroll-mt-28">
-        2. No guaranteed results
+        3. No guaranteed results
       </h2>
       <p>
         I&apos;ll give you the right order of change and hold you accountable.
@@ -87,7 +129,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="eligibility" className="scroll-mt-28">
-        3. Eligibility
+        4. Eligibility
       </h2>
       <p>
         You must be at least 18 years old and able to enter a binding agreement
@@ -96,7 +138,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="booking" className="scroll-mt-28">
-        4. Consultations, programs and payment
+        5. Consultations, programs and payment
       </h2>
       <ul>
         <li>
@@ -120,7 +162,7 @@ export default function TermsPage() {
       </ul>
 
       <h2 id="your-responsibilities" className="scroll-mt-28">
-        5. Your responsibilities
+        6. Your responsibilities
       </h2>
       <ul>
         <li>
@@ -141,7 +183,7 @@ export default function TermsPage() {
       </ul>
 
       <h2 id="ip" className="scroll-mt-28">
-        6. Intellectual property
+        7. Intellectual property
       </h2>
       <p>
         All content on this site and in my programs — the method, the
@@ -154,7 +196,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="acceptable-use" className="scroll-mt-28">
-        7. Acceptable use
+        8. Acceptable use
       </h2>
       <p>When using this site you agree not to:</p>
       <ul>
@@ -172,7 +214,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="tools" className="scroll-mt-28">
-        8. Free tools and estimates
+        9. Free tools and estimates
       </h2>
       <p>
         The calorie calculator and free resources give{" "}
@@ -183,7 +225,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="third-party" className="scroll-mt-28">
-        9. Third-party links and services
+        10. Third-party links and services
       </h2>
       <p>
         This site may link to third-party services (e.g. WhatsApp, payment and
@@ -192,7 +234,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="liability" className="scroll-mt-28">
-        10. Limitation of liability
+        11. Limitation of liability
       </h2>
       <p>
         To the fullest extent permitted by law: I provide the site, tools and
@@ -207,7 +249,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="indemnity" className="scroll-mt-28">
-        11. Indemnity
+        12. Indemnity
       </h2>
       {/* [confirm scope with advocate — review] */}
       <p>
@@ -216,7 +258,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="law" className="scroll-mt-28">
-        12. Governing law and jurisdiction
+        13. Governing law and jurisdiction
       </h2>
       <p>
         These terms are governed by the laws of <strong>India</strong>. Any
@@ -230,7 +272,7 @@ export default function TermsPage() {
       </p>
 
       <h2 id="changes" className="scroll-mt-28">
-        13. Changes and contact
+        14. Changes and contact
       </h2>
       <p>
         I may update these terms from time to time; the current version always

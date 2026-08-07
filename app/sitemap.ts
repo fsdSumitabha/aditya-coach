@@ -16,9 +16,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog", priority: 0.7 },
     { path: "/contact", priority: 0.6 },
     { path: "/book", priority: 1 },
+    { path: "/pricing", priority: 0.5 },
     { path: "/privacy", priority: 0.2 },
     { path: "/terms", priority: 0.2 },
     { path: "/refund", priority: 0.2 },
+    { path: "/shipping", priority: 0.2 },
   ];
 
   return [

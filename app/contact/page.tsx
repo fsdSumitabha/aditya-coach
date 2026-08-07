@@ -277,7 +277,7 @@ export default function ContactPage() {
                   {/* [review] */}
                 </p>
               </ContactRow>
-              <ContactRow label="WhatsApp" icon={<ChatIcon width={15} height={15} />}>
+              <ContactRow label="Phone & WhatsApp" icon={<ChatIcon width={15} height={15} />}>
                 <a
                   href={WA_CONTACT_LINK}
                   target="_blank"
@@ -288,10 +288,18 @@ export default function ContactPage() {
                   <WhatsAppIcon width={18} height={18} />
                   Message on WhatsApp
                 </a>
-                {/* number as plain text for Razorpay review + manual dial */}
-                <p className="type-body text-secondary mt-3">+{WHATSAPP_NUMBER}</p>
+                {/* Dialable tel: link — Razorpay merchant review wants a
+                    working phone number, not only a chat deep-link.
+                    [review] confirm the number takes voice calls. */}
+                <a
+                  href={`tel:+${WHATSAPP_NUMBER}`}
+                  className="type-body mt-3 inline-flex min-h-12 items-center text-gold-300 underline underline-offset-4 hover:text-gold-100"
+                  aria-label={`Call Aditya on +${WHATSAPP_NUMBER}`}
+                >
+                  +{WHATSAPP_NUMBER}
+                </a>
                 <p className="type-caption text-muted mt-1">
-                  Quickest reply.
+                  Same number for calls and WhatsApp. Quickest reply.
                   {/* [review] */}
                 </p>
               </ContactRow>

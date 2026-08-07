@@ -42,10 +42,13 @@ const COLUMNS: {
   },
   {
     heading: "Legal",
+    // Razorpay merchant review requires all six reachable from every page.
     links: [
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
-      { label: "Refund Policy", href: "/refund" },
+      { label: "Cancellation & Refund Policy", href: "/refund" },
+      { label: "Shipping & Delivery Policy", href: "/shipping" },
+      { label: "Pricing", href: "/pricing" },
       { label: "Contact", href: "/contact" },
     ],
   },

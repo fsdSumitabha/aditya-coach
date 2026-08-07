@@ -51,6 +51,23 @@ export const LEGAL = {
   EFFECTIVE_DATE: "9 July 2026" /* [review] set to the actual launch date before go-live */,
 };
 
+// ---- Delivery facts (Razorpay merchant review: "Shipping & Delivery") ----
+// Nothing physical ships. These are the service-delivery windows quoted on
+// /shipping and /pricing. Edit here, never in JSX.
+// [review] Only CONFIRM_WINDOW is site-confirmed (the /book page already
+// promises "WhatsApp confirmation within 24h"). Every other window below is a
+// sensible default awaiting the owner's written confirmation.
+export const DELIVERY = {
+  /** Booking acknowledged on WhatsApp after payment. Confirmed — matches /book. */
+  CONFIRM_WINDOW: "24 hours",
+  /** Audit call scheduled and held within this window of booking. [review] */
+  AUDIT_WINDOW: "3 business days",
+  /** Coaching onboarding begins after the program payment clears. [review] */
+  ONBOARDING_WINDOW: "2 business days",
+  /** Re-send window if an emailed file never lands. [review] */
+  RESEND_WINDOW: "1 business day",
+};
+
 // What the Transformation Audit includes beyond the call itself.
 // Confirmed 6 Aug 2026. Rendered on /programs and /book — edit here, not in JSX.
 export const CONSULT_INCLUDES = {
