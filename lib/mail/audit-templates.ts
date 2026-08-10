@@ -62,8 +62,8 @@ export function auditNotification(submission: AuditSubmission): {
         )
       : "") +
     `<p style="margin:0 0 18px;color:#6c6c76;font-size:14px">` +
-    `The full audit is attached as <strong>${escapeHtml(submission.fileName)}</strong> — ` +
-    `every answer, the signature and the photo.</p>` +
+    `The full audit is attached as <strong>${escapeHtml(submission.fileName)}</strong>, ` +
+    `with every answer, the signature and the photo.</p>` +
     `<p style="margin:22px 0 0">${button(`mailto:${submission.email}`, `Reply to ${name}`)}</p>`;
 
   const text = [

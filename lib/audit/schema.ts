@@ -8,24 +8,44 @@
  *
  * Adding a question is a new entry here, never a redesign. Copy is verbatim
  * from the coach's audit document — do not reword it.
+ *
+ * Three cross-cutting flags:
+ *   required — marked with * on screen. Guidance only: nothing blocks Continue,
+ *              and only name + email are enforced, at the point of sending.
+ *   info     — guidance shown behind an (i) on the label
+ *   showIf   — the field only appears once another answer matches
  */
 
 export type TextInputType = "text" | "number" | "date" | "time" | "tel" | "email";
 
+/** Show this field only while `data[key]` matches `is`. */
+export type ShowIf = { key: string; is: string };
+
+type Conditional = { showIf?: ShowIf };
+
 export type AuditField =
-  | {
+  | (Conditional & {
       kind: "text";
       key: string;
       label: string;
       type?: TextInputType;
       placeholder?: string;
-    }
-  | { kind: "textarea"; key: string; label: string; minHeight?: number }
-  | {
+      required?: boolean;
+      info?: string;
+    })
+  | (Conditional & {
+      kind: "textarea";
+      key: string;
+      label: string;
+      minHeight?: number;
+      required?: boolean;
+      info?: string;
+    })
+  | (Conditional & {
       kind: "chips";
       key: string;
       label?: string;
-      /** Parenthetical after the label, e.g. "(select all)". */
+      /** Parenthetical after the label, e.g. "(you can pick more than one)". */
       labelHint?: string;
       /** Small muted line under the label. */
       note?: string;
@@ -36,16 +56,29 @@ export type AuditField =
       /** Free-text escape hatch rendered under the chips. */
       otherKey?: string;
       otherPlaceholder?: string;
-    }
-  | { kind: "rate"; key: string; label: string }
+      required?: boolean;
+      info?: string;
+    })
+  | (Conditional & {
+      kind: "rate";
+      key: string;
+      label: string;
+      required?: boolean;
+      info?: string;
+    })
   | { kind: "signature"; key: string; label: string; placeholder: string }
   /** Responsive auto-fit grid of sub-fields. */
-  | { kind: "row"; min?: number; fields: readonly AuditField[] }
+  | (Conditional & { kind: "row"; min?: number; fields: readonly AuditField[] })
   /** Eyebrow heading + its own grid. */
-  | { kind: "group"; title: string; min?: number; fields: readonly AuditField[] }
+  | (Conditional & {
+      kind: "group";
+      title: string;
+      min?: number;
+      fields: readonly AuditField[];
+    })
   /** The Daily Routine spine — labelled stops down a gold thread. */
   | { kind: "timeline"; fields: readonly { key: string; label: string }[] }
-  | { kind: "eyebrow"; text: string }
+  | (Conditional & { kind: "eyebrow"; text: string })
   | { kind: "callout"; text: string }
   | { kind: "lead"; text: string }
   | { kind: "note"; text: string }
@@ -65,7 +98,6 @@ export type AuditIcon =
   | "diamond"
   | "sun"
   | "checkbox"
-  | "flag"
   | "seal";
 
 export type AuditStep = {
@@ -80,9 +112,9 @@ export type AuditStep = {
 const YES_NO = ["Yes", "No"] as const;
 const FREQUENCY = ["Never", "Sometimes", "Often", "Daily"] as const;
 
-/** Yes/No chip pair — the shape repeats ~20 times across the audit. */
-function yesNo(key: string, label: string): AuditField {
-  return { kind: "chips", key, label, options: YES_NO };
+/** Yes/No chip pair — the shape repeats across the audit. */
+function yesNo(key: string, label: string, extra: Partial<AuditField> = {}): AuditField {
+  return { kind: "chips", key, label, options: YES_NO, ...extra } as AuditField;
 }
 
 /** Never/Sometimes/Often/Daily chip row. */
@@ -97,19 +129,43 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
     title: "Personal Information",
     icon: "person",
     fields: [
-      { kind: "text", key: "fullName", label: "Full name" },
-      { kind: "chips", key: "gender", label: "Gender", options: ["Male", "Female", "Other"] },
+      { kind: "text", key: "fullName", label: "Full name", required: true },
+      {
+        kind: "chips",
+        key: "gender",
+        label: "Gender",
+        options: ["Male", "Female", "Other"],
+        required: true,
+      },
       {
         kind: "row",
         fields: [
-          { kind: "text", key: "age", label: "Age", type: "number" },
-          { kind: "text", key: "dob", label: "Date of birth", type: "date" },
-          { kind: "text", key: "height", label: "Height", placeholder: "e.g. 175 cm / 5'9\"" },
-          { kind: "text", key: "weightCurrent", label: "Current weight", placeholder: "kg" },
-          { kind: "text", key: "weightTarget", label: "Target weight", placeholder: "kg" },
-          { kind: "text", key: "occupation", label: "Occupation" },
-          { kind: "text", key: "phone", label: "Phone number", type: "tel" },
-          { kind: "text", key: "email", label: "Email", type: "email" },
+          { kind: "text", key: "age", label: "Age", type: "number", required: true },
+          { kind: "text", key: "dob", label: "Date of birth", type: "date", required: true },
+          {
+            kind: "text",
+            key: "height",
+            label: "Height",
+            placeholder: "e.g. 175 cm / 5'9\"",
+            required: true,
+          },
+          {
+            kind: "text",
+            key: "weightCurrent",
+            label: "Current weight",
+            placeholder: "kg",
+            required: true,
+          },
+          {
+            kind: "text",
+            key: "weightTarget",
+            label: "Target weight",
+            placeholder: "kg",
+            required: true,
+          },
+          { kind: "text", key: "occupation", label: "Occupation", required: true },
+          { kind: "text", key: "phone", label: "Phone number", type: "tel", required: true },
+          { kind: "text", key: "email", label: "Email", type: "email", required: true },
           { kind: "text", key: "instagram", label: "Instagram", placeholder: "@handle" },
         ],
       },
@@ -125,8 +181,9 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
         kind: "chips",
         key: "goals",
         label: "What made you contact me?",
-        note: "Select all that apply.",
+        note: "You can pick more than one.",
         multi: true,
+        required: true,
         options: [
           "Fat Loss",
           "Muscle Gain",
@@ -172,7 +229,6 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
           { kind: "text", key: "meds", label: "Current medications" },
           { kind: "text", key: "supplements", label: "Supplements" },
           { kind: "text", key: "allergies", label: "Allergies" },
-          { kind: "text", key: "bp", label: "Blood pressure" },
         ],
       },
       {
@@ -182,11 +238,9 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
         fields: [
           yesNo("diabetes", "Diabetes"),
           yesNo("thyroid", "Thyroid"),
-          yesNo("pcos", "PCOS (if applicable)"),
           yesNo("digestive", "Digestive issues"),
           yesNo("backpain", "Back pain"),
           yesNo("jointpain", "Joint pain"),
-          yesNo("migraine", "Migraine"),
         ],
       },
       { kind: "textarea", key: "medNotes", label: "Anything your coach should know?" },
@@ -201,13 +255,9 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
       {
         kind: "row",
         fields: [
-          { kind: "text", key: "wakeTime", label: "Wake-up time", type: "time" },
-          { kind: "text", key: "sleepTime", label: "Sleep time", type: "time" },
-          { kind: "text", key: "sleepHours", label: "Average sleep", placeholder: "hours/night" },
           { kind: "text", key: "water", label: "Water intake", placeholder: "litres/day" },
           { kind: "text", key: "steps", label: "Steps per day" },
           { kind: "text", key: "screen", label: "Screen time", placeholder: "hours/day" },
-          { kind: "text", key: "travel", label: "Travel frequency" },
         ],
       },
       {
@@ -217,8 +267,12 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
         options: ["Desk job", "Standing job", "Physical work", "Mixed"],
       },
       { kind: "eyebrow", text: "Rate out of 10" },
-      { kind: "rate", key: "energy", label: "Energy" },
-      { kind: "rate", key: "stress", label: "Stress" },
+      {
+        kind: "rate",
+        key: "energy",
+        label: "Energy",
+        info: "How much energy you have on a normal day, not how motivated you feel. 1 = you are tired by mid-morning and running on coffee. 10 = you feel steady from morning to night, with no slump after lunch.",
+      },
     ],
   },
   {
@@ -256,14 +310,9 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
           frequency("outsideFood", "Outside food"),
           frequency("alcohol", "Alcohol"),
           frequency("smoking", "Smoking"),
-          frequency("softdrinks", "Soft drinks"),
-          frequency("sugar", "Sugar cravings"),
-          frequency("nightEating", "Night eating"),
-          frequency("emoEating", "Emotional eating"),
         ],
       },
-      { kind: "textarea", key: "favFoods", label: "Favourite foods" },
-      { kind: "textarea", key: "dislikeFoods", label: "Foods you dislike" },
+      { kind: "textarea", key: "dislikeFoods", label: "Food you don't want to take" },
     ],
   },
   {
@@ -275,32 +324,34 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
       yesNo("workout", "Do you currently work out?"),
       {
         kind: "chips",
-        key: "trainWhere",
-        label: "Where / how do you train?",
-        labelHint: "(select all)",
-        multi: true,
-        options: ["Gym", "Home", "Walking", "Sports", "Yoga", "Nothing"],
-      },
-      {
-        kind: "chips",
         key: "activity",
         label: "Current activity level",
         options: ["Sedentary", "Light", "Moderate", "Active", "Very active"],
+      },
+      // The training questions only make sense once he says he trains.
+      {
+        kind: "chips",
+        key: "trainWhere",
+        label: "Where / how do you train?",
+        labelHint: "(you can pick more than one)",
+        multi: true,
+        options: ["Gym", "Home", "Walking", "Sports", "Yoga"],
+        showIf: { key: "workout", is: "Yes" },
       },
       {
         kind: "chips",
         key: "canPerform",
         label: "Movements you can perform",
-        labelHint: "(select all)",
+        labelHint: "(you can pick more than one)",
         multi: true,
         options: ["Push-ups", "Squats", "Plank", "Cardio"],
+        showIf: { key: "workout", is: "Yes" },
       },
       {
-        kind: "row",
-        fields: [
-          { kind: "text", key: "trainYears", label: "Years of training" },
-          { kind: "text", key: "fitInjuries", label: "Previous injuries" },
-        ],
+        kind: "text",
+        key: "trainYears",
+        label: "Years of training",
+        showIf: { key: "workout", is: "Yes" },
       },
     ],
   },
@@ -313,8 +364,9 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
       {
         kind: "row",
         fields: [
-          { kind: "text", key: "bedtime", label: "Average bedtime", type: "time" },
-          { kind: "text", key: "wakeup", label: "Average wake-up", type: "time" },
+          { kind: "text", key: "sleepTime", label: "Sleep time", type: "time" },
+          { kind: "text", key: "wakeTime", label: "Wake-up time", type: "time" },
+          { kind: "text", key: "sleepHours", label: "Average sleep", placeholder: "hours/night" },
         ],
       },
       {
@@ -323,13 +375,22 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
         fields: [
           yesNo("refreshed", "Wake up refreshed?"),
           yesNo("wakeNight", "Wake up during night?"),
-          yesNo("snoring", "Snoring?"),
           yesNo("phoneBed", "Phone before bed?"),
-          yesNo("coffeeLate", "Coffee after 4pm?"),
-          yesNo("sunlight", "Morning sunlight?"),
         ],
       },
-      { kind: "rate", key: "sleepQuality", label: "Sleep quality" },
+      { kind: "eyebrow", text: "Rate out of 10" },
+      {
+        kind: "rate",
+        key: "sleepQuality",
+        label: "Sleep quality",
+        info: "How well you sleep, not how long. 1 = broken sleep, and you still wake up tired. 10 = deep sleep all night, and you wake up fresh.",
+      },
+      {
+        kind: "rate",
+        key: "fallAsleep",
+        label: "How easily do you fall asleep?",
+        info: "How long it takes you to fall asleep after you switch off the light. 1 = you lie awake an hour or more with your mind running. 10 = you are asleep within ten minutes on most nights.",
+      },
     ],
   },
   {
@@ -338,27 +399,28 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
     title: "Stress & Mental Health",
     icon: "pulse",
     fields: [
-      { kind: "rate", key: "stressRate", label: "Rate your stress" },
+      {
+        kind: "rate",
+        key: "stressRate",
+        label: "Rate your stress",
+        info: "How stressed you feel on a normal day, not in your worst week. 1 = calm and in control. 10 = tense all the time, and it follows you to bed.",
+      },
       {
         kind: "chips",
         key: "stressSources",
         label: "Main sources of stress",
-        labelHint: "(select all)",
+        labelHint: "(you can pick more than one)",
         multi: true,
         options: ["Work", "Relationship", "Money", "Family", "Business", "Health", "Other"],
         otherKey: "stressOther",
         otherPlaceholder: "If other, tell me more…",
       },
       {
-        kind: "row",
-        min: 180,
-        fields: [
-          yesNo("meditate", "Do you meditate?"),
-          yesNo("journal", "Journal?"),
-          yesNo("read", "Read?"),
-        ],
+        kind: "textarea",
+        key: "manageStress",
+        label: "How do you manage stress?",
+        info: "What you actually do when stress hits, not what you plan to do. The gym, your phone, food, a drink, a walk, or nothing. This answer changes your plan more than most.",
       },
-      { kind: "textarea", key: "manageStress", label: "How do you manage stress?" },
     ],
   },
   {
@@ -369,21 +431,65 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
     fields: [
       { kind: "callout", text: "This is where your program becomes different." },
       { kind: "eyebrow", text: "Rate yourself — 1 (low) to 10 (high)" },
-      { kind: "rate", key: "confidence", label: "Confidence" },
-      { kind: "rate", key: "selfEsteem", label: "Self-esteem" },
-      { kind: "rate", key: "communication", label: "Communication" },
-      { kind: "rate", key: "bodyLang", label: "Body language" },
-      { kind: "rate", key: "discipline", label: "Discipline" },
-      { kind: "rate", key: "consistency", label: "Consistency" },
-      { kind: "rate", key: "socialConf", label: "Social confidence" },
-      { kind: "rate", key: "leadership", label: "Leadership" },
-      { kind: "rate", key: "emoControl", label: "Emotional control" },
-      { kind: "rate", key: "publicSpeak", label: "Public speaking" },
-      { kind: "textarea", key: "struggle", label: "Which area do you struggle with most?" },
+      {
+        kind: "rate",
+        key: "confidence",
+        label: "Confidence",
+        info: "How sure you are of yourself before anyone reacts to you. 1 = you doubt every move you make. 10 = you trust yourself without needing anyone to approve.",
+      },
+      {
+        kind: "rate",
+        key: "selfEsteem",
+        label: "Self-esteem",
+        info: "What you really think of yourself when nobody is watching. 1 = you feel behind everyone your age. 10 = you think well of yourself, and you mean it.",
+      },
+      {
+        kind: "rate",
+        key: "communication",
+        label: "Communication",
+        info: "How clearly you get your point across at work, at home, and with people you do not know. 1 = you go quiet, or you talk too much. 10 = you say it once and people get it.",
+      },
+      {
+        kind: "rate",
+        key: "bodyLang",
+        label: "Body language",
+        info: "How you hold yourself before you say anything. Your posture, your eye contact, how much space you take. 1 = closed off and small. 10 = open, calm and steady.",
+      },
+      {
+        kind: "rate",
+        key: "discipline",
+        label: "Discipline",
+        info: "Doing what you decided to do even when you no longer feel like it. 1 = your mood decides your day. 10 = your plan decides your day.",
+      },
+      {
+        kind: "rate",
+        key: "leadership",
+        label: "Leadership",
+        info: "Whether people look to you when a decision has to be made. 1 = you wait to be told what to do. 10 = you make the call and take responsibility for it.",
+      },
+      {
+        kind: "rate",
+        key: "emoControl",
+        label: "Emotional control",
+        info: "What you do between something upsetting you and how you react. 1 = you snap, shut down, or think about it for days. 10 = you feel it and still choose how you react.",
+      },
+      {
+        kind: "rate",
+        key: "publicSpeak",
+        label: "Public speaking",
+        info: "Speaking to a room, a camera, or a table where everyone is listening to you. 1 = you avoid it. 10 = you look forward to it.",
+      },
+      {
+        kind: "textarea",
+        key: "struggle",
+        label: "Which area do you struggle with most?",
+        info: "Name one, not five. The one that holds you back the most is where we start.",
+      },
       {
         kind: "textarea",
         key: "improveOne",
         label: "If you could instantly improve ONE thing about yourself — what would it be?",
+        info: "Write your first answer, not the tidy one. Whatever came to mind before you changed it.",
       },
     ],
   },
@@ -416,7 +522,10 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
     title: "Habits",
     icon: "checkbox",
     fields: [
-      { kind: "note", text: "Tick all that apply — honesty here is what makes the plan work." },
+      {
+        kind: "note",
+        text: "Tick every one that is true for you. Being honest here is what makes the plan work.",
+      },
       {
         kind: "chips",
         key: "habits",
@@ -441,17 +550,6 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
   },
   {
     n: 12,
-    eyebrow: "Section 12",
-    title: "Readiness Score",
-    icon: "flag",
-    fields: [
-      { kind: "rate", key: "committed", label: "How committed are you?" },
-      yesNo("readyFollow", "Are you ready to follow instructions?"),
-      { kind: "textarea", key: "couldStop", label: "What could stop you?" },
-    ],
-  },
-  {
-    n: 13,
     eyebrow: "Final step",
     title: "Client Commitment",
     icon: "seal",
@@ -479,23 +577,42 @@ export const AUDIT_STEPS: readonly AuditStep[] = [
   },
 ] as const;
 
-/** Last data step. Steps 1…12 drive the progress bar; 13 is the commitment. */
-export const LAST_STEP = 13;
-/** Steps counted in the "Section NN / 12" progress label. */
-export const NUMBERED_STEPS = 12;
+/** Steps counted in the "Section NN / NN" progress label. */
+export const NUMBERED_STEPS = AUDIT_STEPS.filter((s) =>
+  s.eyebrow.startsWith("Section"),
+).length;
+/** The commitment page — the last step there is. */
+export const LAST_STEP = AUDIT_STEPS[AUDIT_STEPS.length - 1]!.n;
 
 // ---- Reading answers back out --------------------------------------------
 
 export type AuditValue = string | number | string[];
 export type AuditData = Record<string, AuditValue | undefined>;
 
-/** Every answerable field in a step, flattened out of rows/groups/timelines. */
-export function flattenFields(fields: readonly AuditField[]): AuditField[] {
+/** Conditional fields disappear when their trigger answer does not match. */
+export function isVisible(field: AuditField, data: AuditData): boolean {
+  const condition = (field as Conditional).showIf;
+  if (!condition) return true;
+  const value = data[condition.key];
+  return Array.isArray(value)
+    ? value.includes(condition.is)
+    : String(value ?? "") === condition.is;
+}
+
+/**
+ * Every answerable field in a step, flattened out of rows/groups/timelines.
+ * Pass `data` to drop the branches that are currently hidden.
+ */
+export function flattenFields(
+  fields: readonly AuditField[],
+  data?: AuditData,
+): AuditField[] {
   const out: AuditField[] = [];
   for (const field of fields) {
+    if (data && !isVisible(field, data)) continue;
     if (field.kind === "row" || field.kind === "group") {
       if (field.kind === "group") out.push({ kind: "eyebrow", text: field.title });
-      out.push(...flattenFields(field.fields));
+      out.push(...flattenFields(field.fields, data));
     } else if (field.kind === "timeline") {
       for (const stop of field.fields) {
         out.push({ kind: "text", key: stop.key, label: stop.label });

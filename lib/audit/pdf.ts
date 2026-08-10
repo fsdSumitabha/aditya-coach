@@ -14,6 +14,7 @@
 
 import {
   AUDIT_STEPS,
+  LAST_STEP,
   type AuditData,
   type AuditField,
   clientName,
@@ -677,7 +678,7 @@ function coverPage(
   doc.y = boxTop - boxH;
   doc.gap(30);
   doc.paragraph(
-    "Every answer below is the client's own. It is confidential and used only to build the transformation plan.",
+    "Every answer here is the client's own. It is private, and it is used only to plan his coaching.",
     { size: 9.5, color: MUTED, width: CONTENT_W - 80 },
   );
 }
@@ -718,11 +719,13 @@ export async function buildAuditPdf(
     doc.newPage();
     sectionHeader(doc, step.eyebrow, step.title);
 
+    // `data` prunes the conditional branches that never applied to this
+    // client, so the PDF shows only the questions he was actually asked.
+    const fields = flattenFields(step.fields, data);
     // On the commitment page the signature, its date and the closing line are
     // drawn together at the end, so the generic pass skips them.
-    const fields = flattenFields(step.fields);
     const deferred = (field: AuditField) =>
-      step.n === 13 &&
+      step.n === LAST_STEP &&
       (field.kind === "signature" ||
         field.kind === "closing" ||
         ("key" in field && field.key === "signDate"));
@@ -731,7 +734,7 @@ export async function buildAuditPdf(
       if (!deferred(field)) renderField(doc, field, data);
     }
 
-    if (step.n === 13) {
+    if (step.n === LAST_STEP) {
       doc.gap(16);
       doc.need(120);
       doc.y -= 14;

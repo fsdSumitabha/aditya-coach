@@ -47,7 +47,6 @@ const PATHS: Record<AuditIcon, React.ReactNode> = {
       <path d="M8 12l3 3 5-6" />
     </>
   ),
-  flag: <path d="M6 21V4M6 4h11l-2.5 4L17 12H6" />,
   seal: (
     <>
       <circle cx="12" cy="12" r="8" />
@@ -144,6 +143,25 @@ export function CameraIcon() {
     >
       <path d="M4 8.5A2 2 0 0 1 6 6.5h1.4l.9-1.5A1 1 0 0 1 9.1 4.5h5.8a1 1 0 0 1 .9.5l.9 1.5H18a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
       <circle cx="12" cy="12.4" r="3.1" />
+    </svg>
+  );
+}
+
+export function LockIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="14"
+      height="14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2.4" />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
     </svg>
   );
 }

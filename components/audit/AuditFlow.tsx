@@ -6,6 +6,7 @@ import {
   AUDIT_STEPS,
   LAST_STEP,
   NUMBERED_STEPS,
+  flattenFields,
   type AuditData,
   type AuditValue,
 } from "@/lib/audit/schema";
@@ -18,6 +19,7 @@ import SectionIcon, {
   CameraIcon,
   ClockIcon,
   DownloadIcon,
+  LockIcon,
 } from "./AuditIcons";
 import { AUDIT_CSS } from "./styles";
 import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
@@ -30,8 +32,32 @@ const WA_FALLBACK = waLink(
   "Hi Aditya, I finished the Transformation Audit. Sending the PDF across here.",
 );
 
+/** Shown at the foot of every section — the client is handing over health data. */
+const PRIVACY_NOTE =
+  "Your answers stay private. Only Aditya reads them, and he uses them only to plan your coaching. They are never shared or sold.";
+
 type SaveState = "idle" | "saving" | "saved" | "error";
 type Status = { kind: "ok" | "partial" | "error"; message: React.ReactNode } | null;
+
+/**
+ * Move the caret to the first thing the client has to fix. Chip groups are
+ * buttons, not inputs, so fall back to scrolling their label into view.
+ */
+function focusFirstError(errors: Record<string, string>) {
+  const first = Object.keys(errors)[0];
+  if (!first) return;
+  requestAnimationFrame(() => {
+    const control = document.getElementById(`aud-${first}`);
+    if (control instanceof HTMLElement) {
+      control.scrollIntoView({ behavior: "smooth", block: "center" });
+      control.focus({ preventScroll: true });
+      return;
+    }
+    document
+      .getElementById(`aud-${first}-label`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+}
 
 function today(): string {
   const now = new Date();
@@ -156,6 +182,17 @@ export default function AuditFlow() {
     input.value = "";
   };
 
+  // ---- chrome ------------------------------------------------------------
+  const current = AUDIT_STEPS.find((s) => s.n === step);
+  const progress =
+    step === 0 ? 0 : step <= NUMBERED_STEPS ? (step / NUMBERED_STEPS) * 100 : 100;
+  const counter =
+    step === 0
+      ? "Welcome"
+      : step <= NUMBERED_STEPS
+        ? `Section ${String(step).padStart(2, "0")} / ${NUMBERED_STEPS}`
+        : "Final · Commitment";
+
   // ---- PDF ---------------------------------------------------------------
   const makePdf = async (submittedAt: Date) => {
     const bytes = await buildAuditPdf(data, { submittedAt: submittedAt.toISOString() });
@@ -174,19 +211,25 @@ export default function AuditFlow() {
     }
   };
 
+  /**
+   * The * marks are guidance, not a gate — nothing blocks Continue, and a
+   * client can walk the whole audit and come back. Only the two answers the
+   * coach cannot act without are enforced, and only at the point of sending.
+   */
   const submit = async () => {
     const name = String(data.fullName ?? "").trim();
     const email = String(data.email ?? "").trim();
-    const next: Record<string, string> = {};
-    if (name.length < 2) next.fullName = "I need your name to open your file.";
-    if (!EMAIL_RE.test(email)) next.email = "I need a working email to send your plan to.";
-    if (Object.keys(next).length > 0) {
-      setErrors(next);
+    const found: Record<string, string> = {};
+    if (name.length < 2) found.fullName = "I need your name to open your file.";
+    if (!EMAIL_RE.test(email)) found.email = "I need a working email to send your plan to.";
+    if (Object.keys(found).length > 0) {
+      setErrors(found);
       goTo(1);
       setStatus({
         kind: "error",
         message: "Before this can be sent, Section 01 needs your name and a working email.",
       });
+      focusFirstError(found);
       return;
     }
 
@@ -230,11 +273,11 @@ export default function AuditFlow() {
             <>
               Your PDF downloaded, but it did not reach Aditya
               {body.error ? ` (${body.error})` : ""}. Send{" "}
-              <strong>{fileName}</strong> over on{" "}
+              <strong>{fileName}</strong> to him on{" "}
               <a href={WA_FALLBACK} target="_blank" rel="noopener noreferrer">
                 WhatsApp
               </a>{" "}
-              and it is handled.
+              instead.
             </>
           ),
         });
@@ -245,11 +288,11 @@ export default function AuditFlow() {
         message: (
           <>
             {fileName ? "Your PDF downloaded, but the" : "The"} connection dropped before it
-            reached Aditya. Send the file on{" "}
+            reached Aditya. Send the file to him on{" "}
             <a href={WA_FALLBACK} target="_blank" rel="noopener noreferrer">
               WhatsApp
             </a>{" "}
-            and it is handled.
+            instead.
           </>
         ),
       });
@@ -258,17 +301,6 @@ export default function AuditFlow() {
     }
   };
 
-  // ---- chrome ------------------------------------------------------------
-  const progress =
-    step === 0 ? 0 : step <= NUMBERED_STEPS ? (step / NUMBERED_STEPS) * 100 : 100;
-  const counter =
-    step === 0
-      ? "Welcome"
-      : step <= NUMBERED_STEPS
-        ? `Section ${String(step).padStart(2, "0")} / ${NUMBERED_STEPS}`
-        : "Final · Commitment";
-
-  const current = AUDIT_STEPS.find((s) => s.n === step);
   const photo = typeof data.photo === "string" ? data.photo : "";
   const hasDraft = resumeTo > 0 || Object.keys(data).length > 1;
 
@@ -324,7 +356,7 @@ export default function AuditFlow() {
             <div className="aud-eyebrow">Audit received</div>
             <h1 className="aud-title">Your audit is with Aditya.</h1>
             <p className="aud-quote">
-              The PDF saved to your device. The same file is now in his inbox.
+              The PDF is saved on your device. The same file is now in his inbox.
             </p>
             <p className="aud-autosave" style={{ marginTop: 26 }}>
               He reads every audit himself. Expect a reply within 24 hours.
@@ -459,18 +491,29 @@ export default function AuditFlow() {
               </div>
               <div className="aud-rule" />
               <div className="aud-fields">
+                {flattenFields(current.fields, data).some(
+                  (f) => "required" in f && f.required,
+                ) ? (
+                  <p className="aud-legend">
+                    <b aria-hidden="true">*</b> Required — everything else is optional.
+                  </p>
+                ) : null}
                 {current.fields.map((field, i) => (
                   <Field key={i} field={field} data={data} set={set} errors={errors} />
                 ))}
               </div>
+              <p className="aud-privacy">
+                <LockIcon />
+                <span>{PRIVACY_NOTE}</span>
+              </p>
             </section>
 
             {step === LAST_STEP ? (
               <div className="aud-submit">
                 <h3>Send it to Aditya</h3>
                 <p>
-                  One button. Your completed audit downloads as a PDF and the same file goes
-                  straight to Aditya&apos;s inbox.
+                  One button. Your finished audit saves to your device as a PDF, and the same
+                  file goes straight to Aditya&apos;s inbox.
                 </p>
                 <button type="button" className="aud-btn" onClick={submit} disabled={busy}>
                   <DownloadIcon />

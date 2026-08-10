@@ -114,11 +114,61 @@ export const AUDIT_CSS = `
 .aud-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(var(--min,200px),1fr)); gap:20px 22px;}
 .aud-group-title{font:600 12px/1 inherit; letter-spacing:.14em; text-transform:uppercase; color:#a08a55; margin-bottom:16px;}
 .aud-hair{height:1px; background:#efe7d6;}
+.aud-privacy{
+  display:flex; align-items:flex-start; gap:8px;
+  margin:30px 0 0; padding-top:18px; border-top:1px solid var(--line);
+  font:400 12.5px/1.5 inherit; color:var(--soft);
+}
+.aud-privacy svg{flex:none; margin-top:2px; color:#b7a67c;}
 
 /* ---- fields ---- */
 .aud-label{display:block; font:500 14px/1.35 inherit; color:var(--label); margin:0 0 9px;}
-.aud-label.strong{font-size:15px; color:var(--ink); margin-bottom:4px;}
+.aud-label.strong{font-size:15px; color:var(--ink);}
+.aud-labelrow .aud-label{margin:0;}
 .aud-label i{color:#a99a80; font-weight:400; font-style:normal;}
+
+/* Required marker + the (i) guidance bubble share one relative label row, so
+   the bubble is anchored to the field and can never push the page sideways. */
+/* Block, not flex: the (i) has to sit immediately after the last word of the
+   label, including when the label wraps — a flex row would strand it against
+   the right edge. */
+.aud-labelrow{position:relative; display:block; margin:0 0 9px;}
+.aud-labelrow .aud-label{display:inline;}
+.aud-req{color:#b5524f; margin-left:3px; font-weight:600;}
+.aud-legend{
+  display:flex; align-items:center; gap:6px; margin:0;
+  font:500 12px/1.4 inherit; color:var(--soft);
+}
+.aud-legend b{color:#b5524f; font-weight:600;}
+.aud-tipwrap{position:static; display:inline;}
+.aud-tipbtn{
+  width:19px; height:19px; flex:none; border-radius:999px; padding:0;
+  margin-left:6px; vertical-align:-4px;
+  border:1px solid #ddd0b2; background:var(--field); color:#9a875c;
+  font:600 11px/1 var(--font-fraunces),Georgia,serif; font-style:italic;
+  cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+  transition:border-color .15s,background .15s,color .15s;
+}
+.aud-tipbtn:hover,.aud-tipbtn[aria-expanded="true"]{border-color:var(--acc); background:rgba(201,162,75,.14); color:var(--deep);}
+.aud-tipbtn:focus-visible{outline:2px solid var(--acc); outline-offset:2px;}
+.aud-tip{
+  position:absolute; top:calc(100% + 7px); left:0; z-index:6;
+  width:min(340px,100%); padding:12px 14px; border-radius:12px;
+  background:#241f16; color:#efe7d5; font:400 13px/1.55 inherit;
+  box-shadow:0 18px 38px -18px rgba(20,18,14,.75);
+  opacity:0; visibility:hidden; transform:translateY(-4px);
+  transition:opacity .15s,transform .15s,visibility .15s;
+}
+.aud-tip[data-open]{opacity:1; visibility:visible; transform:none;}
+/* A rating's label row is a flex item that shrinks to its text, so the bubble
+   anchors to the whole rating block instead — otherwise it renders one word
+   wide. Hence the explicit offset rather than top:100%. */
+.aud-rate{position:relative;}
+.aud-rate-top .aud-labelrow{position:static; margin:0;}
+.aud-rate .aud-tip{top:32px;}
+@media (prefers-reduced-motion:reduce){
+  .aud-tipbtn,.aud-tip{transition:none;}
+}
 .aud-note{margin:0 0 13px; font:400 13px/1.4 inherit; color:var(--soft);}
 .aud-lead{margin:0 0 22px; font:400 clamp(15px,2vw,17px)/1.5 var(--font-fraunces),Georgia,serif; font-style:italic; color:var(--deep);}
 .aud-callout{
