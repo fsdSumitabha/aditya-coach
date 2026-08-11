@@ -43,9 +43,11 @@ const WHATSAPP_URL = waLink(
 // downscaled from the 2873×3831 original; the image optimizer serves
 // resized WebP variants on demand).
 const IMG_ABOUT_HERO = {
-  src: "/aditya/img_about_hero.jpg",
-  w: 840,
-  h: 1120,
+  src: "/aditya/img_about_hero_cropped.jpg",
+  // must match the file on disk (385×633) — these reserve the box shape before
+  // the photo lands, and a wrong ratio makes the hero jump on load
+  w: 385,
+  h: 633,
   // 10px JPEG, inlined — covers the gap before the preloaded portrait paints.
   blurDataURL:
     "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAQMEBf/EAB8QAAICAgIDAQAAAAAAAAAAAAECAxEABBIhBRMxcf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAMAwEAAhEDEQA/ADt7EuqF5RtIK7awB+Yldssoa1Fi6JHWWza0cvkTFKOSBAQPneZ8mlH7G4l1FmhfzC7IAv/Z",
@@ -78,7 +80,7 @@ const IMG_ABOUT_AFTER = {
     "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
 } as const;
 
-// ---- §5 audience checklist ("This is for men who want to…") ----
+// ---- §4 audience checklist ("This is for men who want to…") ----
 // [review] Aditya's voice, from the 2026-07-21 direction (complete transformation,
 // not just a gym program). Two-column checklist with gold ticks; stacks on mobile.
 const AUDIENCE_CHECKLIST = [
@@ -93,7 +95,7 @@ const AUDIENCE_CHECKLIST = [
   "Transform completely — not just train",
 ] as const; // [review]
 
-// ---- §8 credibility strip ("Why men trust the work") ----
+// ---- §5 credibility strip ("Why men trust the work") ----
 // [review] No invented stats or credentials — the only figure is the
 // client-supplied 100kg. Restrained trust rows, shown before /results link-out.
 const TRUST_POINTS = [
@@ -221,7 +223,7 @@ export default function AboutPage() {
 
         {/* Full-viewport cinematic open — the page breathes before it speaks */}
         <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 nav:py-20">
-          <div className="grid items-center gap-10 nav:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] nav:gap-16">
+          <div className="grid items-center gap-10 nav:grid-cols-[minmax(0,1fr)_minmax(0,340px)] nav:gap-16">
             {/* Text block — mobile: after the portrait; desktop: left column */}
             <div className="order-2 nav:order-1">
               <FadeIn className="flex items-center gap-4" delayMs={120}>
@@ -254,7 +256,9 @@ export default function AboutPage() {
                 The portrait is this page's LCP element, so it paints statically
                 (A2 LCP < 2.5s beats the 900ms fade); the "slow fade" entrance
                 survives on the gold hairline frame only. */}
-            <div className="order-1 relative mx-auto w-full max-w-[320px] nav:order-2 nav:mx-0 nav:max-w-[420px] nav:justify-self-end">
+            {/* Width caps set the rendered height: the portrait is 385×633 (0.608),
+                so 340px wide → ~559px tall, matching the left column's block. */}
+            <div className="order-1 relative mx-auto w-full max-w-[280px] nav:order-2 nav:mx-0 nav:max-w-[340px] nav:justify-self-end">
               <FadeIn
                 className="pointer-events-none absolute inset-0 rounded-[18px] border border-hairline-gold"
                 durationMs={900}
@@ -274,7 +278,7 @@ export default function AboutPage() {
                   placeholder="blur"
                   blurDataURL={IMG_ABOUT_HERO.blurDataURL}
                   preload
-                  className="sd-zoom block h-auto w-full max-w-full rounded-[16px]"
+                  className="sd-zoom block h-auto w-full rounded-[16px]"
                 />
               </div>
             </div>
@@ -458,7 +462,8 @@ export default function AboutPage() {
                 </p>
               </Reveal>
 
-              {/* Node 3 — The rebuild. (previews the Right Order of Change → Section 4) */}
+              {/* Node 3 — The rebuild. (the Right Order of Change, now taught
+                  only on /method — the philosophy section here was removed) */}
               <Reveal as="li" index={2} className="reveal-left relative pl-12 nav:pl-16">
                 <span
                   aria-hidden="true"
@@ -516,62 +521,13 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 4 — THE PHILOSOPHY ("In Brief") ============ */}
+      {/* ============ Section 4 — WHO I HELP ("Two Men") ============ */}
+      {/* bg-surface-1: the timeline above is bg-base, so this keeps the
+          alternation now that the philosophy section is gone. */}
       <section className="bg-surface-1 border-y border-hairline-soft cv-auto">
         <div className="container-site section">
-          {/* Gold-thread stitch — carries the line language in from the timeline. */}
-          <div aria-hidden="true" className="thread-h sd-draw mb-8 w-24" />
-
-          <Reveal className="max-w-2xl">
-            <Chapter num="03" label="WHAT I BELIEVE" />
-            <h2 className="type-h2 text-primary mt-5">
-              Change has a right order. Most men do it backwards.{/* [review] */}
-            </h2>
-            <p className="type-body text-secondary mt-5 max-w-[62ch]">
-              {/* [review] */}
-              Men chase the diet, the supplement, the quick fix — and wonder
-              why nothing lasts. It never lasts because the foundation was
-              never built. Fix how you live first. Then nutrition. Then
-              supplements. Medical last, always under a doctor. Build it in
-              that order and it holds for the rest of your life.
-            </p>
-          </Reveal>
-
-          {/* Mini-strip teaser — the 4 layers, one word each (taught in full on /method) */}
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            {["Lifestyle", "Nutrition", "Supplements", "Medical"].map(
-              (label, i) => (
-                <Reveal
-                  key={label}
-                  as="span"
-                  index={i}
-                  className="inline-flex items-center gap-3"
-                >
-                  <span className="spot type-caption inline-flex min-h-[36px] items-center rounded-full border border-hairline-gold px-4 uppercase tracking-[0.08em] text-gold-300">
-                    <span>{label}</span>
-                  </span>
-                  {i < 3 && (
-                    <span aria-hidden="true" className="thread-h sd-draw hidden h-px w-6 md:block" />
-                  )}
-                </Reveal>
-              ),
-            )}
-          </div>
-
-          <Reveal delayMs={200} className="mt-10">
-            <Link href="/method" className="btn-outline">
-              See The Right Order of Change
-              <ArrowRightIcon className="h-5 w-5" />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============ Section 5 — WHO I HELP ("Two Men") ============ */}
-      <section className="bg-base cv-auto">
-        <div className="container-site section">
           <Reveal className="mb-5">
-            <Chapter num="04" label="WHO THIS IS FOR" center />
+            <Chapter num="03" label="WHO THIS IS FOR" center />
           </Reveal>
           <SplitHeading
             as="h2"
@@ -581,7 +537,7 @@ export default function AboutPage() {
           {/* [review] */}
 
           {/* Section-opening thesis — existing verbatim line, relocated to the top
-              of §5 (companion to the convergence closer below; text unchanged). */}
+              of §4 (companion to the convergence closer below; text unchanged). */}
           <Reveal delayMs={120} className="reveal-blur mx-auto mt-6 max-w-[60ch] text-center">
             <p className="type-lead text-secondary">
               The goal isn&apos;t only to change how you look. It&apos;s to
@@ -648,7 +604,7 @@ export default function AboutPage() {
           </Reveal>
 
           {/* Convergence closer — core message VERBATIM from Aditya's direction
-              (2026-07-21). Companion to the thesis line at the top of §5. */}
+              (2026-07-21). Companion to the thesis line at the top of §4. */}
           <Reveal delayMs={150} className="reveal-blur mx-auto mt-16 max-w-[46ch] text-center">
             <p className="font-display text-[clamp(1.4rem,2.8vw,2rem)] leading-snug text-primary">
               I do not just change how a man looks. I help change how he shows
@@ -658,12 +614,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 6 — HIS OWN BEFORE / AFTER ("Proof On His Own Body") ============ */}
+      {/* ============ Section 5 — HIS OWN BEFORE / AFTER ("Proof On His Own Body") ============ */}
       <section className="bg-alt border-y border-hairline-soft cv-auto">
         <div className="container-site section">
           <div className="text-center">
             <Reveal className="mb-5">
-              <Chapter num="05" label="THE PROOF" center />
+              <Chapter num="04" label="THE PROOF" center />
             </Reveal>
             <SplitHeading
               as="h2"
@@ -772,7 +728,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 7 — FOLLOW THE WORK ("Social Proof, Live") ============ */}
+      {/* ============ Section 6 — FOLLOW THE WORK ("Social Proof, Live") ============ */}
       <section className="bg-void cv-auto">
         <div className="container-site section text-center">
           <Reveal>
@@ -823,7 +779,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 8 — FINAL CTA BAND ("One Decision") ============ */}
+      {/* ============ Section 7 — FINAL CTA BAND ("One Decision") ============ */}
       {/* Shared closer — copy verbatim from bank; routes only (no email field → no consent line needed).
           FinalCta already carries the aurora + grain atmosphere for this band. */}
       <FinalCta
