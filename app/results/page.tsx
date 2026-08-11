@@ -6,7 +6,6 @@ import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import Marquee from "@/components/Marquee";
 import Reveal from "@/components/Reveal";
-import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
 import { ArrowRightIcon } from "@/components/icons";
 import { OG_IMAGE } from "@/lib/config";
@@ -487,48 +486,6 @@ export default function ResultsPage() {
               <GhostCard key={`ghost-${i}`} delayMs={i * 80} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* §3.3 "HOW THESE HAPPENED" — METHOD BRIDGE (+ §3.4 compliance note) */}
-      <section className="cv-auto bg-alt border-b border-hairline-soft">
-        <div className="container-site section text-center">
-          {/* gold-thread stitch carrying the gallery into the method */}
-          <div className="thread-h sd-draw mb-12 md:mb-16" aria-hidden="true" />
-          {/* [review] */}
-          <SplitHeading
-            as="h2"
-            text="How these happened."
-            className="type-h2 text-primary"
-          />
-          <Reveal
-            as="p"
-            index={1}
-            className="type-body mx-auto mt-5 max-w-[60ch] text-secondary"
-          >
-            {/* [review] method-bridge paragraph, Aditya's voice */}
-            None of this was a crash diet. No supplement stack. We fixed the
-            lifestyle first — then nutrition, then supplements, medical last.
-            The right order of change. That is the only reason it lasted.
-          </Reveal>
-          <Reveal index={2} className="mt-7">
-            <Link
-              href="/method"
-              className="link-draw inline-flex min-h-[48px] items-center gap-2 font-semibold text-gold-300 hover:text-gold-200"
-            >
-              See The Right Order of Change
-              <ArrowRightIcon aria-hidden="true" className="h-4 w-4" />
-            </Link>
-          </Reveal>
-
-          {/* §3.4 COMPLIANCE / RESULTS-VARY NOTE — verbatim, deliberately NOT
-              animated. Page-specific results-vary disclaimer only; the broader
-              medical disclaimer lives in the global footer (not duplicated). */}
-          <p className="disclaimer type-small mx-auto mt-12 max-w-[72ch] rounded-xl border border-hairline-soft px-5 py-4 text-center text-muted md:mt-16 md:px-8 md:py-5">
-            Real clients, shared with permission. Individual results depend on
-            each person&apos;s starting point, effort, consistency, and health.
-            Your results will be your own.
-          </p>
         </div>
       </section>
 
