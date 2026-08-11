@@ -2,17 +2,19 @@
 
 // /about §0 — THE SPLIT ("Before | After", the page opener).
 //
-// Two halves, one seam. Left half fades through the BEFORE frames, right half
-// fades through the AFTER frames, both driven by the SAME index so the pair
-// always reads as one man at two points in time. The "swiper fade effect"
-// is a 3-frame opacity crossfade — no carousel library needed (the project
-// contract forbids new npm packages, and a synchronised crossfade is ~40
-// lines of state).
+// Two framed portraits, separated — a diptych hung side by side, not a
+// collage. Each sits in its own gold-hairline frame with a warm mat and a
+// museum plate reading BEFORE / AFTER. Left frame fades through the BEFORE
+// photographs, right frame through the AFTER photographs, both driven by the
+// SAME index so the pair always reads as one man at two points in time. The
+// "swiper fade effect" is a 3-frame opacity crossfade — no carousel library
+// needed (the project contract forbids new npm packages, and a synchronised
+// crossfade is ~40 lines of state).
 //
-// Between them: THE BRIDGE — the site's gold thread runs down the seam,
-// through a medallion (the → arrow = before→after, and the control that
-// advances the pair), and out of the bottom into the scroll cue that drops
-// the reader into the story.
+// The gap between the frames is the point: the site's gold thread runs down
+// it, through the medallion (the → arrow = before→after, and the control that
+// advances the pair), and on into THE PLAQUE — "Know about this journey" —
+// which drops the reader into the story below.
 //
 // Autoplay and manual drive the SAME index and coexist: the pairs cycle on
 // their own every SLIDE_MS, and the arrow / ticks jump the reader wherever he
@@ -39,7 +41,7 @@ import {
 
 import { ArrowRightIcon } from "@/components/icons";
 
-/** id of the founder-story <section> on /about — the bridge's destination. */
+/** id of the founder-story <section> on /about — the plaque's destination. */
 const STORY_ID = "story";
 
 /**
@@ -65,8 +67,8 @@ const DEMO_PAIRS = [
   },
 ] as const;
 
-/** Each half is ~440px at the 880px cap, ~47vw below it. */
-const HALF_SIZES = "(min-width: 900px) 440px, 47vw";
+/** Each photo well is ~370px at the 980px cap, ~42vw below it. */
+const HALF_SIZES = "(min-width: 900px) 380px, 42vw";
 
 // ---- Component-scoped FX (kept out of globals.css — shared file, never edited).
 // Every animation is transform/opacity only and lives inside a
@@ -76,9 +78,20 @@ const TSPLIT_FX_CSS = `
 .tsplit-slide { opacity: 0; }
 .tsplit-slide[data-active="true"] { opacity: 1; }
 
+/* The frame: gold hairline, warm mat, plate below the photo well. */
+.tsplit-frame {
+  background: var(--grad-card-warm);
+  border: 1px solid var(--hairline-gold);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+.tsplit-well {
+  border: 1px solid rgba(201, 162, 75, 0.16);
+  background: var(--surface-2);
+}
+
 .tsplit-thread {
   width: 1px;
-  background: linear-gradient(180deg, transparent, var(--gold-500) 14%, var(--gold-500) 86%, transparent);
+  background: linear-gradient(180deg, transparent, var(--gold-500) 10%, var(--gold-500) 90%, transparent);
   transform-origin: top center;
 }
 
@@ -86,8 +99,13 @@ const TSPLIT_FX_CSS = `
 .tsplit-medallion:focus-visible .tsplit-ring { border-color: var(--gold-500); }
 .tsplit-medallion:active .tsplit-ring { transform: scale(0.96); }
 
-.tsplit-bridge:hover .tsplit-bridge-ring,
-.tsplit-bridge:focus-visible .tsplit-bridge-ring { border-color: var(--gold-500); }
+.tsplit-plaque:hover .tsplit-plate,
+.tsplit-plaque:focus-visible .tsplit-plate {
+  border-color: var(--gold-500);
+  color: var(--gold-200);
+}
+/* .eyebrow hardcodes gold-500 — let the plate own its own colour transition. */
+.tsplit-plate .eyebrow { color: inherit; }
 
 /* Slide ticks — scaleX + colour only, so the row never reflows. */
 .tsplit-tick-bar { transform: scaleX(0.55); background: rgba(244, 241, 234, 0.3); }
@@ -116,8 +134,8 @@ const TSPLIT_FX_CSS = `
   .tsplit-medallion:focus-visible .tsplit-arrow { transform: translateX(3px); }
 
   .tsplit-ring { transition: border-color 300ms var(--ease-standard), transform 200ms var(--ease-out-expo); }
-  .tsplit-bridge-ring { transition: border-color 300ms var(--ease-standard), transform 300ms var(--ease-out-expo); }
-  .tsplit-bridge:hover .tsplit-bridge-ring { transform: translateY(3px); }
+  .tsplit-plate { transition: border-color 300ms var(--ease-standard), color 300ms var(--ease-standard), transform 300ms var(--ease-out-expo); }
+  .tsplit-plaque:hover .tsplit-plate { transform: translateY(3px); }
 
   .tsplit-chevron { animation: tsplit-bob 2400ms ease-in-out infinite; }
 
@@ -162,7 +180,10 @@ function PauseGlyph({ playing }: { playing: boolean }) {
   );
 }
 
-/** One half of the split: a fixed frame, three stacked frames, one visible. */
+/**
+ * One hung frame: gold hairline surround, warm mat, a photo well holding all
+ * three photographs stacked (one visible), and a plate underneath.
+ */
 function Half({
   side,
   index,
@@ -174,45 +195,34 @@ function Half({
 }) {
   const isBefore = side === "before";
   return (
-    <figure
-      className={`relative m-0 h-[clamp(300px,54vh,430px)] overflow-hidden border-y border-hairline-soft bg-surface-2 nav:h-[min(70vh,620px)] ${
-        isBefore
-          ? "rounded-l-[20px] border-l"
-          : "rounded-r-[20px] border-r"
-      }`}
-    >
-      {DEMO_PAIRS.map((pair, i) => (
-        <div
-          key={pair[side]}
-          data-active={i === index}
-          aria-hidden={i !== index}
-          className="tsplit-slide absolute inset-0"
-        >
-          <Image
-            src={pair[side]}
-            alt={
-              isBefore
-                ? `Transformation frame ${i + 1} of ${DEMO_PAIRS.length} — before`
-                : `Transformation frame ${i + 1} of ${DEMO_PAIRS.length} — after`
-            }
-            fill
-            sizes={HALF_SIZES}
-            loading={eager && i === 0 ? "eager" : "lazy"}
-            fetchPriority={eager && i === 0 ? "high" : undefined}
-            className="object-cover object-[50%_28%]"
-          />
-        </div>
-      ))}
+    <figure className="tsplit-frame m-0 rounded-[8px] p-2 nav:p-3">
+      <div className="tsplit-well relative h-[clamp(280px,50vh,410px)] overflow-hidden rounded-[4px] nav:h-[min(66vh,580px)]">
+        {DEMO_PAIRS.map((pair, i) => (
+          <div
+            key={pair[side]}
+            data-active={i === index}
+            aria-hidden={i !== index}
+            className="tsplit-slide absolute inset-0"
+          >
+            <Image
+              src={pair[side]}
+              alt={
+                isBefore
+                  ? `Transformation ${i + 1} of ${DEMO_PAIRS.length} — before`
+                  : `Transformation ${i + 1} of ${DEMO_PAIRS.length} — after`
+              }
+              fill
+              sizes={HALF_SIZES}
+              loading={eager && i === 0 ? "eager" : "lazy"}
+              fetchPriority={eager && i === 0 ? "high" : undefined}
+              className="object-cover object-[50%_28%]"
+            />
+          </div>
+        ))}
+      </div>
 
-      {/* Bottom scrim — sinks the frame into the void background. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[rgba(8,8,10,0.85)] to-transparent"
-      />
-
-      <figcaption
-        className={`absolute bottom-4 z-10 ${isBefore ? "left-4" : "right-4"}`}
-      >
+      {/* Museum plate on the mat — not stamped over the photograph. */}
+      <figcaption className="pb-0.5 pt-2.5 text-center nav:pt-3">
         <span className="eyebrow text-gold-300">
           {isBefore ? "BEFORE" : "AFTER"}
         </span>
@@ -249,7 +259,7 @@ export default function TransformationSplit({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  // Don't burn frames (or advance unseen pairs) once the section is scrolled past.
+  // Don't burn frames (or advance unseen pairs) once scrolled past.
   useEffect(() => {
     const el = sectionRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
@@ -277,9 +287,9 @@ export default function TransformationSplit({
     [],
   );
 
-  // Progressive enhancement: the bridge is a real in-page anchor, so it works
+  // Progressive enhancement: the plaque is a real in-page anchor, so it works
   // with JS off. JS only upgrades the jump to a smooth scroll + focus move.
-  const onBridgeClick = useCallback(
+  const onPlaqueClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       const target = document.getElementById(STORY_ID);
       if (!target) return; // fall through to the native anchor jump
@@ -308,7 +318,7 @@ export default function TransformationSplit({
 
       <div className="container-site relative z-10 pb-10 pt-8 nav:pb-14 nav:pt-12">
         {/* No heading here on purpose: the page's single <h1> lives in the hero
-            below, and an <h2> above it would break heading order. */}
+            below, and a heading here would put an <h2> ahead of it. */}
         <div className="flex items-center justify-center gap-4">
           <span aria-hidden="true" className="h-px w-8 bg-hairline-gold" />
           <p id="tsplit-label" className="eyebrow">
@@ -317,32 +327,86 @@ export default function TransformationSplit({
           <span aria-hidden="true" className="h-px w-8 bg-hairline-gold" />
         </div>
 
-        {/* ---- The split ---- */}
-        <div className="relative mx-auto mt-6 max-w-[860px] nav:mt-8">
-          <div className="grid grid-cols-2 gap-[3px]">
+        {/* ---- The diptych: two hung frames, a deliberate gap between ---- */}
+        <div className="relative mx-auto mt-6 max-w-[980px] nav:mt-8">
+          {/* The gap is sized to hold the medallion and the plaque on desktop;
+              on a phone they straddle the seam, which is why both carry a
+              backdrop blur and their own dark ground. */}
+          <div className="grid grid-cols-2 items-start gap-4 sm:gap-10 nav:gap-[200px]">
             <Half side="before" index={index} eager />
             <Half side="after" index={index} eager />
           </div>
 
-          {/* Manual jump — ticks sit clear of the BEFORE/AFTER captions below.
-              Using one does not end autoplay, it only restarts the dwell. */}
-          <div className="absolute left-2 top-2 z-30 flex items-center nav:left-3 nav:top-3">
-            {DEMO_PAIRS.map((pair, i) => (
-              <button
-                key={pair.before}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-current={i === index}
-                aria-label={`Show transformation ${i + 1} of ${DEMO_PAIRS.length}`}
-                className="tsplit-tick grid h-12 w-8 place-items-center"
+          {/* The gap: gold thread → medallion → plaque. Offset and sized to the
+              photo wells (not the frames or the plates below them) so the stack
+              reads as centred between the two photographs. */}
+          <div className="pointer-events-none absolute inset-x-0 top-2 z-20 flex h-[clamp(280px,50vh,410px)] flex-col items-center nav:top-3 nav:h-[min(66vh,580px)]">
+            <span aria-hidden="true" className="tsplit-thread flex-1" />
+
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Show the next transformation"
+              className="tsplit-medallion pointer-events-auto relative my-3 grid h-14 w-14 shrink-0 place-items-center rounded-full nav:h-[76px] nav:w-[76px]"
+            >
+              <span
+                aria-hidden="true"
+                className="tsplit-ring absolute inset-0 rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.78)] shadow-[0_8px_30px_rgba(0,0,0,0.55)] backdrop-blur-[6px]"
+              />
+              {/* Sweep hand — remounts each pair so the revolution restarts. */}
+              <span
+                key={index}
+                aria-hidden="true"
+                data-paused={paused}
+                style={{ "--tsplit-dur": `${intervalMs}ms` } as CSSProperties}
+                className="tsplit-orbit absolute inset-0"
               >
-                <span
-                  aria-hidden="true"
-                  className="tsplit-tick-bar block h-[2px] w-5 rounded-full"
-                />
-              </button>
-            ))}
+                <span className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-200 shadow-[0_0_8px_rgba(201,162,75,0.9)]" />
+              </span>
+              {/* The arrow: before → after, and the direction of the control. */}
+              <ArrowRightIcon
+                aria-hidden="true"
+                className="tsplit-arrow relative h-5 w-5 text-gold-300 nav:h-6 nav:w-6"
+              />
+            </button>
+
+            <span aria-hidden="true" className="tsplit-thread flex-1" />
+
+            {/* THE PLAQUE — the reader's way down into the story. */}
+            <a
+              href={`#${STORY_ID}`}
+              onClick={onPlaqueClick}
+              className="tsplit-plaque pointer-events-auto mb-3 mt-3 shrink-0"
+            >
+              <span className="tsplit-plate flex w-[128px] flex-col items-center gap-1.5 rounded-[6px] border border-hairline-gold bg-[rgba(8,8,10,0.82)] px-3 py-3 text-center text-gold-300 shadow-[0_10px_36px_rgba(0,0,0,0.6)] backdrop-blur-[6px] nav:w-[168px] nav:gap-2 nav:px-4 nav:py-4">
+                <span className="eyebrow leading-[1.45]">
+                  Know about this journey{/* [review] */}
+                </span>
+                <ChevronDownIcon className="tsplit-chevron h-4 w-4" />
+              </span>
+            </a>
+
+            <span aria-hidden="true" className="tsplit-thread flex-1" />
           </div>
+        </div>
+
+        {/* ---- Slideshow controls — off the frames, on their own line ---- */}
+        <div className="mt-5 flex items-center justify-center gap-1">
+          {DEMO_PAIRS.map((pair, i) => (
+            <button
+              key={pair.before}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-current={i === index}
+              aria-label={`Show transformation ${i + 1} of ${DEMO_PAIRS.length}`}
+              className="tsplit-tick grid h-12 w-8 place-items-center"
+            >
+              <span
+                aria-hidden="true"
+                className="tsplit-tick-bar block h-[2px] w-5 rounded-full"
+              />
+            </button>
+          ))}
 
           {/* The stop mechanism. Hidden under reduced motion — nothing is
               auto-updating there, so a pause control would be a dead end. */}
@@ -356,64 +420,13 @@ export default function TransformationSplit({
                   ? "Play the transformation slideshow"
                   : "Pause the transformation slideshow"
               }
-              className="tsplit-toggle absolute right-2 top-2 z-30 grid h-12 w-12 place-items-center nav:right-3 nav:top-3"
+              className="tsplit-toggle ml-2 grid h-12 w-12 place-items-center"
             >
               <span className="tsplit-toggle-ring grid h-9 w-9 place-items-center rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.6)] text-gold-300 opacity-70 backdrop-blur-[4px]">
                 <PauseGlyph playing={!userPaused} />
               </span>
             </button>
           )}
-
-          {/* The seam: gold thread + medallion, centred on the gap. */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 flex w-[84px] -translate-x-1/2 flex-col items-center">
-            <span aria-hidden="true" className="tsplit-thread flex-1" />
-
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Show the next transformation"
-              className="tsplit-medallion pointer-events-auto relative my-3 grid h-16 w-16 shrink-0 place-items-center rounded-full nav:h-[84px] nav:w-[84px]"
-            >
-              <span
-                aria-hidden="true"
-                className="tsplit-ring absolute inset-0 rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.72)] shadow-[0_8px_30px_rgba(0,0,0,0.55)] backdrop-blur-[6px]"
-              />
-              {/* Sweep hand — remounts each pair so the revolution restarts. */}
-              <span
-                key={index}
-                aria-hidden="true"
-                data-paused={paused}
-                style={{ "--tsplit-dur": `${SLIDE_MS}ms` } as CSSProperties}
-                className="tsplit-orbit absolute inset-0"
-              >
-                <span className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-200 shadow-[0_0_8px_rgba(201,162,75,0.9)]" />
-              </span>
-              {/* The arrow: before → after, and the direction of the control. */}
-              <ArrowRightIcon
-                aria-hidden="true"
-                className="tsplit-arrow relative h-5 w-5 text-gold-300 nav:h-6 nav:w-6"
-              />
-            </button>
-
-            <span aria-hidden="true" className="tsplit-thread flex-1" />
-          </div>
-        </div>
-
-        {/* ---- The bridge: the thread leaves the seam and drops into the story ---- */}
-        <div className="flex flex-col items-center">
-          <span aria-hidden="true" className="tsplit-thread h-8 nav:h-10" />
-          <a
-            href={`#${STORY_ID}`}
-            onClick={onBridgeClick}
-            className="tsplit-bridge group flex flex-col items-center gap-2.5 pb-1 pt-2"
-          >
-            <span className="tsplit-bridge-ring grid h-14 w-14 place-items-center rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.72)]">
-              <ChevronDownIcon className="tsplit-chevron h-5 w-5 text-gold-300" />
-            </span>
-            <span className="eyebrow text-secondary">
-              THE STORY{/* [review] */}
-            </span>
-          </a>
         </div>
       </div>
     </section>

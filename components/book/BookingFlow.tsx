@@ -47,6 +47,7 @@ import {
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import PlaceholderImage from "@/components/PlaceholderImage";
+import VideoFrame from "@/components/home/VideoFrame";
 import { CheckIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
@@ -498,6 +499,51 @@ export default function BookingFlow() {
                     Start Your Transformation
                   </a>
                 </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- §1b THE FILM ----------
+             Same asset as the home page's "In my words" band (one file, one
+             swap in components/home/VideoFrame.tsx) — presented differently
+             here: home centres it as a standalone moment, /book runs it as an
+             asymmetric two-column band directly under the hero so it reads as
+             "know who you're paying before you pay", never as a detour.
+             Deliberately BELOW the hero CTA: the H1 stays the LCP and the
+             gold button stays above the fold on mobile. */}
+        <section className="cv-auto border-t border-hairline-soft bg-alt">
+          <div className="container-site section">
+            <div className="mx-auto grid max-w-[1000px] items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-14">
+              <div>
+                <Reveal className="flex items-center gap-3">
+                  <span aria-hidden="true" className="thread-h sd-draw h-px w-10" />
+                  <p className="eyebrow">BEFORE YOU BOOK{/* [review] */}</p>
+                </Reveal>
+                {/* [review] */}
+                <SplitHeading
+                  as="h2"
+                  text="Ninety seconds, from me."
+                  className="type-h2 mt-4 text-primary"
+                />
+                <Reveal delayMs={80}>
+                  {/* [review] */}
+                  <p className="type-lead mt-4 text-secondary">
+                    Watch it before you pay. You will know exactly what the
+                    audit is, what we go through, and how I work.
+                  </p>
+                </Reveal>
+              </div>
+              <Reveal delayMs={160} className="reveal-blur">
+                <VideoFrame
+                  label="FILM — IN MY WORDS"
+                  w={1280}
+                  h={720}
+                  runtime="90 SEC"
+                  alt="Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans."
+                  caption="One take, no script — what the audit is, in his own words."
+                  /* [review] caption */
+                />
               </Reveal>
             </div>
           </div>
