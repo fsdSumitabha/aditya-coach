@@ -41,6 +41,7 @@ import {
   type ChangeEvent,
   type FormEvent,
   type MouseEvent,
+  type ReactNode,
   type SVGProps,
 } from "react";
 import Reveal from "@/components/Reveal";
@@ -106,6 +107,80 @@ const GOAL_OPTIONS = [
   "Energy",
   "Confidence",
   "Overall lifestyle change",
+];
+
+// ---------------------------------------------------------------------------
+// §7 FAQ — single list, rendered in /book's <details> card design.
+// First three are /book's own payment-gate questions. The rest are carried
+// over VERBATIM from /programs (same answers men ask before starting), so a
+// visitor who lands straight on /book from Instagram never has to leave to
+// get them answered.
+//
+// /programs' "What's your refund policy?" is deliberately NOT duplicated —
+// "Can I get a refund?" below is the same answer and the same /refund link.
+// ---------------------------------------------------------------------------
+
+const FAQS: { q: string; a: ReactNode }[] = [
+  {
+    q: "Is the payment safe?",
+    /* [review] */
+    a: "Yes. Payment is handled by Razorpay over an encrypted connection. Aditya never sees your card details.",
+  },
+  {
+    q: "Can I get a refund?",
+    /* [review] */
+    a: (
+      <>
+        Refunds are covered by our clear refund policy — no surprises.{" "}
+        <Link
+          href="/refund"
+          className="underline underline-offset-2 hover:text-secondary"
+        >
+          Read it here
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
+    q: "What if I can't make the time?",
+    /* [review] */
+    a: (
+      <>
+        No problem.{" "}
+        <a
+          href={waLink(
+            "Hi Aditya, I booked the Transformation Audit but need help with the time slot.", /* [review] */
+            COACH_WHATSAPP,
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:text-secondary"
+        >
+          Message Aditya on WhatsApp
+        </a>{" "}
+        and we&apos;ll reschedule. The slot is flexible — the decision to start
+        is the part that matters.
+      </>
+    ),
+  },
+  // ---- carried over from /programs (copy verbatim) ----
+  {
+    q: "Is this online, or do I have to be in Kolkata?",
+    a: "Both work. I'm based in Kolkata and coach men in person and worldwide online. The Transformation Audit is a 45-minute call over WhatsApp, so it doesn't matter where you are.",
+  },
+  {
+    q: "Do you take international clients?",
+    a: "Yes. I coach men worldwide online. The call, the check-ins and your plan all run remotely — nothing about the process needs you in the same city.",
+  },
+  {
+    q: "What if I'm a complete beginner?",
+    a: "Good. Beginners get the cleanest results because there's nothing to un-learn. We fix your lifestyle first — how you sleep, wake, move and eat — before anything advanced. You don't need a gym background to start.",
+  },
+  {
+    q: "How soon will I see results?",
+    a: "Some things shift in the first two weeks — energy, sleep, focus. Visible body change takes longer and depends on your starting point and how consistently you execute. I don't sell overnight transformations. I build change that lasts. Individual results vary.",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -826,89 +901,28 @@ export default function BookingFlow() {
                 <h2 className="type-h2 text-primary">Quick questions.</h2>
               </Reveal>
               <div className="mt-8 grid gap-4">
-                <Reveal index={1}>
-                  <details className="card group spot">
-                    <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                      <span className="type-h3 text-primary">
-                        Is the payment safe?
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="text-xl leading-none text-gold-300 transition-transform duration-200 group-open:rotate-45"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    {/* [review] */}
-                    <p className="type-body mt-3 text-secondary">
-                      Yes. Payment is handled by Razorpay over an encrypted
-                      connection. Aditya never sees your card details.
-                    </p>
-                  </details>
-                </Reveal>
-                <Reveal index={2}>
-                  <details className="card group spot">
-                    <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                      <span className="type-h3 text-primary">
-                        Can I get a refund?
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="text-xl leading-none text-gold-300 transition-transform duration-200 group-open:rotate-45"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    {/* [review] */}
-                    <p className="type-body mt-3 text-secondary">
-                      Refunds are covered by our clear refund policy — no
-                      surprises.{" "}
-                      <Link
-                        href="/refund"
-                        className="underline underline-offset-2 hover:text-secondary"
-                      >
-                        Read it here
-                      </Link>
-                      .
-                    </p>
-                  </details>
-                </Reveal>
-                <Reveal index={3}>
-                  <details className="card group spot">
-                    <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                      <span className="type-h3 text-primary">
-                        What if I can&apos;t make the time?
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="text-xl leading-none text-gold-300 transition-transform duration-200 group-open:rotate-45"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    {/* [review] */}
-                    <p className="type-body mt-3 text-secondary">
-                      No problem.{" "}
-                      <a
-                        href={waLink(
-                          "Hi Aditya, I booked the Transformation Audit but need help with the time slot.", /* [review] */
-                          BOOKING.COACH_WHATSAPP,
-                        )}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline underline-offset-2 hover:text-secondary"
-                      >
-                        Message Aditya on WhatsApp
-                      </a>{" "}
-                      and we&apos;ll reschedule. The slot is flexible — the
-                      decision to start is the part that matters.
-                    </p>
-                  </details>
-                </Reveal>
+                {FAQS.map((faq, i) => (
+                  <Reveal key={faq.q} delayMs={(i + 1) * 60}>
+                    <details className="card group spot">
+                      <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                        <span className="type-h3 text-primary">{faq.q}</span>
+                        <span
+                          aria-hidden="true"
+                          className="text-xl leading-none text-gold-300 transition-transform duration-200 group-open:rotate-45"
+                        >
+                          +
+                        </span>
+                      </summary>
+                      <p className="type-body mt-3 max-w-[64ch] text-secondary">
+                        {faq.a}
+                      </p>
+                    </details>
+                  </Reveal>
+                ))}
               </div>
 
               {/* [review] ONE lateral context link (funnel discipline: /programs only) */}
-              <Reveal index={4}>
+              <Reveal delayMs={480}>
                 <p className="mt-10 text-center type-small text-muted">
                   Wondering what comes after the call?{" "}
                   <Link
