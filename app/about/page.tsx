@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import FadeIn from "@/components/about/FadeIn";
+import TransformationSplit from "@/components/about/TransformationSplit";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
@@ -210,6 +211,14 @@ export default function AboutPage() {
       {/* Page-authored FX CSS — see ABOUT_FX_CSS note above */}
       <style>{ABOUT_FX_CSS}</style>
 
+      {/* ============ Section 0 — THE SPLIT (before | after opener) ============ */}
+      {/* Sits above the hero: the proof lands before the claim. Carries no
+          heading — the page's single <h1> is the hero below, and a heading
+          here would put an <h2> ahead of it. Its bridge control scrolls to
+          #story (Section 2). ⚠️ still wired to /public/demo stock frames —
+          see the DEMO ASSETS note in the component. */}
+      <TransformationSplit />
+
       {/* ============ Section 1 — HERO ("The Fade-In") ============ */}
       {/* aurora + grain atmosphere; overflow-hidden pens the drifting ghost word. */}
       <section className="bg-void glow-top grain aurora relative overflow-hidden">
@@ -277,7 +286,9 @@ export default function AboutPage() {
                   alt="Aditya Kumar Upadhyay, men's lifestyle coach, Kolkata — present-day portrait, composed and direct to camera"
                   placeholder="blur"
                   blurDataURL={IMG_ABOUT_HERO.blurDataURL}
-                  preload
+                  // no `preload`: the split opener now sits above this, so the
+                  // portrait is a viewport down and is no longer the LCP —
+                  // preloading it would race the real LCP frames for bandwidth.
                   className="sd-zoom block h-auto w-full rounded-[16px]"
                 />
               </div>
@@ -304,7 +315,11 @@ export default function AboutPage() {
       </section>
 
       {/* ============ Section 2 — THE FOUNDER STORY ("The Centerpiece") ============ */}
-      <section className="bg-surface-1 grain aurora relative overflow-hidden border-y border-hairline-soft">
+      {/* id="story" — the landing point for the opener's bridge control. */}
+      <section
+        id="story"
+        className="bg-surface-1 grain aurora relative overflow-hidden border-y border-hairline-soft"
+      >
         <div className="container-site section-lg">
           <h2 className="sr-only">The Founder Story</h2>
 
