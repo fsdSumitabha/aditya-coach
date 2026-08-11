@@ -176,36 +176,6 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* ---- 4. LEAD MAGNET 3 — The Personality Audit Blueprint ---- */}
-      <section
-        id="personality-audit"
-        className="bg-alt cv-auto border-t border-hairline-soft"
-      >
-        <div className="container-site section">
-          <Reveal className="max-w-[720px] mx-auto">
-            <LeadMagnetCard
-              title={"The Personality Audit Blueprint" /* [review] */}
-              description={
-                "Body language, grooming and style — the starting audit. Where you stand today, and the first fixes that change how people see you." /* [review] */
-              }
-              imageLabel="IMG-PERSONALITY"
-              imageAlt={
-                "Cover of the free Personality Audit Blueprint PDF" /* [review] */
-              }
-              source="tools-personality-audit"
-              resource="personality-audit"
-              imageSrc="/aditya/aditya_03.jpg"
-              pdfHref={PERSONALITY_PDF}
-              pdfLabel={"Open the Personality Audit now" /* [review] */}
-              buttonLabel={"Send Me the Audit" /* [review] */}
-              successBody={
-                "Your Personality Audit Blueprint has been emailed to you." /* [review] */
-              }
-            />
-          </Reveal>
-        </div>
-      </section>
-
       {/* gold-thread stitch: the give-first magnets draw down into the payoff.
           Static (full) on non-supporting browsers; scale-draws on scroll. */}
       <div className="container-site" aria-hidden="true">
