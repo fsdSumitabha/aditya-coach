@@ -186,64 +186,6 @@ export default function MethodPage() {
     <>
       <JsonLd data={[howToSchema, serviceSchema, breadcrumbSchema]} />
 
-      {/* ============ 2. HERO — DOCTRINE OPENER ============ */}
-      <section className="aurora grain relative overflow-hidden bg-void">
-        {/* ONE ghost watermark behind the doctrine block — decorative, drifts */}
-        <span
-          aria-hidden="true"
-          className="ghost-word sd-ghost-drift left-[2%] top-[30%] md:left-[6%]"
-        >
-          ORDER
-        </span>
-        {/* Full-viewport doctrine opener — the page states its law, then proves it */}
-        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16">
-          <div className="mx-auto flex max-w-[760px] flex-col items-center text-center md:mx-0 md:items-start md:text-left">
-            <div className="flex items-center gap-4">
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
-              <p className="eyebrow">THE METHOD</p>{/* [review] */}
-            </div>
-            {/* Hero H1 — LCP element; never animated, paints at final state frame 1 */}
-            <h1 className="font-display mt-5 text-[clamp(2.4rem,4.8vw,4.2rem)] font-medium leading-[1.06] tracking-[-0.02em] text-primary">
-              The Right Order of Change.{" "}
-              <span className="block text-secondary">
-                Most coaches get this wrong.
-              </span>
-            </h1>
-            <Reveal delayMs={100} className="reveal-blur mt-8 max-w-[62ch] space-y-4">
-              <p className="type-lead text-secondary">
-                Most coaches hand you a diet. A supplement stack. A quick fix.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                That&apos;s the top of the pyramid. The tip. The part everyone
-                can see.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                But there&apos;s no foundation under it. Nothing holding it up.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                So it works for three weeks. Then it collapses. And you blame
-                yourself.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                It was never you. It was the order.
-              </p>{/* [review] */}
-              <p className="type-lead text-primary">
-                Change built from the top down always falls. Change built from
-                the ground up lasts for the rest of your life.
-              </p>{/* [review] */}
-            </Reveal>
-            <Reveal delayMs={220} className="mt-8">
-              <SmoothScrollLink
-                targetId="foundation-stack"
-                className="link-draw inline-flex min-h-[48px] items-center gap-2 font-medium text-gold-300 transition-colors hover:text-gold-200 motion-safe:animate-[wa-breathe_2.6s_ease-in-out_infinite]"
-              >
-                See how the order works ↓{/* [review] */}
-              </SmoothScrollLink>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle base → Presence top) ============ */}
       <section
         id="foundation-stack"
