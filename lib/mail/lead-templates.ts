@@ -18,6 +18,10 @@ import type { Resource } from "./resources";
  */
 
 export type LeadMeta = {
+  /** lead's full name, as typed */
+  name: string;
+  /** lead's phone number, as typed */
+  phone: string;
   email: string;
   source: string;
   /** ISO timestamp */
@@ -34,9 +38,12 @@ export function leadMagnetDelivery(opts: {
   /** on-site fallback link to the same guide */
   pdfUrl?: string;
   bookUrl: string;
+  /** lead's full name — the greeting is dropped when it's absent */
+  name?: string;
 }): { subject: string; html: string; text: string } {
   const { resource } = opts;
   const t = escapeHtml(resource.title);
+  const firstName = (opts.name ?? "").trim().split(/\s+/)[0] ?? "";
 
   const attachLine = opts.attached
     ? `<p style="margin:0 0 14px">Your copy of <strong>${t}</strong> is attached to this email as a PDF. Save it somewhere you'll actually open it.</p>`
@@ -49,6 +56,10 @@ export function leadMagnetDelivery(opts: {
   const bodyHtml =
     eyebrow("Your free guide") +
     `<h1 style="margin:0 0 14px;font-size:22px;font-weight:600">Here's ${t}.</h1>` +
+    /* [review] first-name greeting — dropped when no name was captured */
+    (firstName
+      ? `<p style="margin:0 0 14px">${escapeHtml(firstName)} — you asked for it, so here it is.</p>`
+      : "") +
     `<p style="margin:0 0 14px">${escapeHtml(resource.summary)}</p>` +
     attachLine +
     calloutBox(
@@ -63,6 +74,7 @@ export function leadMagnetDelivery(opts: {
   const text = [
     `Here's ${resource.title}.`,
     "",
+    firstName ? `${firstName} — you asked for it, so here it is.` : "",
     resource.summary,
     "",
     opts.attached
@@ -98,6 +110,7 @@ export function leadAdminNotification(opts: {
 }): { subject: string; html: string; text: string } {
   const { resource, meta } = opts;
   const email = escapeHtml(meta.email);
+  const phoneHref = meta.phone.replace(/[^\d+]/g, "");
 
   const status = opts.delivered
     ? `<span style="color:#2e7d32;font-weight:600">Delivered ✓</span>`
@@ -105,6 +118,11 @@ export function leadAdminNotification(opts: {
 
   const rows: [string, string][] = [
     ["Resource", escapeHtml(resource.title)],
+    ["Name", escapeHtml(meta.name)],
+    [
+      "Phone",
+      `<a href="tel:${escapeHtml(phoneHref)}" style="color:#8a6d1f">${escapeHtml(meta.phone)}</a>`,
+    ],
     ["Email", `<a href="mailto:${email}" style="color:#8a6d1f">${email}</a>`],
     ["Source", escapeHtml(meta.source)],
     ["Received", `${escapeHtml(istTimestamp(meta.receivedAt))} IST`],
@@ -122,6 +140,8 @@ export function leadAdminNotification(opts: {
 
   const text = [
     `New lead — ${resource.title}`,
+    `Name: ${meta.name}`,
+    `Phone: ${meta.phone}`,
     `Email: ${meta.email}`,
     `Source: ${meta.source}`,
     `Received: ${istTimestamp(meta.receivedAt)} IST`,
@@ -134,7 +154,7 @@ export function leadAdminNotification(opts: {
     .join("\n");
 
   return {
-    subject: `New lead — ${resource.title} (${meta.email})`,
+    subject: `New lead — ${resource.title} (${meta.name} · ${meta.phone})`,
     html: renderEmail({ preheader: `New download: ${resource.title}`, bodyHtml }),
     text,
   };

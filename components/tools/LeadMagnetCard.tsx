@@ -91,7 +91,7 @@ export default function LeadMagnetCard({
             consent={
               /* [review] tools-spec DPDP consent — asset-neutral wording */
               <p className="type-caption text-muted mt-3">
-                By entering your email you agree to receive this guide and
+                By submitting your details you agree to receive this guide and
                 occasional emails from Aditya Kumar Upadhyay. Your data is
                 handled under India&apos;s{" "}
                 <Link

@@ -97,12 +97,6 @@ export default function ToolsPage() {
               <a href="#training-split" className={chipClass}>
                 Training Split
               </a>
-              <a href="#personality-audit" className={chipClass}>
-                Personality Audit{/* [review] */}
-              </a>
-              <a href="#calculator" className={chipClass}>
-                Calorie Calculator
-              </a>
             </nav>
           </Reveal>
 
@@ -186,7 +180,7 @@ export default function ToolsPage() {
       <section
         id="calculator"
         className="bg-alt cv-auto aurora relative overflow-hidden"
-      >
+      > 
         {/* extra bottom padding keeps ~88px+ clearance under the WhatsApp FAB */}
         <div className="container-site section" style={{ paddingBottom: 112 }}>
           <div className="text-center max-w-[720px] mx-auto">

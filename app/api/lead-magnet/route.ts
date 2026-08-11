@@ -19,6 +19,20 @@ export const dynamic = "force-dynamic";
 
 const EMAIL_MAX = 254;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const NAME_MAX = 120;
+const PHONE_MAX = 24;
+/** Digits only, after stripping formatting — 10 (IN local) to 15 (E.164 max). */
+const PHONE_DIGITS_RE = /^\d{10,15}$/;
+
+function phoneDigits(value: string): string {
+  return value.replace(/[^\d]/g, "").replace(/^0+/, "");
+}
+
+/** `"Display Name" <addr>` — quoted so commas/angle brackets can't split the header. */
+function recipientAddress(name: string, email: string): string {
+  const display = sanitizeHeader(name).replace(/["\\]/g, "");
+  return display ? `"${display}" <${email}>` : email;
+}
 
 /** Where lead notifications land (admin). */
 function adminRecipient(): string | undefined {
@@ -74,6 +88,8 @@ export async function POST(request: NextRequest) {
   const payload = (body ?? {}) as Record<string, unknown>;
   const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
+  const name = str(payload.name);
+  const phone = str(payload.phone);
   const email = str(payload.email);
   const source = str(payload.source) || "lead-magnet";
   const resourceKey = str(payload.resource);
@@ -83,17 +99,18 @@ export async function POST(request: NextRequest) {
   // Honeypot tripped → report success and drop it.
   if (honeypot) return json({ ok: true }, 200);
 
+  const errors: Partial<Record<"name" | "phone" | "email", string>> = {};
+  if (name.length < 2 || name.length > NAME_MAX) {
+    errors.name = "Please enter your full name.";
+  }
+  if (phone.length > PHONE_MAX || !PHONE_DIGITS_RE.test(phoneDigits(phone))) {
+    errors.phone = "That doesn't look like a valid phone number.";
+  }
   if (!email || email.length > EMAIL_MAX || !EMAIL_RE.test(email)) {
-    return json(
-      {
-        ok: false,
-        errors: {
-          email:
-            "That doesn't look like a valid email. Check it and try again.",
-        },
-      },
-      422,
-    );
+    errors.email = "That doesn't look like a valid email. Check it and try again.";
+  }
+  if (Object.keys(errors).length > 0) {
+    return json({ ok: false, errors }, 422);
   }
 
   if (rateLimited(clientIp(request))) {
@@ -135,9 +152,15 @@ export async function POST(request: NextRequest) {
   // 1) Deliver the guide to the subscriber (primary action).
   let delivered = false;
   try {
-    const mail = leadMagnetDelivery({ resource, attached: ready, pdfUrl, bookUrl });
+    const mail = leadMagnetDelivery({
+      resource,
+      attached: ready,
+      pdfUrl,
+      bookUrl,
+      name,
+    });
     await sendMail({
-      to: email,
+      to: recipientAddress(name, email),
       subject: sanitizeHeader(mail.subject),
       html: mail.html,
       text: mail.text,
@@ -158,6 +181,8 @@ export async function POST(request: NextRequest) {
       resource,
       delivered,
       meta: {
+        name,
+        phone,
         email,
         source,
         receivedAt,
