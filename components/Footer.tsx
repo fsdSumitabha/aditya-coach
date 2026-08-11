@@ -36,7 +36,6 @@ const COLUMNS: {
       { label: "Free Lifestyle Blueprint", href: "/tools" },
       { label: "Fat Loss Training Split", href: "/tools" },
       { label: "Personality Audit Blueprint", href: "/tools" } /* [review] third free blueprint per Aditya's brief */,
-      { label: "Calorie Calculator", href: "/tools" },
       { label: "Articles", href: "/blog" },
     ],
   },
