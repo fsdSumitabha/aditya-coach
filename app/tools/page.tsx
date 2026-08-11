@@ -176,34 +176,6 @@ export default function ToolsPage() {
         <div className="thread-h sd-draw" />
       </div>
 
-      {/* ---- 5. THE CALORIE CALCULATOR — the hero tool ---- */}
-      <section
-        id="calculator"
-        className="bg-alt cv-auto aurora relative overflow-hidden"
-      > 
-        {/* extra bottom padding keeps ~88px+ clearance under the WhatsApp FAB */}
-        <div className="container-site section" style={{ paddingBottom: 112 }}>
-          <div className="text-center max-w-[720px] mx-auto">
-            <SplitHeading
-              as="h2"
-              text="Get a Starting Estimate of How Much You Should Be Eating."
-              className="type-h2 text-primary"
-            />
-            <Reveal
-              as="p"
-              delayMs={120}
-              className="type-lead text-secondary mt-5"
-            >
-              Most men are eating for the body they currently have. You should
-              be eating for the body you want to have. This calculator shows
-              you the difference.
-            </Reveal>
-          </div>
-          <Reveal index={1} className="max-w-[880px] mx-auto mt-10">
-            <Calculator />
-          </Reveal>
-        </div>
-      </section>
     </>
   );
 }
