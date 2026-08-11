@@ -8,7 +8,6 @@ import Marquee from "@/components/Marquee";
 import { WhatsAppIcon } from "@/components/icons";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { waLink } from "@/lib/config";
-import SmoothScrollLink from "@/components/method/SmoothScrollLink";
 import FoundationStack from "@/components/method/FoundationStack";
 import StepRail from "@/components/method/StepRail";
 import {
@@ -191,6 +190,8 @@ export default function MethodPage() {
         id="foundation-stack"
         className="border-y border-hairline-soft bg-alt"
       >
+        {/* Page h1 — the hero that carried it is gone; keep exactly one h1 */}
+        <h1 className="sr-only">The Right Order of Change.</h1>
         {/* Real-text equivalent for assistive tech — the stack below is decorative */}
         <p className="sr-only">
           The Complete Rebuild, from the base up: Lifestyle at the foundation,
@@ -344,69 +345,6 @@ export default function MethodPage() {
         </div>
       </section>
 
-      {/* ============ 5. "WHY THE ORDER MATTERS" + MYTH vs TRUTH ============ */}
-      <section className="cv-auto border-y border-hairline-soft bg-alt">
-        <div className="container-site section">
-          <div className="max-w-[720px]">
-            <SplitHeading
-              as="h2"
-              text="Why the order matters."
-              className="type-h2 text-primary"
-            />
-            <Reveal delayMs={100} className="reveal-blur mt-6 space-y-4">
-              <p className="type-lead text-secondary">
-                Anyone can hand you a diet. Anyone can sell you a pill.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                The hard part isn&apos;t the pieces. It&apos;s the order you put
-                them in.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                Do it in the right order and each layer holds up the next. The
-                change compounds. It lasts.
-              </p>{/* [review] */}
-              <p className="type-lead text-secondary">
-                Do it in the wrong order and every layer sits on nothing.
-                That&apos;s why it always falls apart. That&apos;s why
-                you&apos;ve quit before.
-              </p>{/* [review] */}
-              <p className="type-lead text-primary">
-                Same ingredients. Different order. Completely different life.
-              </p>{/* [review] */}
-            </Reveal>
-          </div>
-
-          <dl className="mt-12 flex flex-col md:mt-16">
-            {MYTH_TRUTH.map((row, i) => (
-              <div
-                key={i}
-                className="group grid gap-y-3 border-b border-hairline-soft px-3 py-6 transition-colors duration-300 first:border-t hover:bg-[rgba(201,162,75,0.04)] md:grid-cols-2 md:gap-x-10"
-              >
-                <Reveal
-                  as="dt"
-                  index={i}
-                  className="reveal-left type-body text-muted"
-                >
-                  <span className="type-step mb-1 block text-muted">
-                    Myth
-                  </span>{/* [review] */}
-                  &ldquo;{row.myth}&rdquo;
-                </Reveal>
-                <Reveal
-                  as="dd"
-                  delayMs={i * 100 + 150}
-                  className="reveal-right type-body border-l-2 border-[var(--gold-500)] pl-4 text-primary transition-shadow duration-300 group-hover:[box-shadow:-6px_0_18px_-8px_rgba(201,162,75,0.5)]"
-                >
-                  <span className="type-step mb-1 block text-gold-500">
-                    Truth
-                  </span>{/* [review] */}
-                  {row.truth}
-                </Reveal>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
 
       {/* ============ 5b. POSITIONING — WHO THE COMPLETE REBUILD IS FOR ============ */}
       <section className="cv-auto aurora grain relative overflow-hidden border-t border-hairline-soft bg-surface-warm">
