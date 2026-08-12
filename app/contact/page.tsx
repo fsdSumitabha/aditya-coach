@@ -161,29 +161,39 @@ function CalendarIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Label/value row inside the Direct Contact card — stacked on mobile, 2-col ≥768px. */
-function ContactRow({
+/**
+ * One contact fact, as a tile in the Direct Contact grid.
+ *
+ * Alignment is structural, not eyeballed: every tile is this same component
+ * with the same three slots — icon+label rule, value, optional caption pinned
+ * to the bottom (`mt-auto`). Grid rows stretch, so a two-line address and a
+ * one-line phrase still produce a flush row. Nothing here can drift.
+ */
+function ContactFact({
   label,
   icon,
+  index,
+  note,
   children,
 }: {
   label: string;
   icon: ReactNode;
+  /** sibling position — drives the 70ms reveal stagger */
+  index: number;
+  note?: string;
   children: ReactNode;
 }) {
   return (
-    <div className="group border-b border-hairline-soft py-5 first:pt-0 last:border-b-0 last:pb-0 md:grid md:grid-cols-[180px_1fr] md:items-start md:gap-x-10">
-      <div className="eyebrow md:pt-1 flex items-center gap-2.5">
-        <span
-          aria-hidden="true"
-          className="text-gold-500 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
-        >
-          {icon}
-        </span>
+    <Reveal as="div" delayMs={index * 70} className="card flex h-full flex-col">
+      <dt className="eyebrow flex items-center gap-2.5">
+        <span aria-hidden="true">{icon}</span>
         {label}
-      </div>
-      <div className="mt-2 md:mt-0">{children}</div>
-    </div>
+      </dt>
+      <dd className="mt-3 flex flex-1 flex-col">
+        {children}
+        {note ? <p className="type-caption text-muted mt-auto pt-3">{note}</p> : null}
+      </dd>
+    </Reveal>
   );
 }
 
@@ -258,42 +268,27 @@ export default function ContactPage() {
               {/* [review] */}
             </p>
           </Reveal>
-          <Reveal index={2} className="mt-10 max-w-3xl">
-            {/* gold hairline top edge reads as a concierge desk card */}
-            <div className="card spot" style={{ borderTopColor: "var(--gold-600)" }}>
-              <ContactRow label="Coach" icon={<PersonIcon width={15} height={15} />}>
-                <p className="type-body text-primary">{COACH_NAME}</p>
-              </ContactRow>
-              <ContactRow label="Email" icon={<MailIcon width={15} height={15} />}>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="type-body inline-flex min-h-12 items-center text-gold-300 underline underline-offset-4 hover:text-gold-100"
-                  aria-label={`Email Aditya at ${EMAIL}`}
-                >
-                  {EMAIL}
-                </a>
-                <p className="type-caption text-muted">
-                  For detailed enquiries and documents.
-                  {/* [review] */}
+          {/* Primary channel gets its own panel so the WhatsApp button is a
+              flex sibling of the number, never an inline box inside a text
+              row. Gold hairline border reads as the concierge desk. */}
+          <Reveal index={2} className="mt-10">
+            <div
+              className="card spot flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10"
+              style={{ borderColor: "var(--hairline-gold)" }}
+            >
+              <div className="min-w-0">
+                <p className="eyebrow flex items-center gap-2.5">
+                  <span aria-hidden="true">
+                    <ChatIcon width={15} height={15} />
+                  </span>
+                  Phone &amp; WhatsApp
                 </p>
-              </ContactRow>
-              <ContactRow label="Phone & WhatsApp" icon={<ChatIcon width={15} height={15} />}>
-                <a
-                  href={WA_CONTACT_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-wa w-full sm:w-auto"
-                  aria-label="Message Aditya on WhatsApp"
-                >
-                  <WhatsAppIcon width={18} height={18} />
-                  Message on WhatsApp
-                </a>
                 {/* Dialable tel: link — Razorpay merchant review wants a
                     working phone number, not only a chat deep-link.
                     [review] confirm the number takes voice calls. */}
                 <a
                   href={`tel:+${WHATSAPP_NUMBER}`}
-                  className="type-body mt-3 inline-flex min-h-12 items-center text-gold-300 underline underline-offset-4 hover:text-gold-100"
+                  className="text-primary hover:text-gold-200 mt-2 inline-flex min-h-12 items-center text-[1.375rem] font-medium tracking-[0.005em] transition-colors sm:text-2xl"
                   aria-label={`Call Aditya on +${WHATSAPP_NUMBER}`}
                 >
                   +{WHATSAPP_NUMBER}
@@ -302,34 +297,88 @@ export default function ContactPage() {
                   Same number for calls and WhatsApp. Quickest reply.
                   {/* [review] */}
                 </p>
-              </ContactRow>
-              <ContactRow label="Location" icon={<PinIcon width={15} height={15} />}>
-                {/* Full operational address as selectable text — Razorpay
-                    merchant review asks for exactly this. */}
-                <address className="type-body text-primary not-italic">
-                  {ADDRESS.STREET}, {ADDRESS.LOCALITY}
-                  <br />
-                  {ADDRESS.CITY} {ADDRESS.POSTAL_CODE}, {ADDRESS.REGION},{" "}
-                  {ADDRESS.COUNTRY}
-                </address>
-              </ContactRow>
-              <ContactRow label="Availability" icon={<GlobeIcon width={15} height={15} />}>
-                <p className="type-body text-primary">{SERVICE_AREA}</p>
-              </ContactRow>
-              <ContactRow label="Response time" icon={<ClockIcon width={15} height={15} />}>
-                <p className="type-body text-primary">Typically {RESPONSE_TIME}</p>
-              </ContactRow>
-              <ContactRow label="Hours" icon={<CalendarIcon width={15} height={15} />}>
-                {/* [review]: confirm actual working hours */}
-                <p className="type-body text-primary">{HOURS}</p>
-              </ContactRow>
+              </div>
+              <a
+                href={WA_CONTACT_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-wa w-full shrink-0 sm:w-auto"
+                aria-label="Message Aditya on WhatsApp"
+              >
+                <WhatsAppIcon width={18} height={18} />
+                Message on WhatsApp
+              </a>
             </div>
           </Reveal>
+
+          {/* Every remaining fact is one uniform tile — same slots, stretched
+              rows. Razorpay-visible details stay real selectable text. */}
+          <dl className="mt-4 grid gap-4 sm:grid-cols-2 md:mt-5 md:gap-5 lg:grid-cols-3">
+            <ContactFact
+              label="Coach"
+              index={0}
+              icon={<PersonIcon width={15} height={15} />}
+            >
+              <p className="type-body text-primary">{COACH_NAME}</p>
+            </ContactFact>
+
+            <ContactFact
+              label="Email"
+              index={1}
+              icon={<MailIcon width={15} height={15} />}
+              note="For detailed enquiries and documents." /* [review] */
+            >
+              <a
+                href={`mailto:${EMAIL}`}
+                className="type-body text-gold-300 hover:text-gold-100 inline-flex min-h-12 items-center break-all underline underline-offset-4"
+                aria-label={`Email Aditya at ${EMAIL}`}
+              >
+                {EMAIL}
+              </a>
+            </ContactFact>
+
+            <ContactFact
+              label="Response time"
+              index={2}
+              icon={<ClockIcon width={15} height={15} />}
+            >
+              <p className="type-body text-primary">Typically {RESPONSE_TIME}</p>
+            </ContactFact>
+
+            <ContactFact
+              label="Location"
+              index={3}
+              icon={<PinIcon width={15} height={15} />}
+            >
+              {/* Full operational address as selectable text — Razorpay
+                  merchant review asks for exactly this. */}
+              <address className="type-body text-primary not-italic">
+                {ADDRESS.STREET}, {ADDRESS.LOCALITY}
+                <br />
+                {ADDRESS.CITY} {ADDRESS.POSTAL_CODE}, {ADDRESS.REGION},{" "}
+                {ADDRESS.COUNTRY}
+              </address>
+            </ContactFact>
+
+            <ContactFact
+              label="Availability"
+              index={4}
+              icon={<GlobeIcon width={15} height={15} />}
+            >
+              <p className="type-body text-primary">{SERVICE_AREA}</p>
+            </ContactFact>
+
+            <ContactFact
+              label="Hours"
+              index={5}
+              icon={<CalendarIcon width={15} height={15} />}
+            >
+              {/* [review]: confirm actual working hours */}
+              <p className="type-body text-primary">{HOURS}</p>
+            </ContactFact>
+          </dl>
           {/* gold-thread stitch — draws on scroll, leading the eye into the enquiry form */}
-          <div
-            className="thread-h sd-draw mt-14 max-w-3xl md:mt-16"
-            aria-hidden="true"
-          />
+          <div className="thread-h sd-draw mt-14 md:mt-16" aria-hidden="true" />
         </div>
       </section>
 
