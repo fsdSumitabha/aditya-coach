@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_ORIGIN } from "@/lib/site";
 import { posts } from "@/lib/blog";
+import { stories } from "@/lib/stories";
 
 export const dynamic = "force-static";
 
@@ -34,6 +35,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(p.dateModified),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    })),
+    ...stories.map((s) => ({
+      url: `${SITE_ORIGIN}/results/${s.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
   ];
 }

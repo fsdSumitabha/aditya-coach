@@ -12,14 +12,16 @@
 // same beat; prev/next and the dots move the WHOLE set. Under the panels sits
 // that man's headline, which is the link through to his page.
 //
-// ⚠️  CONSENT + PLACEHOLDERS  ⚠️
+// ⚠️  CONSENT  ⚠️
 // Aditya's own photographs and client-01 / client-02 are cleared (consent
 // confirmed 29 Jul 2026). client-03 / client-04 photographs were supplied by
-// the owner 12 Aug 2026 — [review] their WRITTEN consent is not yet recorded
-// here, and their headlines are still unwritten, so both sets stay unlinked
-// with a "to be confirmed" headline until the owner supplies real copy.
-// No set is ever filled with stock imagery — this is the proof page, and
-// borrowed proof here is worse than an empty frame.
+// the owner 12 Aug 2026 — [review] their WRITTEN consent is not yet recorded,
+// and client-03 / client-04 are named in their stories, so confirm before
+// launch. No set is ever filled with stock imagery — this is the proof page,
+// and borrowed proof here is worse than an empty frame.
+//
+// Every set now reads through to its story at /results/[slug]; the headline is
+// the link. Story copy lives in lib/stories.ts, not here.
 
 import Image from "next/image";
 import Link from "next/link";
@@ -87,8 +89,8 @@ const SETS: TxSet[] = [
     id: "client-01",
     eyebrow: "CLIENT 01",
     headline: "He did not come to me to lose weight.",
-    href: "/programs",
-    linkLabel: "The coaching behind this",
+    href: "/results/client-transformation-entrepreneur-fashion-industry",
+    linkLabel: "Read his story",
     before: {
       kind: "photo",
       src: "/client/client-01-before.jpg",
@@ -104,8 +106,10 @@ const SETS: TxSet[] = [
     id: "client-02",
     eyebrow: "CLIENT 02",
     headline: "The weight was never the problem. The lifestyle was.",
-    href: "/programs",
-    linkLabel: "The coaching behind this",
+    // His story is published — the headline reads through to it rather than to
+    // the generic programs page. See lib/stories.ts.
+    href: "/results/success-had-already-found-him-presence-hadnt",
+    linkLabel: "Read his story",
     before: {
       kind: "photo",
       src: "/client/client-02-before.jpg",
@@ -117,13 +121,12 @@ const SETS: TxSet[] = [
       alt: "Same client after the lifestyle came first.",
     },
   },
-  // ---- Photographs on file. Headlines + written consent still outstanding. --
   {
     id: "client-03",
     eyebrow: "CLIENT 03",
-    headline: "Headline to be confirmed.",
-    href: null,
-    linkLabel: "",
+    headline: "He built companies on discipline. He’d just never turned it on himself.",
+    href: "/results/he-built-companies-on-discipline-hed-just-never-turned-it-on-himself",
+    linkLabel: "Read his story",
     before: {
       kind: "photo",
       src: "/client/client-03-before.jpg",
@@ -141,9 +144,9 @@ const SETS: TxSet[] = [
   {
     id: "client-04",
     eyebrow: "CLIENT 04",
-    headline: "Headline to be confirmed.",
-    href: null,
-    linkLabel: "",
+    headline: "Most men wait until something forces the change. Jeet didn’t wait.",
+    href: "/results/client-transformation-jeet-corporate-professional",
+    linkLabel: "Read his story",
     before: {
       kind: "photo",
       src: "/client/client-04-before.png",

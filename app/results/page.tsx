@@ -59,7 +59,7 @@ type TxImage = {
 
 const IMG = {
   t1_before: {
-    src: "/aditya/before/before_transformation.jpg",
+    src: "/aditya/before/before_transformation.png",
     w: 800,
     h: 1000,
     label: "ADITYA BEFORE",
@@ -146,8 +146,10 @@ const TRANSFORMATIONS: Transformation[] = [
     quote:
       "He did not come to me to lose weight. He came because he did not recognize himself anymore. We did not just change his body. We changed his entire lifestyle.",
     attribution: "— Aditya, on a client", /* [review] coach narration */
-    linkHref: "/programs", // client cards → matching program
-    linkLabel: "The coaching behind this",
+    // NOTE: renders the /client/client-01-* photographs, i.e. the set
+    // <TransformationStage> labels CLIENT 01. His story is published.
+    linkHref: "/results/client-transformation-entrepreneur-fashion-industry",
+    linkLabel: "Read his story",
   },
   {
     id: "client-03",
@@ -162,8 +164,10 @@ const TRANSFORMATIONS: Transformation[] = [
     quote:
       "The weight was never the problem. The lifestyle was. Fix that — and the body follows.",
     attribution: "— Aditya, on a client", /* [review] */
-    linkHref: "/programs",
-    linkLabel: "The coaching behind this",
+    // NOTE: this entry renders the /client/client-02-* photographs, i.e. the
+    // set <TransformationStage> labels CLIENT 02. Its story is published.
+    linkHref: "/results/success-had-already-found-him-presence-hadnt",
+    linkLabel: "Read his story",
   },
 
   // ---- FUTURE SLOTS (scaffolded, currently inactive) ---------------------
