@@ -219,6 +219,54 @@ const STAGE_FX_CSS = `
   transform-origin: top center;
 }
 
+/* The seam CTA — the badge on the gold thread is the read-through to this
+   man's story. It carries its label at every size rather than revealing it on
+   hover, because the primary device is a phone and a phone never hovers. The
+   label sits UNDER the badge, not through the middle of the pair: on mobile the
+   gap between the panels is 10px, so a horizontal pill would lie across both
+   photographs. */
+.stage-seam-cta { text-decoration: none; }
+.stage-seam-badge {
+  position: relative;
+  border: 1px solid var(--hairline-gold);
+  background: rgba(8, 8, 10, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+/* Resting ring pulse — the only cue a touch device gets that this is tappable.
+   A pseudo-element so transform/opacity animate, never box-shadow. */
+.stage-seam-badge::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-500);
+  opacity: 0;
+}
+.stage-seam-label {
+  white-space: nowrap;
+  border: 1px solid var(--hairline-gold);
+  border-radius: 999px;
+  background: rgba(8, 8, 10, 0.8);
+  backdrop-filter: blur(4px);
+  color: var(--gold-300);
+  padding: 4px 10px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.stage-seam-cta:hover .stage-seam-badge,
+.stage-seam-cta:focus-visible .stage-seam-badge {
+  border-color: var(--gold-300);
+  background: rgba(201, 162, 75, 0.18);
+}
+.stage-seam-cta:hover .stage-seam-label,
+.stage-seam-cta:focus-visible .stage-seam-label {
+  border-color: var(--gold-300);
+  color: var(--gold-100);
+}
+
 .stage-nav:hover:not(:disabled) { border-color: var(--gold-500); color: var(--gold-200); }
 .stage-nav:disabled { opacity: 0.35; cursor: default; }
 
@@ -255,9 +303,31 @@ const STAGE_FX_CSS = `
 
   .stage-dot-bar { transition: transform 400ms var(--ease-out-expo), background-color 300ms var(--ease-standard); }
   .stage-toggle-ring { transition: border-color 300ms var(--ease-standard), color 300ms var(--ease-standard), opacity 300ms var(--ease-standard); }
+
+  .stage-seam-badge,
+  .stage-seam-label,
+  .stage-seam-arrow {
+    transition: transform 320ms var(--ease-out-expo),
+      border-color 300ms var(--ease-standard),
+      background-color 300ms var(--ease-standard),
+      color 300ms var(--ease-standard);
+  }
+  /* Only the interactive badge pulses. The placeholder mark stays still. */
+  .stage-seam-cta .stage-seam-badge::after { animation: stage-seam-ring 2.9s var(--ease-out-expo) infinite; }
+  .stage-seam-cta:hover .stage-seam-badge,
+  .stage-seam-cta:focus-visible .stage-seam-badge { transform: scale(1.1); }
+  .stage-seam-cta:hover .stage-seam-arrow { transform: translateX(2px); }
+  .stage-seam-cta:hover .stage-seam-label,
+  .stage-seam-cta:focus-visible .stage-seam-label { transform: translateY(2px); }
+  /* The pulse is an invitation, not a nag — it stops once he is already here. */
+  .stage-seam-cta:hover .stage-seam-badge::after { animation: none; }
 }
 
 @keyframes stage-draw { from { transform: scaleY(0); } }
+@keyframes stage-seam-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  70%, 100% { transform: scale(1.6); opacity: 0; }
+}
 @keyframes stage-enter {
   from { opacity: 0; transform: translateX(calc(var(--stage-dir, 1) * 18px)); }
 }
@@ -476,17 +546,37 @@ export default function TransformationStage({
           <Panel side="before" index={index} />
           <Panel side="after" index={index} />
 
-          {/* The seam: gold thread through a small before → after badge. The
-              bottom padding lifts it off the plates so it centres on the
-              photographs, not on the figures. */}
+          {/* The seam: gold thread through a small before → after badge, which
+              is also the way in to this man's story. The bottom padding lifts
+              it off the plates so it centres on the photographs, not on the
+              figures. */}
           <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 flex w-12 -translate-x-1/2 flex-col items-center pb-[34px] nav:pb-[50px]">
             <span aria-hidden="true" className="stage-thread flex-1" />
-            <span
-              aria-hidden="true"
-              className="my-2 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-hairline-gold bg-[rgba(8,8,10,0.8)] shadow-[0_6px_20px_rgba(0,0,0,0.5)] backdrop-blur-[4px] nav:h-11 nav:w-11"
-            >
-              <ArrowRightIcon className="h-4 w-4 text-gold-300" />
-            </span>
+
+            {set.href !== null ? (
+              <Link
+                href={set.href}
+                aria-label={`${set.linkLabel} — ${set.headline}`}
+                className="stage-seam-cta pointer-events-auto my-2 flex shrink-0 flex-col items-center gap-2"
+              >
+                <span className="stage-seam-badge grid h-11 w-11 place-items-center rounded-full nav:h-12 nav:w-12">
+                  <ArrowRightIcon
+                    aria-hidden="true"
+                    className="stage-seam-arrow h-4 w-4 text-gold-300"
+                  />
+                </span>
+                <span className="stage-seam-label">{set.linkLabel}</span>
+              </Link>
+            ) : (
+              // No story published for this man yet — the badge stays a mark.
+              <span
+                aria-hidden="true"
+                className="stage-seam-badge my-2 grid h-9 w-9 shrink-0 place-items-center rounded-full nav:h-11 nav:w-11"
+              >
+                <ArrowRightIcon className="h-4 w-4 text-gold-300" />
+              </span>
+            )}
+
             <span aria-hidden="true" className="stage-thread flex-1" />
           </div>
         </div>
