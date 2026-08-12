@@ -118,7 +118,7 @@ export default function MethodPage() {
           The Complete Rebuild, in order: Lifestyle first, then Body, then
           Nutrition, then Performance, with Presence last.
         </p>
-        {/* Showpiece: sticky-pinned scene, tiers assemble top-down on scroll */}
+        {/* The five layers, widest first — each box carries its own copy */}
         <FoundationStack />
       </section>
 

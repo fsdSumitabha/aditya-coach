@@ -3,6 +3,7 @@
 import { useEffect, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import Scene from "./Scene";
+import { Stats } from "@react-three/drei";
 
 /**
  * First-seconds frame-rate watchdog. In-app browsers (Instagram/WhatsApp
@@ -62,7 +63,7 @@ export default function ExperienceCanvas({
       ) {
         onPerfFail();
       }
-    }, 7000);
+    }, 60000);
     return () => window.clearTimeout(t);
   }, [onPerfFail]);
 
@@ -79,6 +80,7 @@ export default function ExperienceCanvas({
         });
       }}
     >
+        <Stats />
       <PerfWatchdog onFail={onPerfFail} onAlive={onAlive} framesRef={framesRef} />
       <Scene />
     </Canvas>
