@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float, Text } from "@react-three/drei";
 import * as THREE from "three";
 import Hotspot from "./Hotspot";
 import { useExperience } from "./store";
+import { ChapterAlive, useChapterAlive, useChapterVisibility } from "./visibility";
 import { LEGAL } from "@/lib/legal";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -24,18 +25,35 @@ const smooth = (a: number, b: number, x: number) => {
 
 /* ---------- shared: cheap blob shadow (radial gradient sprite) ---------- */
 
-function useBlobShadow() {
-  return useMemo(() => {
-    const c = document.createElement("canvas");
-    c.width = c.height = 128;
-    const ctx = c.getContext("2d")!;
-    const g = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
-    g.addColorStop(0, "rgba(0,0,0,0.55)");
-    g.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 128, 128);
-    return new THREE.CanvasTexture(c);
-  }, []);
+/**
+ * ONE texture, geometry and material for every blob shadow in the scene.
+ * useMemo is per component instance, so the previous version built and
+ * uploaded ten identical 128×128 textures — one per shadow.
+ */
+let blobAssets: {
+  geometry: THREE.PlaneGeometry;
+  material: THREE.MeshBasicMaterial;
+} | null = null;
+
+function getBlobAssets() {
+  if (blobAssets) return blobAssets;
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(64, 64, 8, 64, 64, 64);
+  g.addColorStop(0, "rgba(0,0,0,0.55)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  blobAssets = {
+    geometry: new THREE.PlaneGeometry(1, 1),
+    material: new THREE.MeshBasicMaterial({
+      map: new THREE.CanvasTexture(c),
+      transparent: true,
+      depthWrite: false,
+    }),
+  };
+  return blobAssets;
 }
 
 function BlobShadow({
@@ -45,12 +63,15 @@ function BlobShadow({
   position: [number, number, number];
   scale?: number;
 }) {
-  const tex = useBlobShadow();
+  const { geometry, material } = getBlobAssets();
   return (
-    <mesh position={position} rotation={[-Math.PI / 2, 0, 0]} scale={scale}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial map={tex} transparent depthWrite={false} />
-    </mesh>
+    <mesh
+      geometry={geometry}
+      material={material}
+      position={position}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={scale}
+    />
   );
 }
 
@@ -66,8 +87,10 @@ export function Arrival() {
   const landscape = size.width > size.height;
   const sealX = landscape ? 2.35 : 0;
   const sealY = landscape ? 1.55 : 2.6;
+  const { alive, visible } = useChapterVisibility(0);
 
   useFrame((state, delta) => {
+    if (!alive.current) return;
     const t = state.clock.elapsedTime;
     if (outer.current) {
       outer.current.rotation.x = t * 0.22;
@@ -84,13 +107,15 @@ export function Arrival() {
 
   return (
     <group position={[sealX, sealY, 0]}>
-      <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.5}>
+      {/* 12×96 segments on a 0.028-thick ring was ~2,300 triangles of
+          tessellation nobody can resolve; 8×64 is visually identical. */}
+      <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.5} enabled={visible}>
         <mesh ref={outer}>
-          <torusGeometry args={[1.15, 0.028, 12, 96]} />
+          <torusGeometry args={[1.15, 0.028, 8, 64]} />
           <meshStandardMaterial color={GOLD} metalness={1} roughness={0.22} />
         </mesh>
         <mesh ref={mid} rotation={[Math.PI / 3, 0, Math.PI / 5]}>
-          <torusGeometry args={[0.86, 0.022, 12, 96]} />
+          <torusGeometry args={[0.86, 0.022, 8, 64]} />
           <meshStandardMaterial color={GOLD_LIGHT} metalness={1} roughness={0.18} />
         </mesh>
         {/* the centerpiece: a brilliant-cut diamond — a man, cut and polished */}
@@ -148,14 +173,17 @@ function Pedestal({ position }: { position: [number, number, number] }) {
 export function TheMan() {
   const rough = useRef<THREE.Mesh>(null);
   const carved = useRef<THREE.Group>(null);
+  const { alive } = useChapterVisibility(-16);
 
   useFrame((state) => {
+    if (!alive.current) return;
     const t = state.clock.elapsedTime;
     if (rough.current) rough.current.rotation.y = t * 0.1;
     if (carved.current) carved.current.rotation.y = -t * 0.14;
   });
 
   return (
+    <ChapterAlive.Provider value={alive}>
     <group position={[0, 0, -16]}>
       {/* BEFORE — the unshaped boulder */}
       <group position={[-1.7, 0, 0]}>
@@ -210,6 +238,7 @@ export function TheMan() {
         <pointLight position={[0, 2.6, 1.2]} intensity={4} color={GOLD_LIGHT} distance={6} />
       </group>
     </group>
+    </ChapterAlive.Provider>
   );
 }
 
@@ -230,8 +259,13 @@ function Slab({ index }: { index: number }) {
   const s = SLABS[index];
   const finalY = SLAB_H / 2 + index * (SLAB_H + 0.06);
   const side = index % 2 === 0 ? 1 : -1;
+  const alive = useChapterAlive();
 
   useFrame((_, delta) => {
+    // The assembly window (progress 0.30–0.52) sits well inside the visible
+    // band, so freezing the slabs when the stack is out of sight never cuts
+    // the animation short — it only stops five dampers running for nothing.
+    if (alive && !alive.current) return;
     const { progress } = useExperience.getState();
     // staggered assembly window scrubbed by the journey
     const a = 0.3 + index * 0.032;
@@ -290,7 +324,9 @@ function Slab({ index }: { index: number }) {
 }
 
 export function TheOrder() {
+  const { alive } = useChapterVisibility(-34);
   return (
+    <ChapterAlive.Provider value={alive}>
     <group position={[0, 0, -34]}>
       {SLABS.map((_, i) => (
         <Slab key={i} index={i} />
@@ -308,20 +344,25 @@ export function TheOrder() {
         EVERYTHING SITS ON THIS
       </Text>
     </group>
+    </ChapterAlive.Provider>
   );
 }
 
 /* ========= CHAPTER 3 — THE PROOF: floating gallery frames ========= */
 
-// Served through the image optimizer — the raw AFTER source is a 2.3MB
-// 2887×3608 JPEG, and this loader bypasses <Image>. w must be one of the
-// optimizer's allowed widths (750 is in the default deviceSizes list).
-function optimized(path: string) {
-  return `${BASE}/_next/image?url=${encodeURIComponent(path)}&w=750&q=75`;
-}
+// Pre-baked to exactly the size the texture needs — see
+// scripts/build-gl-textures.mjs, which must be re-run whenever either source
+// photo is replaced. This used to go through /_next/image?w=750, which made
+// the first visitor wait on the server resizing a 10-megapixel JPEG and tied
+// the 3D scene to the image optimizer being reachable. 4.1MB of sources
+// became 309KB of static files.
+//
+// It also fixes a dead reference: the old BEFORE path ended in .jpg, but the
+// file in public/ is .png — the request 404'd and the gallery silently showed
+// the silhouette placeholder instead of the real photo.
 const PORTRAIT_SRC = {
-  before: optimized("/aditya/before/before_transformation.jpg"),
-  after: optimized("/aditya/after/after_transformation.jpg"),
+  before: `${BASE}/aditya/before/before_transformation_gl.jpg`,
+  after: `${BASE}/aditya/after/after_transformation_gl.jpg`,
 };
 
 /** canvas plane is 1.32 × 1.72 — portraits are cover-cropped to match it */
@@ -410,16 +451,23 @@ function GalleryFrame({
   after,
   hotspot,
   caption,
+  floating,
 }: {
   position: [number, number, number];
   rotationY: number;
   after: boolean;
   hotspot?: string;
   caption: string;
+  floating: boolean;
 }) {
   const tex = usePortraitTexture(after);
   return (
-    <Float speed={1.1} rotationIntensity={0.06} floatIntensity={0.35}>
+    <Float
+      speed={1.1}
+      rotationIntensity={0.06}
+      floatIntensity={0.35}
+      enabled={floating}
+    >
       <group position={position} rotation={[0, rotationY, 0]}>
         <mesh>
           <boxGeometry args={[1.5, 1.9, 0.07]} />
@@ -457,7 +505,9 @@ function GalleryFrame({
 }
 
 export function Proof() {
+  const { alive, visible } = useChapterVisibility(-52);
   return (
+    <ChapterAlive.Provider value={alive}>
     <group position={[0, 0, -52]}>
       <GalleryFrame
         position={[-1.9, 1.8, 0]}
@@ -465,6 +515,7 @@ export function Proof() {
         after={false}
         caption="BEFORE"
         hotspot="proof-client"
+        floating={visible}
       />
       <GalleryFrame
         position={[1.9, 1.8, 0]}
@@ -472,11 +523,13 @@ export function Proof() {
         after
         caption="AFTER"
         hotspot="proof-truth"
+        floating={visible}
       />
       <BlobShadow position={[-1.9, 0.012, 0]} scale={3} />
       <BlobShadow position={[1.9, 0.012, 0]} scale={3} />
       <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
     </group>
+    </ChapterAlive.Provider>
   );
 }
 
@@ -501,8 +554,10 @@ function Stele({
   const [hover, setHover] = useState(false);
   const setFocus = useExperience((s) => s.setFocus);
   const focused = useExperience((s) => s.focus === id);
+  const alive = useChapterAlive();
 
   useFrame((_, delta) => {
+    if (alive && !alive.current) return;
     if (!group.current) return;
     const damp = 1 - Math.exp(-7 * delta);
     const lift = hover || focused ? 0.14 : 0;
@@ -589,11 +644,15 @@ function Stele({
 
 export function Decision() {
   const book = useRef<THREE.Group>(null);
+  const { alive, visible } = useChapterVisibility(-70);
+
   useFrame((state) => {
+    if (!alive.current) return;
     if (book.current) book.current.rotation.y = state.clock.elapsedTime * 0.35;
   });
 
   return (
+    <ChapterAlive.Provider value={alive}>
     <group position={[0, 0, -70]}>
       {/* the gate + the three programs (direction doc §4 + §9) */}
       <Stele
@@ -628,7 +687,7 @@ export function Decision() {
 
       {/* the free blueprint — a floating golden folio off to the side */}
       <group position={[-1.6, 1.1, 4]}>
-        <Float speed={1.6} rotationIntensity={0.25} floatIntensity={0.7}>
+        <Float speed={1.6} rotationIntensity={0.25} floatIntensity={0.7} enabled={visible}>
           <group ref={book}>
             <mesh>
               <boxGeometry args={[0.5, 0.68, 0.06]} />
@@ -651,5 +710,6 @@ export function Decision() {
 
       <pointLight position={[0, 4, 2.8]} intensity={8} color={GOLD_LIGHT} distance={12} />
     </group>
+    </ChapterAlive.Provider>
   );
 }

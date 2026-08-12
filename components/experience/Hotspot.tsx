@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useExperience } from "./store";
+import { useChapterAlive } from "./visibility";
 
 /**
  * A small pulsing gold marker anchored to an object. Hover: brightens and
@@ -24,8 +25,12 @@ export default function Hotspot({
   const [hover, setHover] = useState(false);
   const setFocus = useExperience((s) => s.setFocus);
   const focused = useExperience((s) => s.focus === id);
+  const alive = useChapterAlive();
 
   useFrame((state, delta) => {
+    // ~10 hotspots each wrote two scales and a material every frame, including
+    // the ones tens of units behind the visitor. Skip the hidden ones.
+    if (alive && !alive.current) return;
     const t = state.clock.elapsedTime;
     const active = hover || focused;
     const k = 1 - Math.exp(-8 * delta);

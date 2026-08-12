@@ -94,6 +94,7 @@ export default function Home3D() {
         window.innerWidth < 768
       ) {
         useExperience.getState().setQuality("low");
+        useExperience.getState().lockQuality();
       }
       // ?flat=1 — manual escape hatch to preview the 2D journey on any device
       const forced = new URLSearchParams(window.location.search).has("flat");

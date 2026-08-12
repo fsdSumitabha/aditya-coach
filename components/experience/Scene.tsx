@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   Environment,
@@ -28,11 +29,19 @@ function ProgressDamper() {
 function Floor({ reflective }: { reflective: boolean }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -33]}>
-      <planeGeometry args={[60, 110]} />
+      {/* Width was 60. The widest the camera can see at the fog wall (30
+          units, 42° fov, 16:10) is about ±21 — the rest was fill rate spent
+          on floor that is off-screen at every point of the journey. Length
+          must stay: the camera travels the full 70 units. */}
+      <planeGeometry args={[48, 110]} />
       {reflective ? (
         <MeshReflectorMaterial
-          blur={[220, 60]}
-          resolution={512}
+          // The reflection is a full extra render of the scene every frame,
+          // then a two-pass blur. resolution 512 → 256 quarters that pass;
+          // blur 220 → 120 nearly halves the blur. Invisible in the result
+          // because mixBlur 0.9 + roughness 0.85 smear it to a haze anyway.
+          blur={[120, 40]}
+          resolution={256}
           mixBlur={0.9}
           mixStrength={0.5}
           roughness={0.85}
@@ -54,12 +63,35 @@ export default function Scene() {
   const quality = useExperience((s) => s.quality);
   const setQuality = useExperience((s) => s.setQuality);
   const setDpr = useThree((s) => s.setDpr);
+  const gl = useThree((s) => s.gl);
   const high = quality === "high";
+
+  // The pixel ratio the Canvas resolved to at boot, so a recovery can restore
+  // exactly that rather than guessing.
+  const baseDpr = useRef<number | null>(null);
+  if (baseDpr.current == null) baseDpr.current = gl.getPixelRatio();
 
   return (
     <>
       <PerformanceMonitor
+        // Previously this could only ever step DOWN: one bad moment — a
+        // background task, a driver hiccup — permanently stripped bloom and
+        // reflections for the rest of the session. Now a sustained recovery
+        // restores them, and flipflops caps the oscillation at two swaps so
+        // a borderline machine settles instead of pumping.
+        flipflops={2}
         onDecline={() => {
+          setQuality("low");
+          setDpr(1);
+        }}
+        onIncline={() => {
+          // Phones and coarse-pointer devices are pinned low by Home3D by
+          // design — never promote them.
+          if (useExperience.getState().qualityLocked) return;
+          setQuality("high");
+          setDpr(baseDpr.current ?? 1);
+        }}
+        onFallback={() => {
           setQuality("low");
           setDpr(1);
         }}

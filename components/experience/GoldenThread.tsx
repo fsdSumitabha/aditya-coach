@@ -30,7 +30,10 @@ export default function GoldenThread() {
         [0, 0.8, -71.5],
       ].map(([x, y, z]) => new THREE.Vector3(x, y, z)),
     );
-    const geo = new THREE.TubeGeometry(curve, 360, 0.016, 6, false);
+    // 360 segments over a 70-unit curve was a vertex every 0.19 units on a
+    // 0.016-radius thread. 200 is a segment every 0.35 units — the draw-range
+    // reveal stays just as smooth, at ~55% of the geometry.
+    const geo = new THREE.TubeGeometry(curve, 200, 0.016, 6, false);
     return { geometry: geo, indexCount: geo.index ? geo.index.count : 0 };
   }, []);
 
