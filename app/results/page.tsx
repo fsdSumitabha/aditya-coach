@@ -7,6 +7,7 @@ import JsonLd from "@/components/JsonLd";
 import Marquee from "@/components/Marquee";
 import Reveal from "@/components/Reveal";
 import TiltCard from "@/components/TiltCard";
+import TransformationStage from "@/components/results/TransformationStage";
 import { ArrowRightIcon } from "@/components/icons";
 import { OG_IMAGE } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
@@ -450,6 +451,14 @@ export default function ResultsPage() {
           <div className="thread-h sd-draw" aria-hidden="true" />
         </div>
       </section>
+
+      {/* §3.15 THE STAGE — one-viewport set-by-set showcase.
+          Placed after the hero + its marquee stitch (which are a designed
+          pair) and before the gallery, so it is the page's first content
+          section. Carries no heading: the page's single <h1> is the hero
+          above, and a heading here would land ahead of the gallery's <h2>.
+          The full before/after gallery below is untouched. */}
+      <TransformationStage />
 
       {/* §3.2 TRANSFORMATION GALLERY */}
       <section className="bg-base relative overflow-hidden">
