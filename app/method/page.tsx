@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ComponentType, ReactNode, SVGProps } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import JsonLd from "@/components/JsonLd";
@@ -9,15 +9,8 @@ import { WhatsAppIcon } from "@/components/icons";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { waLink } from "@/lib/config";
 import FoundationStack from "@/components/method/FoundationStack";
-import StepRail from "@/components/method/StepRail";
-import {
-  OG_METHOD_IMG,
-  ICON_STEP1,
-  ICON_STEP2,
-  ICON_STEP3,
-  ICON_STEP4,
-  ICON_STEP5,
-} from "@/components/method/method-assets";
+import { METHOD_STEPS } from "@/components/method/method-steps";
+import { OG_METHOD_IMG } from "@/components/method/method-assets";
 
 // ============================================================
 // BUILD SPEC — /method — "The Method" (The Complete Rebuild, in the Right Order)
@@ -31,79 +24,6 @@ export const metadata: Metadata = pageMetadata({
   path: "/method",
   ogImage: OG_METHOD_IMG,
 });
-
-// ---- Step content (verbatim bodies; depth copy invented in his voice) ----
-type Step = {
-  id: string;
-  num: string;
-  name: string;
-  Icon: ComponentType<SVGProps<SVGSVGElement>>;
-  body: string; // VERBATIM — do not alter
-  depth: { lead: string; text: string }[];
-};
-
-const STEPS: Step[] = [
-  {
-    id: "step-1",
-    num: "01",
-    name: "Lifestyle",
-    Icon: ICON_STEP1,
-    body: "Fix how you live.", // VERBATIM
-    depth: [
-      { lead: "What we change:", text: "When you sleep and when you wake. How much you move. The daily habits running on autopilot. How you handle stress and how you recover." } /* [review] */,
-      { lead: "Why it's first:", text: "This is the ground everything else stands on. Fix how a man lives and his body starts changing before he's touched a barbell or his diet." } /* [review] */,
-      { lead: "Skip it and:", text: "every layer above collapses. You can't out-train broken sleep. You can't out-eat a life that's falling apart." } /* [review] */,
-    ],
-  },
-  {
-    id: "step-2",
-    num: "02",
-    name: "Body",
-    Icon: ICON_STEP2,
-    body: "Build strength, fitness, and physical confidence.", // VERBATIM
-    depth: [
-      { lead: "What we build:", text: "Real strength. Everyday fitness. The training foundations that make hard work feel normal instead of punishment." } /* [review] */,
-      { lead: "Why it's second:", text: "Once the day around you is stable, the body can take load and actually adapt. Strength built on a solid life stays." } /* [review] */,
-      { lead: "What you get:", text: "A body that can do things — and the physical confidence that comes with it. That doesn't come from a mirror. It comes from what you can do." } /* [review] */,
-    ],
-  },
-  {
-    id: "step-3",
-    num: "03",
-    name: "Nutrition",
-    Icon: ICON_STEP3,
-    body: "Fuel your body properly.", // VERBATIM
-    depth: [
-      { lead: "What we change:", text: "How much you eat, how often, and the few foods doing the most damage. Eating for the body you actually want. No crash diet. No banned list you'll quit in a week." } /* [review] */,
-      { lead: "Why it comes here:", text: "Food only holds once the life and the training around it hold it in place. Not before. Never before." } /* [review] — reuses verbatim fragment "Not before. Never before." */,
-      { lead: "Skip the foundation and:", text: "you get the same result you always got — three good weeks, then back to square one." } /* [review] */,
-    ],
-  },
-  {
-    id: "step-4",
-    num: "04",
-    name: "Performance",
-    Icon: ICON_STEP4,
-    body: "Improve training, recovery, energy, and performance.", // VERBATIM
-    depth: [
-      { lead: "What we sharpen:", text: "How you recover. Your energy across the day. The quality of every session — so the work you put in actually pays you back." } /* [review] */,
-      { lead: "Where supplements fit:", text: "Right here, as guidance — not a shortcut. A short, honest list that fills a real gap once the food is right. Never a cabinet full of tubs." } /* [review] */,
-      { lead: "Why it's this late:", text: "Performance is the finishing layer. It works because there's already a foundation under it to sharpen." } /* [review] */,
-    ],
-  },
-  {
-    id: "step-5",
-    num: "05",
-    name: "Presence",
-    Icon: ICON_STEP5,
-    body: "Improve how you communicate, carry yourself, and show up.", // VERBATIM
-    depth: [
-      { lead: "What we build:", text: "Body language. The way you communicate. Grooming and style that fit the man you've become. How you show up the moment you walk into a room." } /* [review] */,
-      { lead: "Why it's last:", text: "You earn it. Once the body is rebuilt, presence is what makes the change land on everyone who meets you. It's the finish, not the foundation." } /* [review] */,
-      { lead: "The full picture:", text: "This is the part most coaching never reaches — the part that decides how the world reads you before you've said a word." } /* [review] */,
-    ],
-  },
-];
 
 // ---- Myth vs Truth (all invented in his voice) ----
 const MYTH_TRUTH: { myth: string; truth: ReactNode }[] = [
@@ -152,12 +72,13 @@ const howToSchema = {
   name: "The Complete Rebuild — The Right Order of Change",
   description:
     "Lifestyle, then body, then nutrition, then performance, then presence — the exact order Aditya uses to build change in men that actually lasts.",
-  step: STEPS.map((s, i) => ({
+  // The steps now live inside the pinned stack's detail panel, so there is no
+  // per-step anchor to point at — the schema describes the page as a whole.
+  step: METHOD_STEPS.map((s, i) => ({
     "@type": "HowToStep",
     position: i + 1,
     name: s.name,
     text: s.body,
-    url: `${SITE_ORIGIN}/method#${s.id}`,
   })),
 };
 
@@ -185,7 +106,7 @@ export default function MethodPage() {
     <>
       <JsonLd data={[howToSchema, serviceSchema, breadcrumbSchema]} />
 
-      {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle base → Presence top) ============ */}
+      {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle widest on top → Presence narrowest at the bottom) ============ */}
       <section
         id="foundation-stack"
         className="border-y border-hairline-soft bg-alt"
@@ -194,156 +115,20 @@ export default function MethodPage() {
         <h1 className="sr-only">The Right Order of Change.</h1>
         {/* Real-text equivalent for assistive tech — the stack below is decorative */}
         <p className="sr-only">
-          The Complete Rebuild, from the base up: Lifestyle at the foundation,
-          then Body, then Nutrition, then Performance, with Presence at the top.
+          The Complete Rebuild, in order: Lifestyle first, then Body, then
+          Nutrition, then Performance, with Presence last.
         </p>
-        {/* Showpiece: sticky-pinned scene, tiers assemble bottom-up on scroll */}
+        {/* Showpiece: sticky-pinned scene, tiers assemble top-down on scroll */}
         <FoundationStack />
       </section>
 
-      {/* Decorative ticker — verbatim layer labels bridging into the five steps */}
+      {/* Decorative ticker — verbatim layer labels closing the stack scene */}
       <div className="border-b border-hairline-soft bg-void py-6 md:py-8">
         <Marquee
           items={["Lifestyle", "Body", "Nutrition", "Performance", "Presence"]}
           speedS={34}
         />
       </div>
-
-      {/* ============ 4. FIVE EXPANDED STEP SECTIONS (01 → 05) ============ */}
-      {/* Sticky numeral rail (desktop) lights the active step as you read */}
-      <StepRail />
-      <section className="cv-auto bg-base">
-        <div className="container-site section">
-          {/* THE COMPLETE REBUILD — the framework, rebranded (H1 above stays) */}
-          <Reveal className="mb-12 max-w-[720px] md:mb-16">
-            <div className="flex items-center gap-4">
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
-              <p className="eyebrow">THE COMPLETE REBUILD</p>
-            </div>
-            <SplitHeading
-              as="h2"
-              text="Five layers. One order."
-              className="type-h2 text-primary mt-4"
-            />
-            <p className="type-lead mt-5 text-secondary">
-              Most men attack one piece and wonder why nothing holds. The
-              complete rebuild runs all five — in the order that makes each one
-              stick.
-            </p>{/* [review] */}
-          </Reveal>
-          <div className="relative">
-            {/* the gold thread — draws itself down the steps as you scroll */}
-            <div
-              aria-hidden="true"
-              className="thread-v sd-draw absolute bottom-6 left-[30px] top-4 z-0 md:left-[52px]"
-            />
-            <ol className="relative flex list-none flex-col gap-10 md:gap-14">
-              {STEPS.map((step, i) => {
-                const Icon = step.Icon;
-                return (
-                  <li
-                    key={step.id}
-                    id={step.id}
-                    className="grid grid-cols-[60px_minmax(0,1fr)] gap-x-3 md:grid-cols-[104px_minmax(0,1fr)] md:gap-x-8"
-                  >
-                    {/* ornamental oversized numeral — a gold bead on the thread.
-                        Outer span = solid base mask (hides the line behind the
-                        glyph); inner span = metallic gradient text. */}
-                    <div
-                      aria-hidden="true"
-                      className="relative z-10 self-start justify-self-center"
-                    >
-                      <span className="block bg-base px-1 py-2">
-                        <span
-                          className="type-numeral text-gold-grad block text-center"
-                          style={{ fontSize: "clamp(48px, 8vw, 92px)", lineHeight: 1 }}
-                        >
-                          {step.num}
-                        </span>
-                      </span>
-                    </div>
-                    <Reveal
-                      delayMs={100}
-                      className={`min-w-0 ${i % 2 === 0 ? "reveal-left" : "reveal-right"}`}
-                    >
-                      <article
-                        className="card"
-                        style={
-                          i % 2 === 1
-                            ? { background: "var(--surface-2)" }
-                            : undefined
-                        }
-                      >
-                        <div className="flex items-center gap-4 md:gap-5">
-                          <span
-                            aria-hidden="true"
-                            className="float-idle inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-500 md:h-[72px] md:w-[72px]"
-                            style={{ animationDelay: `${i * 0.55}s` }}
-                          >
-                            <Icon width={40} height={40} />
-                          </span>
-                          <div>
-                            <p aria-hidden="true" className="eyebrow">
-                              Step {step.num}
-                            </p>
-                            <h2 className="type-h3 mt-1 text-primary">
-                              <span className="sr-only">Step {i + 1} — </span>
-                              {step.name}
-                            </h2>
-                          </div>
-                        </div>
-                        {/* VERBATIM step copy — do not alter */}
-                        <p className="type-lead mt-5 text-primary">{step.body}</p>
-                        <div className="mt-5 space-y-3 border-t border-hairline-soft pt-5">
-                          {/* each depth line lands on its own beat */}
-                          {step.depth.map((d, di) => (
-                            <Reveal
-                              as="p"
-                              key={d.lead}
-                              delayMs={di * 90}
-                              className="type-body text-secondary"
-                            >
-                              <strong className="font-semibold text-primary">
-                                {d.lead}
-                              </strong>{" "}
-                              {d.text}
-                            </Reveal>
-                          ))}
-                        </div>
-                        {step.id === "step-3" && (
-                          <Link
-                            href="/tools#calculator"
-                            className="type-small mt-6 inline-flex min-h-[48px] items-center gap-2 rounded-full border border-hairline-gold px-5 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
-                          >
-                            See how much you should actually eat →
-                          </Link>
-                        )}
-                        {step.id === "step-4" && (
-                          <p className="type-small mt-5 text-muted">
-                            {/* [review] — supplements are guidance; medical stays a doctor-led last resort */}
-                            Supplements are guidance, not a prescription. Any
-                            medical or clinical step is a last resort, taken only
-                            under a qualified doctor.
-                          </p>
-                        )}
-                      </article>
-                    </Reveal>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-          {/* Cross-link chip → /programs (method↔programs requirement) */}
-          <Reveal className="mt-12 text-center md:mt-16">
-            <Link
-              href="/programs"
-              className="type-small inline-flex min-h-[48px] items-center gap-2 rounded-full border border-hairline-gold px-6 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
-            >
-              This is the order every program follows →
-            </Link>
-          </Reveal>
-        </div>
-      </section>
 
 
       {/* ============ 5b. POSITIONING — WHO THE COMPLETE REBUILD IS FOR ============ */}

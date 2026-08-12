@@ -2,19 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  ICON_STEP1,
-  ICON_STEP2,
-  ICON_STEP3,
-  ICON_STEP4,
-  ICON_STEP5,
-} from "@/components/method/method-assets";
+import { METHOD_STEPS as TIERS } from "@/components/method/method-steps";
 
 /**
  * The page's showpiece: a sticky-pinned scene where the Complete Rebuild
- * assembles bottom-up (Lifestyle base first → Presence last) as the user
- * scrolls through the tall wrapper. Scroll-linked scrubbing so the motion
- * feels physical.
+ * assembles top-down (Lifestyle first → Presence last) as the user scrolls
+ * through the tall wrapper. Scroll-linked scrubbing so the motion feels
+ * physical.
  *
  * - Transform/opacity only, one rAF-throttled scroll value drives every tier.
  * - Progressive enhancement: SSR paints the FINISHED, seated stack. JS only
@@ -22,71 +16,13 @@ import {
  *   motion is allowed — reduced motion / no-JS keep the static finished stack.
  * - Each tier is a real button: hover or focus (desktop) swaps the detail
  *   panel beside the stack; tap (mobile) opens the same detail over the stack.
- *   Descriptions are condensed from docs/my_coaching_philosophy.md.
+ *   The detail copy IS the five expanded step sections that used to sit below
+ *   this scene — see components/method/method-steps.ts.
  */
 
-// Visual stack order = DOM top→bottom (Presence on top, Lifestyle at the base).
-const TIERS = [
-  {
-    num: "05",
-    Icon: ICON_STEP5,
-    name: "PRESENCE",
-    label: "How you show up" /* [review] */,
-    // condensed from my_coaching_philosophy.md — PRESENCE / GROOMING sections
-    desc: "How you walk into a room. How you stand, how you move, your eye contact, your communication. Grooming and style built for your face and your build — not a template. People form an impression of you before you say a single word.",
-    width: "40%",
-    bg: "var(--surface-1)",
-    edge: "rgba(201, 162, 75, 0.25)",
-  },
-  {
-    num: "04",
-    Icon: ICON_STEP4,
-    name: "PERFORMANCE",
-    label: "Sharpen everything" /* [review] */,
-    // condensed from my_coaching_philosophy.md — LAYER THREE + LAYER FOUR
-    desc: "Once lifestyle and nutrition are working, we look at supplementation — not to replace the foundation, to support it. Genuine gaps only. Nothing unnecessary, nothing blindly prescribed. Medical is the last layer, never the first, and always under a qualified physician.",
-    width: "55%",
-    bg: "var(--surface-1)",
-    edge: "rgba(201, 162, 75, 0.42)",
-  },
-  {
-    num: "03",
-    Icon: ICON_STEP3,
-    name: "NUTRITION",
-    label: "Fuel it right" /* [review] */,
-    // condensed from my_coaching_philosophy.md — LAYER TWO
-    desc: "Only after your lifestyle foundation is stable do we look at what you eat. Not a crash diet. Not a list of foods you can never touch again. A way of eating that fits your culture, your schedule and your real life.",
-    width: "70%",
-    bg: "var(--surface-2)",
-    edge: "rgba(201, 162, 75, 0.6)",
-  },
-  {
-    num: "02",
-    Icon: ICON_STEP2,
-    name: "BODY",
-    label: "Build the frame" /* [review] */,
-    // condensed from my_coaching_philosophy.md — THE COMPLETE PICTURE
-    desc: "Real strength. Everyday fitness. The physical confidence that comes from what your body can do, not what it looks like standing still. A strong body without discipline is temporary.",
-    width: "85%",
-    bg: "var(--surface-2)",
-    edge: "rgba(201, 162, 75, 0.8)",
-  },
-  {
-    num: "01",
-    Icon: ICON_STEP1,
-    name: "LIFESTYLE",
-    label: "The Foundation" /* [review] */,
-    // condensed from my_coaching_philosophy.md — LAYER ONE
-    desc: "Before the diet. Before the training. Before a single supplement — we fix how you live. When you wake, how you sleep, how much you move, your stress, your habits, your environment. Your body is a reflection of the life you repeatedly live.",
-    width: "100%",
-    bg: "var(--surface-warm)",
-    edge: "var(--gold-500)",
-  },
-];
-
 // Index of the base layer — the detail panel opens on it, and it is the tier
-// that is already seated when the scene arrives.
-const BASE_INDEX = TIERS.length - 1;
+// that is already seated when the scene arrives. Lifestyle now leads the DOM.
+const BASE_INDEX = 0;
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
@@ -103,8 +39,6 @@ export default function FoundationStack() {
   const [active, setActive] = useState<number | null>(null);
   // Mobile has no hover — a tap raises the same detail over the stack.
   const [sheetOpen, setSheetOpen] = useState(false);
-  const sheetOpenRef = useRef(false);
-  sheetOpenRef.current = sheetOpen;
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -115,7 +49,7 @@ export default function FoundationStack() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const N = tiers.length;
-    // Each tier gets a scrub window; bottom tier (last in array) leads.
+    // Each tier gets a scrub window; Lifestyle leads, Presence lands last.
     const step = 0.15;
     const dur = 0.34;
 
@@ -123,7 +57,7 @@ export default function FoundationStack() {
       let seated = 0;
       for (let i = 0; i < N; i++) {
         const el = tiers[i];
-        const k = N - 1 - i; // Lifestyle(i=N-1) → k=0 (first); Presence(i=0) → last
+        const k = i; // Lifestyle(i=0) → first; Presence(i=N-1) → last
         // The base layer is never animated away: the scene must never open on
         // an empty screen, and "the foundation is already there" is the point.
         const t = k === 0 ? 1 : easeOut(clamp01((progress - k * step) / dur));
@@ -178,7 +112,8 @@ export default function FoundationStack() {
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
       // Scrolling dismisses the mobile detail so it never hides the assembly.
-      if (sheetOpenRef.current) setSheetOpen(false);
+      // Safe to call unconditionally — React bails out when already false.
+      setSheetOpen(false);
     };
 
     update();
@@ -206,9 +141,18 @@ export default function FoundationStack() {
         <TierIcon width={26} height={26} />
       </span>
       <p className="type-caption mt-4 tracking-[0.16em] text-gold-500">
-        LAYER {tier.num} — {tier.name}
+        STEP {tier.num} — {tier.name}
       </p>
-      <p className="type-body mt-3 text-secondary">{tier.desc}</p>
+      {/* VERBATIM step copy — do not alter */}
+      <p className="type-lead mt-2 text-primary">{tier.body}</p>
+      <div className="mt-4 space-y-2.5 border-t border-hairline-soft pt-4">
+        {tier.depth.map((d) => (
+          <p key={d.lead} className="type-small text-secondary">
+            <strong className="font-semibold text-primary">{d.lead}</strong>{" "}
+            {d.text}
+          </p>
+        ))}
+      </div>
       <Link
         href="/programs"
         className="type-small mt-5 inline-flex min-h-[48px] items-center gap-2 rounded-full border border-hairline-gold px-5 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
@@ -224,7 +168,7 @@ export default function FoundationStack() {
         <div className="container-site w-full">
           <div
             onMouseLeave={() => setActive(null)}
-            className="mx-auto grid max-w-[1000px] items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] md:gap-12"
+            className="mx-auto grid max-w-[1080px] items-center gap-8 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)] md:gap-12"
           >
             {/* ---- the stack ---- */}
             <div className="relative">
@@ -330,7 +274,7 @@ export default function FoundationStack() {
             {/* ---- desktop: icon stickers, crossfading to the layer copy ---- */}
             <div
               id="foundation-detail"
-              className="relative hidden min-h-[320px] border-l border-hairline-soft pl-8 md:block"
+              className="relative hidden min-h-[440px] border-l border-hairline-soft pl-8 md:block"
             >
               {/* resting state — the five layers as gold badges, no copy */}
               <div
@@ -348,8 +292,9 @@ export default function FoundationStack() {
                       key={t.num}
                       className="float-idle inline-flex h-[52px] w-[52px] items-center justify-center rounded-full border border-hairline-gold text-gold-500"
                       style={{
-                        marginLeft: `${(TIERS.length - 1 - i) * 22}px`,
-                        opacity: 0.35 + i * 0.13,
+                        // steps inward going down, mirroring the inverted stack
+                        marginLeft: `${i * 22}px`,
+                        opacity: 0.87 - i * 0.13,
                         animationDelay: `${i * 0.4}s`,
                         background: "var(--surface-1)",
                       }}
@@ -364,7 +309,7 @@ export default function FoundationStack() {
               </div>
               {/* revealed state — the layer's detail + the way into coaching */}
               <div
-                className="absolute inset-0 flex flex-col justify-center pl-8 transition-opacity duration-300"
+                className="absolute inset-0 flex flex-col justify-center overflow-y-auto pl-8 transition-opacity duration-300"
                 style={{
                   opacity: active === null ? 0 : 1,
                   pointerEvents: active === null ? "none" : undefined,
