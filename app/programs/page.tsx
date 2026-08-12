@@ -685,8 +685,7 @@ export default function ProgramsPage() {
                         </Reveal>
                     </div>
 
-                    {/* [review] — mobile treatment: single semantic table kept scrollable
-              inside .table-scroll (never page-level horizontal scroll at 375px) */}
+                    {/* [review] — mobile treatment: single semantic table kept scrollable inside .table-scroll (never page-level horizontal scroll at 375px) */}
                     <Reveal className="mt-10 reveal-scale">
                         <div className="table-scroll rounded-2xl border border-hairline-soft bg-surface-1">
                             <table className="w-full min-w-[720px] border-collapse text-left">
@@ -799,7 +798,7 @@ export default function ProgramsPage() {
                     <Reveal className="reveal-blur text-center">
                         {/* [review] */}
                         <p className="font-display text-[clamp(1.5rem,2.6vw,2.1rem)] leading-snug tracking-[-0.01em] text-primary max-w-[34ch] mx-auto">
-                            The {PRICE_CONSULT} Transformation Audit is the only price you decide
+                            The Transformation Audit is the only price you decide
                             on today.
                         </p>
                         {/* [review] */}

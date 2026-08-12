@@ -62,24 +62,6 @@ const IMG_TL_BEFORE = {
     blurDataURL:
       "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
  } as const;
-// The before shot is the real one (public/aditya/before/before_transformation.jpg —
-// 800×1000, side-trimmed from a 1650×1788 original to the same 4:5 the AFTER
-// slot reserves, so the pair sits square in the grid).
-const IMG_ABOUT_BEFORE = {
-  src: "/aditya/before/before_transformation.jpg",
-  w: 800,
-  h: 1000,
-  blurDataURL:
-    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
-} as const;
-    
-const IMG_ABOUT_AFTER = {
-  src: "/aditya/after/after_transformation.jpg",
-  w: 640,
-  h: 800,
-  blurDataURL:
-    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
-} as const;
 
 // ---- §4 audience checklist ("This is for men who want to…") ----
 // [review] Aditya's voice, from the 2026-07-21 direction (complete transformation,
@@ -629,76 +611,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 5 — HIS OWN BEFORE / AFTER ("Proof On His Own Body") ============ */}
-      <section className="bg-alt border-y border-hairline-soft cv-auto">
-        <div className="container-site section">
-          <div className="text-center">
-            <Reveal className="mb-5">
-              <Chapter num="04" label="THE PROOF" center />
-            </Reveal>
-            <SplitHeading
-              as="h2"
-              text="Proof. On my own body."
-              className="type-h2 text-primary"
-            />
-            {/* [review] */}
-          </div>
-
-          <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
-            <div>
-              <Reveal as="p" className="eyebrow mb-3">BEFORE</Reveal>
-              {/* sd-wipe reveals the photo bottom-up as it scrolls in (not wrapped
-                  in Reveal — an sd-* entrance never shares an element with one). */}
-              <div className="sd-wipe">
-                <Image
-                  src={IMG_ABOUT_BEFORE.src}
-                  width={IMG_ABOUT_BEFORE.w}
-                  height={IMG_ABOUT_BEFORE.h}
-                  alt="Before — Aditya at 100kg, his starting point"
-                  placeholder="blur"
-                  blurDataURL={IMG_ABOUT_BEFORE.blurDataURL}
-                  className="block h-auto w-full max-w-full rounded-[16px]"
-                />
-              </div>
-            </div>
-            <div>
-              <Reveal as="p" className="eyebrow mb-3">AFTER</Reveal>
-              <div className="sd-wipe">
-                <Image
-                  src={IMG_ABOUT_AFTER.src}
-                  width={IMG_ABOUT_AFTER.w}
-                  height={IMG_ABOUT_AFTER.h}
-                  alt="After — Aditya today, rebuilt through his own lifestyle-first method"
-                  placeholder="blur"
-                  blurDataURL={IMG_ABOUT_AFTER.blurDataURL}
-                  className="block h-auto w-full max-w-full rounded-[16px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <Reveal delayMs={200} className="reveal-blur mt-12 text-center">
-            <blockquote className="font-display mx-auto max-w-[40ch] text-2xl leading-snug text-primary md:text-[1.75rem]">
-              This was me. 100kg. Zero confidence. The decision to change was
-              the hardest part. Everything else followed.
-            </blockquote>
-            <p className="type-small mt-4 text-gold-300">
-              — Aditya, on his own transformation{/* [review] */}
-            </p>
-            {/* Contextual individual-results disclaimer (site compliance rule; global medical disclaimer lives in the footer) */}
-            <p className="type-caption mt-6 text-muted">
-              {/* [review] */}
-              Individual results vary. This is one man&apos;s journey, not a
-              guarantee of yours.
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============ Section 6.5 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
-      {/* Restrained trust rows — no invented stats/credentials. Placed after the
-          proof section; links out to /results. [review] framing throughout. */}
-      <section className="bg-surface-1 cv-auto border-y border-hairline-soft">
+      {/* ============ Section 5 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
+      {/* Restrained trust rows — no invented stats/credentials. Carries the proof
+          job now that the before/after section is gone; links out to /results
+          where the client transformations live. [review] framing throughout. */}
+      {/* bg-alt: §4 above is bg-surface-1, so this keeps the alternation. */}
+      <section className="bg-alt cv-auto border-y border-hairline-soft">
         <div className="container-site section">
           <div className="text-center">
             <SplitHeading
