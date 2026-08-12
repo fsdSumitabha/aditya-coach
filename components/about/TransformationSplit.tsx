@@ -31,14 +31,7 @@
 // before this section is published.
 
 import Image from "next/image";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
-
+import { useCallback, useEffect, useRef, useState, type CSSProperties, } from "react";
 import { ArrowRightIcon } from "@/components/icons";
 
 /** id of the founder-story <section> on /about — the plaque's destination. */
@@ -49,21 +42,21 @@ const STORY_ID = "story";
  * Also the sweep hand's revolution time, so the ring always reads as a
  * countdown to the next pair. Override per-instance with `intervalMs`.
  */
-const SLIDE_MS = 3000;
+const SLIDE_MS = 1000;
 
 /** ⚠️ placeholders — see the DEMO ASSETS note above. All frames are 2:3. */
 const DEMO_PAIRS = [
   {
-    before: "/demo/before/pexels-aysegul-aytoren-46790226-11795044.jpg",
-    after: "/demo/after/pexels-ivan-ananiev-737908-16495739.jpg",
+    before: "/aditya/before/before_transformation.png",
+    after: "/aditya/after/after_transformation.jpg",
   },
   {
-    before: "/demo/before/pexels-aysegul-aytoren-46790226-36148298.jpg",
-    after: "/demo/after/pexels-ivan-ananiev-737908-16495740.jpg",
+    before: "/aditya/before/before_transformation_01.png",
+    after: "/aditya/after/after_transformation_01.jpg",
   },
   {
-    before: "/demo/before/pexels-aysegul-aytoren-46790226-37196695.jpg",
-    after: "/demo/after/pexels-ivan-ananiev-737908-16495747.jpg",
+    before: "/aditya/before/before_transformation.png",
+    after: "/aditya/after/after_transformation_02.jpg",
   },
 ] as const;
 

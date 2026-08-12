@@ -14,10 +14,12 @@
 //
 // ⚠️  CONSENT + PLACEHOLDERS  ⚠️
 // Aditya's own photographs and client-01 / client-02 are cleared (consent
-// confirmed 29 Jul 2026). Sets 4 and 5 are LABELLED PLACEHOLDERS: no photo,
-// no headline, no link. They are not filled with stock imagery — this is the
-// proof page, and borrowed proof here is worse than an empty frame. Fill them
-// only when a real client's photographs AND written consent are both on file.
+// confirmed 29 Jul 2026). client-03 / client-04 photographs were supplied by
+// the owner 12 Aug 2026 — [review] their WRITTEN consent is not yet recorded
+// here, and their headlines are still unwritten, so both sets stay unlinked
+// with a "to be confirmed" headline until the owner supplies real copy.
+// No set is ever filled with stock imagery — this is the proof page, and
+// borrowed proof here is worse than an empty frame.
 
 import Image from "next/image";
 import Link from "next/link";
@@ -33,10 +35,18 @@ import { ArrowRightIcon } from "@/components/icons";
 
 /** Autoplay frequency. Each set carries a headline to read, so this is slower
  *  than the /about opener. Pass intervalMs={0} to turn autoplay off entirely. */
-const STAGE_MS = 6500;
+const STAGE_MS = 2000;
 
 type Shot =
-  | { kind: "photo"; src: string; alt: string }
+  | {
+      kind: "photo";
+      src: string;
+      alt: string;
+      /** CSS object-position for the 3:4 well. Omit for the default 50% 22%.
+       *  Set it when a photograph is not already 3:4 and its subject would
+       *  otherwise crop badly. */
+      pos?: string;
+    }
   | { kind: "empty"; label: string };
 
 type TxSet = {
@@ -64,7 +74,7 @@ const SETS: TxSet[] = [
     linkLabel: "See the exact order of change",
     before: {
       kind: "photo",
-      src: "/aditya/before/before_transformation.jpg",
+      src: "/aditya/before/before_transformation.png",
       alt: "Aditya at 100kg before rebuilding his lifestyle.",
     },
     after: {
@@ -107,15 +117,26 @@ const SETS: TxSet[] = [
       alt: "Same client after the lifestyle came first.",
     },
   },
-  // ---- Awaiting photographs + written consent. Do not fill with stock. ----
+  // ---- Photographs on file. Headlines + written consent still outstanding. --
   {
     id: "client-03",
     eyebrow: "CLIENT 03",
     headline: "Headline to be confirmed.",
     href: null,
     linkLabel: "",
-    before: { kind: "empty", label: "CLIENT 03 BEFORE" },
-    after: { kind: "empty", label: "CLIENT 03 AFTER" },
+    before: {
+      kind: "photo",
+      src: "/client/client-03-before.jpg",
+      alt: "Client before beginning coaching.",
+      // Portrait taller than 3:4 — hold the face inside the well.
+      pos: "52% 8%",
+    },
+    after: {
+      kind: "photo",
+      src: "/client/client-03-after.jpg",
+      alt: "Same client after coaching.",
+      // Already 3:4, so the well shows the whole photograph uncropped.
+    },
   },
   {
     id: "client-04",
@@ -123,8 +144,19 @@ const SETS: TxSet[] = [
     headline: "Headline to be confirmed.",
     href: null,
     linkLabel: "",
-    before: { kind: "empty", label: "CLIENT 04 BEFORE" },
-    after: { kind: "empty", label: "CLIENT 04 AFTER" },
+    before: {
+      kind: "photo",
+      src: "/client/client-04-before.png",
+      alt: "Client before beginning training and nutrition coaching.",
+      pos: "50% 30%",
+    },
+    after: {
+      kind: "photo",
+      src: "/client/client-04-after.png",
+      alt: "Same client after training and nutrition coaching.",
+      // Portrait taller than 3:4 — centre on the back, not the ceiling.
+      pos: "50% 55%",
+    },
   },
 ];
 
@@ -288,7 +320,8 @@ function Panel({
                 fill
                 sizes={PANEL_SIZES}
                 loading={i === 0 ? "eager" : "lazy"}
-                className="object-cover object-[50%_22%]"
+                style={{ objectPosition: shot.pos ?? "50% 22%" }}
+                className="object-cover"
               />
             ) : (
               <div className="stage-empty grid h-full w-full place-items-center px-4 text-center">

@@ -460,43 +460,6 @@ export default function ResultsPage() {
           The full before/after gallery below is untouched. */}
       <TransformationStage />
 
-      {/* §3.2 TRANSFORMATION GALLERY */}
-      <section className="bg-base relative overflow-hidden">
-        {/* ONE ghost watermark behind the proof wall (aria-hidden, drifts on
-            scroll; the overflow-hidden section clips its bleed). */}
-        <span
-          className="ghost-word filled sd-ghost-drift"
-          aria-hidden="true"
-          style={{ top: "4%", left: "-3%" }}
-        >
-          PROOF
-        </span>
-        <div className="container-site section relative z-10">
-          {/* [review] sr-only <h2> chosen (spec-preferred) to keep focus on the images */}
-          <h2 className="sr-only">Transformations</h2>
-
-          {/* Featured card — full width, always first. Likely LCP: not cv-auto,
-              and when real photos land this pair gets loading="eager"
-              fetchpriority="high". */}
-          {featured.map((t) => (
-            <TxCard key={t.id} t={t} />
-          ))}
-
-          {/* Standard client cards + ghost slots share one responsive grid.
-              [review pick] auto-fit minmax(min(320px,100%),1fr) per spec
-              recommendation: 1-col phones, 2-col tablet/desktop, flows to
-              2–3 across as entries grow to 6–9. Scales for N = 1…9 with
-              zero markup edits. */}
-          <div className="cv-auto mt-6 grid grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))] gap-6 md:mt-8 md:gap-8">
-            {standard.map((t) => (
-              <TxCard key={t.id} t={t} />
-            ))}
-            {Array.from({ length: GHOST_SLOTS }).map((_, i) => (
-              <GhostCard key={`ghost-${i}`} delayMs={i * 80} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* §3.5 FINAL CTA — shared deep-page closing band → /book (+ /tools) */}
       <FinalCta

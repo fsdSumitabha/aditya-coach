@@ -23,14 +23,14 @@ const COLUMNS: {
     heading: "Coaching",
     links: [
       /* [review] lineup per direction doc 2026-07-21 */
-      { label: `Transformation Audit ${LEGAL.CONSULT_PRICE}`, href: "/book" },
+      { label: `Transformation Audit`, href: "/book" },
       { label: "Lifestyle Coaching", href: "/programs" },
       { label: "Personality & Presence Coaching", href: "/programs" },
       { label: "Complete Transformation", href: "/programs" },
       { label: "Book Your Transformation Audit", href: "/book" },
     ],
   },
-  {
+  { 
     heading: "Resources",
     links: [
       { label: "Free Lifestyle Blueprint", href: "/tools" },
