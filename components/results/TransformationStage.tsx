@@ -69,23 +69,6 @@ type TxSet = {
 // new claim is made here. Anything genuinely new is tagged [review].
 const SETS: TxSet[] = [
   {
-    id: "coach-aditya",
-    eyebrow: "THE COACH",
-    headline: "This was me. 100kg. Zero confidence.",
-    href: "/method",
-    linkLabel: "See the exact order of change",
-    before: {
-      kind: "photo",
-      src: "/aditya/before/before_transformation.png",
-      alt: "Aditya at 100kg before rebuilding his lifestyle.",
-    },
-    after: {
-      kind: "photo",
-      src: "/aditya/after/after_transformation.jpg",
-      alt: "Aditya after his own lifestyle transformation.",
-    },
-  },
-  {
     id: "client-01",
     eyebrow: "CLIENT 01",
     headline: "He did not come to me to lose weight.",
@@ -159,6 +142,23 @@ const SETS: TxSet[] = [
       alt: "Same client after training and nutrition coaching.",
       // Portrait taller than 3:4 — centre on the back, not the ceiling.
       pos: "50% 55%",
+    },
+  },
+  {
+    id: "coach-aditya",
+    eyebrow: "THE COACH",
+    headline: "This was me. 100kg. Zero confidence.",
+    href: "/method",
+    linkLabel: "See the exact order of change",
+    before: {
+      kind: "photo",
+      src: "/aditya/before/before_transformation.png",
+      alt: "Aditya at 100kg before rebuilding his lifestyle.",
+    },
+    after: {
+      kind: "photo",
+      src: "/aditya/after/after_transformation.jpg",
+      alt: "Aditya after his own lifestyle transformation.",
     },
   },
 ];
@@ -508,10 +508,7 @@ export default function TransformationStage({
   // the vertical budget can give goes to the photographs instead.
   const story = (
     <span className="inline-flex flex-wrap items-baseline justify-center gap-x-2.5 gap-y-1">
-      <span className="eyebrow">{set.eyebrow}</span>
-      <span aria-hidden="true" className="font-display text-xs text-muted">
-        {counter}
-      </span>
+
       <span className="stage-headline font-display text-[clamp(1.05rem,2vw,1.5rem)] font-medium leading-[1.25] tracking-[-0.015em] text-primary">
         {set.headline}
       </span>

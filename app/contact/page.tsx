@@ -202,62 +202,6 @@ export default function ContactPage() {
     <>
       <JsonLd data={localBusinessSchema} />
 
-      {/* 1) HERO — text LCP; H1 paints at final state frame 1 (never animated) */}
-      <section className="bg-void aurora grain relative overflow-hidden">
-        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col items-center justify-center py-16 text-center">
-          <div className="mb-6 flex items-center justify-center gap-4">
-            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
-            <p className="eyebrow">CONTACT{/* [review] */}</p>
-            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
-          </div>
-          <h1 className="font-display text-[clamp(3rem,7vw,5.4rem)] font-medium leading-[1.02] tracking-[-0.03em] text-primary">
-            Let&apos;s Talk.
-          </h1>
-          <Reveal delayMs={60}>
-            <p className="type-lead text-secondary mx-auto mt-5 max-w-xl">
-              {"Whatever's been holding you back — put it in a message. I read every one."}
-              {/* [review] — invented supporting line in Aditya's voice */}
-            </p>
-          </Reveal>
-          <Reveal delayMs={120}>
-            <p className="type-small text-muted mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-              <span className="inline-flex items-center gap-2">
-                <CheckIcon width={15} height={15} className="shrink-0 text-gold-500" />
-                Replies {RESPONSE_TIME}
-              </span>
-              <span aria-hidden="true" className="text-gold-700">
-                ·
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <PinIcon width={15} height={15} className="shrink-0 text-gold-500" />
-                Kolkata + worldwide online
-              </span>
-            </p>
-          </Reveal>
-          <Reveal delayMs={180} className="mt-9 w-full sm:w-auto">
-            <div className="cta-stack justify-center">
-              <Link href="/book" className="btn-gold shine-loop">
-                Book Your Transformation Audit
-              </Link>
-              <a
-                href={WA_CONTACT_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-wa"
-                aria-label="Chat with Aditya on WhatsApp"
-              >
-                <WhatsAppIcon width={18} height={18} />
-                Chat on WhatsApp
-              </a>
-            </div>
-          </Reveal>
-        </div>
-        {/* faint gold hairline divider below the hero */}
-        <div className="container-site">
-          <div className="gold-line" aria-hidden="true" />
-        </div>
-      </section>
-
       {/* 2) DIRECT CONTACT — Razorpay-visible details as real selectable text */}
       <section className="bg-base">
         <div className="container-site section">

@@ -157,8 +157,8 @@ export default function MethodPage() {
             </p>
           </Reveal>
           <Reveal delayMs={250} className="mt-8">
-            <Link href="/programs" className="btn-outline">
-              See Complete Transformation
+            <Link href="/results" className="btn-outline">
+              See Real Results
             </Link>
           </Reveal>
         </div>
