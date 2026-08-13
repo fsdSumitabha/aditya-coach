@@ -1,7 +1,15 @@
 "use client";
 import dynamic from "next/dynamic";
-import { Component, useEffect, useRef, useState, type ReactNode, } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useExperience } from "./store";
+import { forceFlat, forceThree, reportFallback } from "./flags";
 import Overlay from "./Overlay";
 import StaticFallback from "./StaticFallback";
 
@@ -27,15 +35,18 @@ function Poster() {
 
 /** WebGL render crashes downgrade to the content-first fallback. */
 class GLBoundary extends Component<
-  { onFail: () => void; children: ReactNode },
+  { onFail: (reason: string) => void; children: ReactNode },
   { failed: boolean }
 > {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
   }
-  componentDidCatch() {
-    this.props.onFail();
+  componentDidCatch(error: Error) {
+    // A genuine bug in the scene, not a device limitation — always report the
+    // message so it is fixable, rather than silently serving the 2D page.
+    console.error("[atelier] 3D scene crashed:", error);
+    this.props.onFail(`the 3D scene threw an error: ${error.message}`);
   }
   render() {
     return this.state.failed ? null : this.props.children;
@@ -53,42 +64,53 @@ function supportsWebGL(): boolean {
 
 const TRACK_VH = 6.2; // journey length: 6.2 viewport heights
 
+/** Strict Mode double-mounts and Fast Refresh remounts churn WebGL contexts in
+ *  dev, producing failures no visitor will ever see. Never auto-demote there. */
+const DEV = process.env.NODE_ENV !== "production";
+
 export default function Home3D() {
   const [mode, setMode] = useState<"loading" | "3d" | "fallback">("loading");
   const trackRef = useRef<HTMLDivElement>(null);
   const focusAnchor = useRef<number | null>(null);
   const aliveRef = useRef(false);
 
+  /** Single exit to the 2D journey — every trigger says why, in the console. */
+  const demote = useCallback((reason: string) => {
+    reportFallback(reason);
+    setMode("fallback");
+  }, []);
+
   // Mount watchdog: on devices/networks too slow to even load and boot the
   // three.js chunk, the visitor would sit on the poster spinner forever —
-  // the in-canvas fps watchdog only exists once the canvas mounts. If no
-  // frame has been produced 12s after choosing 3D, serve the 2D journey.
+  // the in-canvas fps watchdog only exists once the canvas mounts. This is a
+  // last resort for a scene that never arrives at all, so it is deliberately
+  // patient: a slow connection downloading three.js is not a broken device,
+  // and a spinner that eventually resolves beats swapping the page out.
   useEffect(() => {
     if (mode !== "3d") return;
     let t = 0;
     const arm = () => {
       t = window.setTimeout(() => {
-        if (aliveRef.current || navigator.webdriver) return;
+        if (aliveRef.current || navigator.webdriver || DEV) return;
+        if (forceThree()) return;
         // background tabs pause rAF — don't punish them, check again later
         if (document.visibilityState !== "visible") {
           arm();
           return;
         }
-        setMode("fallback");
-      }, 12000);
+        demote("the 3D scene never started within 45 seconds of loading");
+      }, 45000);
     };
     arm();
     return () => window.clearTimeout(t);
-  }, [mode]);
+  }, [mode, demote]);
 
   useEffect(() => {
     // deferred a frame — avoids a sync setState-in-effect cascade
     const raf = requestAnimationFrame(() => {
-      const reduced = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      // phones start on the low tier (no bloom/reflections, fewer particles);
-      // PerformanceMonitor can only step down further, never up past this
+      // Phones start on the low tier (no bloom/reflections, fewer particles).
+      // NOTE: this is a QUALITY choice, never a fallback — no screen size,
+      // aspect ratio or input type sends anyone to the 2D journey.
       if (
         window.matchMedia("(pointer: coarse)").matches ||
         window.innerWidth < 768
@@ -96,12 +118,39 @@ export default function Home3D() {
         useExperience.getState().setQuality("low");
         useExperience.getState().lockQuality();
       }
+
+      // ?three=1 — force the 3D journey, overriding every check below AND
+      // every runtime watchdog. The fastest way to prove on a visitor's own
+      // machine that the hardware is fine and something else routed them to
+      // the 2D page.
+      if (forceThree()) {
+        setMode("3d");
+        return;
+      }
+
+      // Reduced motion no longer swaps the whole page out. DESIGN-KIT.md says
+      // "reduced motion → static everywhere", and for CSS effects it still
+      // does — but replacing the homepage with a different homepage was too
+      // blunt a reading, and it was sending capable machines (a WebGL-healthy
+      // M1 among them) to the 2D page permanently. These visitors now get the
+      // real journey with every idle animation switched off; see `calm` in
+      // store.ts. Decided with the owner, 12 Aug 2026.
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        useExperience.getState().setCalm();
+      }
+
       // ?flat=1 — manual escape hatch to preview the 2D journey on any device
-      const forced = new URLSearchParams(window.location.search).has("flat");
-      setMode(!forced && !reduced && supportsWebGL() ? "3d" : "fallback");
+      const reason = forceFlat()
+        ? "?flat=1 is in the URL"
+        : !supportsWebGL()
+          ? "this browser did not return a WebGL context"
+          : null;
+
+      if (reason) demote(reason);
+      else setMode("3d");
     });
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [demote]);
 
   // scroll → journey target (raw; the scene damps it per-frame)
   useEffect(() => {
@@ -166,9 +215,9 @@ export default function Home3D() {
         {mode === "loading" ? (
           <Poster />
         ) : (
-          <GLBoundary onFail={() => setMode("fallback")}>
+          <GLBoundary onFail={demote}>
             <ExperienceCanvas
-              onPerfFail={() => setMode("fallback")}
+              onPerfFail={demote}
               onAlive={() => {
                 aliveRef.current = true;
               }}

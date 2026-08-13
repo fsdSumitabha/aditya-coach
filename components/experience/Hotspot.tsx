@@ -33,16 +33,21 @@ export default function Hotspot({
     if (alive && !alive.current) return;
     const t = state.clock.elapsedTime;
     const active = hover || focused;
+    const calm = useExperience.getState().calm;
     const k = 1 - Math.exp(-8 * delta);
     if (core.current) {
-      const target = active ? 1.5 : 1 + Math.sin(t * 2.2) * 0.08;
+      // Reduced motion: no idle breathe — the marker still swells on hover and
+      // focus, because that is the visitor's own action.
+      const idle = calm ? 1 : 1 + Math.sin(t * 2.2) * 0.08;
+      const target = active ? 1.5 : idle;
       const s = core.current.scale.x + (target - core.current.scale.x) * k;
       core.current.scale.setScalar(s);
       const m = core.current.material as THREE.MeshStandardMaterial;
       m.emissiveIntensity += ((active ? 3.4 : 1.5) - m.emissiveIntensity) * k;
     }
     if (ring.current) {
-      const pulse = ((t * 0.55) % 1 + 1) % 1;
+      // Reduced motion: the halo holds a steady ring instead of pinging out.
+      const pulse = calm ? 0.35 : (((t * 0.55) % 1) + 1) % 1;
       ring.current.scale.setScalar(1 + pulse * 2.2);
       const m = ring.current.material as THREE.MeshBasicMaterial;
       m.opacity = (1 - pulse) * (active ? 0.5 : 0.28);

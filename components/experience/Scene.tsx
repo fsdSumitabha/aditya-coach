@@ -64,6 +64,7 @@ export default function Scene() {
   const setQuality = useExperience((s) => s.setQuality);
   const setDpr = useThree((s) => s.setDpr);
   const gl = useThree((s) => s.gl);
+  const calm = useExperience((s) => s.calm);
   const high = quality === "high";
 
   // The pixel ratio the Canvas resolved to at boot, so a recovery can restore
@@ -131,11 +132,12 @@ export default function Scene() {
       <Floor reflective={high} />
       <GoldenThread />
 
-      {/* ambient gold dust across the whole journey */}
+      {/* ambient gold dust across the whole journey — speed 0 under reduced
+          motion leaves the dust hanging in the air instead of drifting */}
       <Sparkles
         count={high ? 260 : 120}
         size={high ? 2.4 : 2}
-        speed={0.24}
+        speed={calm ? 0 : 0.24}
         opacity={0.5}
         color="#e8d9a8"
         scale={[16, 7, 84]}

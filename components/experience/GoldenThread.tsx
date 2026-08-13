@@ -45,7 +45,12 @@ export default function GoldenThread() {
     const drawn = Math.min(1, progress * 1.12 + 0.08);
     geo.setDrawRange(0, Math.floor(indexCount * drawn));
     const m = mesh.current.material as THREE.MeshStandardMaterial;
-    const target = 1.6 + Math.sin(state.clock.elapsedTime * 1.4) * 0.5;
+    // Reduced motion: the thread still draws itself in with scroll (that is
+    // the visitor's own action) but holds a steady glow instead of breathing.
+    const calm = useExperience.getState().calm;
+    const target = calm
+      ? 1.6
+      : 1.6 + Math.sin(state.clock.elapsedTime * 1.4) * 0.5;
     m.emissiveIntensity += (target - m.emissiveIntensity) * (1 - Math.exp(-3 * delta));
   });
 

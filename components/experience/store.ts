@@ -16,7 +16,18 @@ type ExperienceState = {
    * never promote these devices back up to bloom + reflections.
    */
   qualityLocked: boolean;
+  /**
+   * The visitor asked their OS for reduced motion. The journey still renders —
+   * the camera follows scroll, because that IS the navigation — but every
+   * idle, looping, ambient motion is switched off: seal and folio rotations,
+   * Float bobbing, sparkle drift, hotspot pulsing, pointer look-around.
+   * Nothing moves that the visitor did not move themselves.
+   *
+   * Set once at mount and never changed, so useFrame reads it via getState().
+   */
+  calm: boolean;
   webglFailed: boolean;
+  setCalm: () => void;
   setTarget: (t: number) => void;
   setProgress: (p: number) => void;
   setFocus: (id: string | null) => void;
@@ -31,7 +42,9 @@ export const useExperience = create<ExperienceState>((set) => ({
   focus: null,
   quality: "high",
   qualityLocked: false,
+  calm: false,
   webglFailed: false,
+  setCalm: () => set({ calm: true }),
   setTarget: (target) => set({ target }),
   setProgress: (progress) => set({ progress }),
   setFocus: (focus) => set({ focus }),

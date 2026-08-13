@@ -60,7 +60,7 @@ export default function CameraRig() {
   const lookTarget = useRef(new THREE.Vector3());
 
   useFrame((state, delta) => {
-    const { progress, focus } = useExperience.getState();
+    const { progress, focus, calm } = useExperience.getState();
     const aspect = state.size.width / state.size.height;
     const pf = portraitBlend(aspect);
 
@@ -103,9 +103,11 @@ export default function CameraRig() {
     look.current.lerp(tmpT.current, k);
 
     // -- 3. pointer look-around (damped, bounded) --
+    // Reduced motion: the camera stops drifting with the pointer. Scroll still
+    // drives the dolly — that is the navigation itself, not decoration.
     const px = state.pointer.x;
     const py = state.pointer.y;
-    const range = focus ? 0.035 : 0.09;
+    const range = calm ? 0 : focus ? 0.035 : 0.09;
     const kl = 1 - Math.exp(-2.5 * delta);
     lookOffset.current.yaw += (px * range - lookOffset.current.yaw) * kl;
     lookOffset.current.pitch += (py * range * 0.6 - lookOffset.current.pitch) * kl;

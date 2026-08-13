@@ -88,9 +88,12 @@ export function Arrival() {
   const sealX = landscape ? 2.35 : 0;
   const sealY = landscape ? 1.55 : 2.6;
   const { alive, visible } = useChapterVisibility(0);
+  const calm = useExperience((s) => s.calm);
 
   useFrame((state, delta) => {
     if (!alive.current) return;
+    // Reduced motion: the seal holds its pose instead of turning forever.
+    if (useExperience.getState().calm) return;
     const t = state.clock.elapsedTime;
     if (outer.current) {
       outer.current.rotation.x = t * 0.22;
@@ -109,7 +112,12 @@ export function Arrival() {
     <group position={[sealX, sealY, 0]}>
       {/* 12×96 segments on a 0.028-thick ring was ~2,300 triangles of
           tessellation nobody can resolve; 8×64 is visually identical. */}
-      <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.5} enabled={visible}>
+      <Float
+        speed={1.4}
+        rotationIntensity={0.15}
+        floatIntensity={0.5}
+        enabled={visible && !calm}
+      >
         <mesh ref={outer}>
           <torusGeometry args={[1.15, 0.028, 8, 64]} />
           <meshStandardMaterial color={GOLD} metalness={1} roughness={0.22} />
@@ -177,6 +185,8 @@ export function TheMan() {
 
   useFrame((state) => {
     if (!alive.current) return;
+    // Reduced motion: the boulder and the column stand still.
+    if (useExperience.getState().calm) return;
     const t = state.clock.elapsedTime;
     if (rough.current) rough.current.rotation.y = t * 0.1;
     if (carved.current) carved.current.rotation.y = -t * 0.14;
@@ -461,12 +471,13 @@ function GalleryFrame({
   floating: boolean;
 }) {
   const tex = usePortraitTexture(after);
+  const calm = useExperience((s) => s.calm);
   return (
     <Float
       speed={1.1}
       rotationIntensity={0.06}
       floatIntensity={0.35}
-      enabled={floating}
+      enabled={floating && !calm}
     >
       <group position={position} rotation={[0, rotationY, 0]}>
         <mesh>
@@ -645,9 +656,12 @@ function Stele({
 export function Decision() {
   const book = useRef<THREE.Group>(null);
   const { alive, visible } = useChapterVisibility(-70);
+  const calm = useExperience((s) => s.calm);
 
   useFrame((state) => {
     if (!alive.current) return;
+    // Reduced motion: the folio stops turning.
+    if (useExperience.getState().calm) return;
     if (book.current) book.current.rotation.y = state.clock.elapsedTime * 0.35;
   });
 
@@ -687,7 +701,12 @@ export function Decision() {
 
       {/* the free blueprint — a floating golden folio off to the side */}
       <group position={[-1.6, 1.1, 4]}>
-        <Float speed={1.6} rotationIntensity={0.25} floatIntensity={0.7} enabled={visible}>
+        <Float
+          speed={1.6}
+          rotationIntensity={0.25}
+          floatIntensity={0.7}
+          enabled={visible && !calm}
+        >
           <group ref={book}>
             <mesh>
               <boxGeometry args={[0.5, 0.68, 0.06]} />
