@@ -44,9 +44,6 @@ export default function WhoThisIsFor() {
     return (
         <section className="bg-surface-1 border-y border-hairline-soft cv-auto">
         <div className="container-site section">
-          <Reveal className="mb-5">
-            <Chapter num="03" label="WHO THIS IS FOR" center />
-          </Reveal>
           <SplitHeading
             as="h2"
             text="Who This Is For."

@@ -14,6 +14,7 @@ import FaqItem from "@/components/programs/FaqItem";
 import { waLink } from "@/lib/config";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
+import WhoThisIsFor from "@/components/programs/WhoThisIsFor";
 
 // ===== Page-level config (swappable constants) =====
 // PHASE-2 STUBS — waLink/track come from the ONE global config block (lib/config.ts).
@@ -253,6 +254,8 @@ export default function ProgramsPage() {
                     speedS={38}
                 />
             </div>
+
+            <WhoThisIsFor />
 
             {/* ============ 2. THE OFFER — AUDIT BAND + THREE PROGRAMS ============ */}
             <section className="bg-base aurora relative overflow-hidden isolate">
