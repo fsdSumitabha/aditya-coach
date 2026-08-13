@@ -357,6 +357,34 @@ export default function TransformationStage({
     return () => window.clearTimeout(t);
   }, [index, paused, reducedMotion, intervalMs, autoplays]);
 
+  // Hover-pause is scoped to the photographs, not the section. The section is
+  // a full viewport tall, so listening there meant a cursor resting anywhere on
+  // screen — which is exactly where a reading cursor sits — held autoplay off
+  // indefinitely. Pointer events, filtered to a real mouse: a tap on a touch
+  // screen also raises enter, and whether a matching leave follows is browser-
+  // dependent — filtering on pointerType keeps a phone out of this path
+  // entirely rather than relying on that.
+  const onPointerEnter = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType === "mouse") setHovering(true);
+  }, []);
+  const onPointerLeave = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType === "mouse") setHovering(false);
+  }, []);
+
+  // Only a KEYBOARD walk-through pauses. Clicking prev/next also focuses the
+  // button it hit, and a plain focus check left autoplay paused from that click
+  // until the reader happened to click somewhere else on the page.
+  const onFocusCapture = useCallback((e: React.FocusEvent<HTMLElement>) => {
+    const el = e.target as HTMLElement | null;
+    let keyboard = false;
+    try {
+      keyboard = !!el?.matches?.(":focus-visible");
+    } catch {
+      keyboard = false; // no :focus-visible support — fall back to not pausing
+    }
+    setFocused(keyboard);
+  }, []);
+
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLElement>) => {
       if (e.key === "ArrowLeft") {
@@ -397,9 +425,7 @@ export default function TransformationStage({
     <section
       ref={sectionRef}
       aria-label="Transformations, one man at a time"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onFocusCapture={() => setFocused(true)}
+      onFocusCapture={onFocusCapture}
       onBlurCapture={() => setFocused(false)}
       onKeyDown={onKeyDown}
       className="bg-alt grain aurora relative overflow-hidden border-b border-hairline-soft"
@@ -409,8 +435,14 @@ export default function TransformationStage({
       {/* No section eyebrow: the hero above already says PROOF, and the row it
           would occupy is worth more as photograph. */}
       <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-8 nav:py-10">
-        {/* ---- The pair. Both panels cross on the same beat. ---- */}
-        <div className="stage-pair relative w-full">
+        {/* ---- The pair. Both panels cross on the same beat. ----
+             This is the ONLY hover-pause region: a mouse resting on the
+             photographs (or on the seam CTA inside them) holds the set. */}
+        <div
+          className="stage-pair relative w-full"
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
+        >
           <Panel side="before" index={index} />
           <Panel side="after" index={index} />
 
