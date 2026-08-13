@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { BRAND_LINE } from "@/lib/site";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
@@ -78,9 +79,23 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-6 border-t border-hairline-soft pt-8 md:flex-row md:items-center md:justify-between">
-          <p className="type-body text-primary font-display max-w-md">
-            {BRAND_LINE}
-          </p>
+          <div className="flex max-w-md flex-col gap-5">
+            <Link
+              href="/"
+              aria-label="Aditya Kumar Upadhyay — home"
+              className="inline-flex w-fit"
+            >
+              <Image
+                src="/logo/aku_logo.svg"
+                alt=""
+                width={1600}
+                height={900}
+                unoptimized
+                className="h-20 w-auto opacity-90 transition-opacity hover:opacity-100"
+              />
+            </Link>
+            <p className="type-body text-primary font-display">{BRAND_LINE}</p>
+          </div>
           <div className="flex items-center gap-5">
             <a
               href={IG_URL}

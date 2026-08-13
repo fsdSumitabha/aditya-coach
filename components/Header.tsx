@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -82,8 +83,23 @@ export default function Header() {
     <>
       <header className={`site-header${scrolled ? " scrolled" : ""}`}>
         <div className="container-site header-inner">
-          <Link href="/" className="wordmark" aria-label="Aditya Kumar Upadhyay — home">
-            Aditya Kumar Upadhyay
+          <Link
+            href="/"
+            className="wordmark flex items-center"
+            aria-label="Aditya Kumar Upadhyay — home"
+          >
+            {/* The AKU monogram, cropped from public/logo/aku_logo.svg by
+                scripts/build-logo-assets.mjs. The full stacked lockup cannot
+                be used at header height — see that script's header. */}
+            <Image
+              src="/logo/aku_logo.svg"
+              alt=""
+              width={1600}
+              height={900}
+              unoptimized
+              priority
+              className="h-[52px] w-auto"
+            />
           </Link>
 
           <nav className="header-nav" aria-label="Primary">
@@ -133,7 +149,21 @@ export default function Header() {
         aria-hidden={!open}
       >
         <div className="overlay-top">
-          <span className="wordmark">Aditya Kumar Upadhyay</span>
+          <Link
+            href="/"
+            className="wordmark flex items-center"
+            aria-label="Aditya Kumar Upadhyay — home"
+            onClick={close}
+          >
+            <Image
+              src="/logo/aku_logo.svg"
+              alt=""
+              width={1600}
+              height={900}
+              unoptimized
+              className="h-[52px] w-auto"
+            />
+          </Link>
           <button
             ref={closeRef}
             type="button"
