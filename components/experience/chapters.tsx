@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float, Html, Text } from "@react-three/drei";
 import * as THREE from "three";
 import Hotspot from "./Hotspot";
 import { CHAPTERS, FACTS } from "./facts";
 import { useExperience } from "./store";
-import { BTN_SCENE, requestNavigate } from "./ui";
+import { BTN_SCENE, EYEBROW, requestNavigate } from "./ui";
 import { ChapterAlive, useChapterAlive, useChapterVisibility } from "./visibility";
 import { LEGAL } from "@/lib/legal";
+import { CLIENT_SETS, glTexture } from "@/lib/transformations";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const FRAUNCES = `${BASE}/fonts/fraunces-500.ttf`;
@@ -201,9 +208,9 @@ const PORTRAIT_ASPECT = 1.32 / 1.72;
 
 /**
  * ONE decode, ONE cover-crop bake and ONE upload per photograph, shared by
- * every panel that shows it. Chapter 1 (Aditya's own before/after) and
- * chapter 3 (the proof gallery) draw the same two files, so a per-instance
- * cache would have put four ~3MB textures on the GPU for two images.
+ * both panels of chapter 1. (The proof gallery has its own eight files and
+ * goes through loadTexture below, which needs no canvas step because those
+ * bakes already come out at the panel aspect.)
  *
  * Never disposed: two textures live exactly as long as the canvas does, and
  * surviving a Fast Refresh remount saves re-baking them.
@@ -309,37 +316,81 @@ function usePortraitTexture(after: boolean) {
   return tex;
 }
 
-/* ================= CHAPTER 0 — ARRIVAL: the gold seal ================= */
+/* ---------- shared: file → texture ---------- */
 
-/** Generic image → texture, cached by src so a remount never re-decodes. */
+/**
+ * Cached by src, and cached at the MODULE level rather than per component: the
+ * proof gallery cycles four sets across two panels, so the same file is asked
+ * for again every few seconds and must not decode or upload twice. In-flight
+ * loads are cached too, or a preload racing a panel's own request would fetch
+ * and upload the same photograph twice.
+ *
+ * Never disposed. These live exactly as long as the canvas does, and surviving
+ * a Fast Refresh remount saves re-decoding all of them.
+ */
 const imageTextures = new Map<string, THREE.Texture>();
+const imageLoads = new Map<string, Promise<THREE.Texture>>();
 
-function useImageTexture(src: string) {
-  // src is a module constant at every call site, so the initial value is the
-  // whole story — no render-phase adjustment needed.
+function loadTexture(
+  src: string,
+  gl: THREE.WebGLRenderer,
+  anisotropy: number,
+): Promise<THREE.Texture> {
+  const hit = imageTextures.get(src);
+  if (hit) return Promise.resolve(hit);
+  let pending = imageLoads.get(src);
+  if (!pending) {
+    pending = new Promise<THREE.Texture>((resolve, reject) => {
+      new THREE.TextureLoader().load(src, resolve, undefined, reject);
+    }).then((t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      // panels sit at up to ±0.32rad — without this the grazing angle smears
+      if (anisotropy) {
+        t.anisotropy = Math.min(anisotropy, gl.capabilities.getMaxAnisotropy());
+      }
+      imageTextures.set(src, t);
+      return t;
+    });
+    imageLoads.set(src, pending);
+  }
+  return pending;
+}
+
+/** Returns null until the file has decoded — callers render their mount board
+ *  in the meantime rather than a black panel. */
+function useImageTexture(src: string, anisotropy = 0) {
+  const gl = useThree((s) => s.gl);
   const [tex, setTex] = useState<THREE.Texture | null>(
     () => imageTextures.get(src) ?? null,
   );
 
+  // Render-phase adjustment: a proof panel's src changes every time the set
+  // flips, so the initial value is NOT the whole story — swap to whatever that
+  // file already has instead of holding the previous man's photograph.
+  const [shown, setShown] = useState(src);
+  if (shown !== src) {
+    setShown(src);
+    setTex(imageTextures.get(src) ?? null);
+  }
+
   useEffect(() => {
-    if (imageTextures.has(src)) return;
     let cancelled = false;
-    new THREE.TextureLoader().load(src, (t) => {
-      if (cancelled) {
-        t.dispose();
-        return;
-      }
-      t.colorSpace = THREE.SRGBColorSpace;
-      imageTextures.set(src, t);
-      setTex(t);
-    });
+    loadTexture(src, gl, anisotropy)
+      .then((t) => {
+        if (!cancelled) setTex(t);
+      })
+      .catch(() => {
+        /* a missing bake leaves the mount board showing, never a black hole */
+      });
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [src, anisotropy, gl]);
 
   return tex;
 }
+
+/* ================= CHAPTER 0 — ARRIVAL: the gold seal ================= */
 
 const AKU_MARK = `${BASE}/logo/aku-mark.png`;
 const MARK_ASPECT = 480 / 157; // the shipped wordmark's own proportions
@@ -748,99 +799,240 @@ export function TheOrder() {
   );
 }
 
-/* ========= CHAPTER 3 — THE PROOF: floating gallery frames ========= */
+/* ========= CHAPTER 3 — THE PROOF: the client gallery ========= */
 
-// PLACEHOLDER CONTENT. These two frames are meant to carry a *client's*
-// before/after, but no cleared client photo exists yet, so they borrow
-// Aditya's — the same pair chapter 1 shows. Swap PORTRAIT_SRC's targets (or
-// give this chapter its own pair) once the client images are edited and
-// consent is on file. The museum-box frame here is deliberately left as-is.
+// Two hung frames that step through the FOUR client transformations, the same
+// four /results shows — the sets come from lib/transformations.ts so the two
+// surfaces can never disagree about who is in a frame or where his story is.
+//
+// A SET IS ATOMIC. Both frames always carry the same man: they take one index
+// between them and there is deliberately no way to give the panels separate
+// ones, because pairing client A's before with client B's after would be a
+// fabricated result.
+//
+// ⚠️  CONSENT  ⚠️  client-01 / client-02 are cleared (29 Jul 2026).
+// client-03 / client-04 photographs came from the owner 12 Aug 2026 and their
+// WRITTEN consent is [review] not yet recorded — the same status they already
+// carry on /results. Confirm before launch.
+//
+// The museum box frame that used to stand here (a 1.5×1.9×0.07 slab behind
+// every photo plus a solid gold lip) is gone; these use the same single-draw
+// hairline frame as chapter 1.
 
-function GalleryFrame({
-  position,
-  rotationY,
-  after,
-  hotspot,
-  caption,
+const PROOF_X = 1.78; // outer edge lands at 2.52 vs the 2.63 a phone can see
+const PROOF_Y = 1.8;
+const PROOF_TOE = 0.28; // the gallery opens a little wider than the diptych
+
+/** How long each man holds the frames. */
+const FLIP_MS = 1000;
+/** Crossfade between sets — long enough not to blink, short at this cadence. */
+const FADE_MS = 260;
+
+const proofSrc = (setIndex: number, side: "before" | "after") =>
+  `${BASE}${glTexture(CLIENT_SETS[setIndex][side]) ?? ""}`;
+
+/**
+ * One frame. Two stacked quads: the outgoing man at full opacity underneath,
+ * the incoming one fading in over him, so the pair never blinks to black
+ * between sets. Opacity is written straight to the material each frame from
+ * the shared fade ref — a React state write at 60fps for a crossfade would
+ * re-render the chapter on every frame.
+ */
+function ProofPanel({
+  side,
+  cur,
+  prev,
+  fade,
   floating,
 }: {
-  position: [number, number, number];
-  rotationY: number;
-  after: boolean;
-  hotspot?: string;
-  caption: string;
+  side: "before" | "after";
+  cur: number;
+  prev: number;
+  fade: MutableRefObject<number>;
   floating: boolean;
 }) {
-  const tex = usePortraitTexture(after);
+  const after = side === "after";
+  const front = useImageTexture(proofSrc(cur, side), 8);
+  const back = useImageTexture(proofSrc(prev, side), 8);
+  const frontMat = useRef<THREE.MeshBasicMaterial>(null);
   const calm = useExperience((s) => s.calm);
+  const sign = after ? 1 : -1;
+
+  useFrame(() => {
+    if (frontMat.current) frontMat.current.opacity = fade.current;
+  });
+
   return (
-    <Float
-      speed={1.1}
-      rotationIntensity={0.06}
-      floatIntensity={0.35}
-      enabled={floating && !calm}
-    >
-      <group position={position} rotation={[0, rotationY, 0]}>
-        <mesh>
-          <boxGeometry args={[1.5, 1.9, 0.07]} />
-          <meshStandardMaterial color="#0e0d0b" roughness={0.6} metalness={0.3} />
-        </mesh>
-        <mesh position={[0, 0, 0.041]}>
-          <planeGeometry args={[1.32, 1.72]} />
-          <meshBasicMaterial map={tex} />
-        </mesh>
-        {/* gold frame lip */}
-        <mesh position={[0, 0, -0.005]}>
-          <boxGeometry args={[1.58, 1.98, 0.045]} />
-          <meshStandardMaterial
-            color={GOLD}
-            metalness={1}
-            roughness={0.28}
-            emissive={GOLD}
-            emissiveIntensity={0.22}
+    <group position={[sign * PROOF_X, 0, 0]}>
+      <Float
+        speed={1.1}
+        rotationIntensity={0.06}
+        floatIntensity={0.35}
+        enabled={floating && !calm}
+      >
+        <group position={[0, PROOF_Y, 0]} rotation={[0, -sign * PROOF_TOE, 0]}>
+          {/* mount board — also what shows while a photograph is still decoding */}
+          <mesh position={[0, 0, -0.006]}>
+            <planeGeometry args={[PANEL_W + MAT * 2 + LINE, PANEL_H + MAT * 2 + LINE]} />
+            <meshBasicMaterial color="#12100d" />
+          </mesh>
+          {back && (
+            <mesh>
+              <planeGeometry args={[PANEL_W, PANEL_H]} />
+              <meshBasicMaterial map={back} />
+            </mesh>
+          )}
+          {front && (
+            <mesh position={[0, 0, 0.001]}>
+              <planeGeometry args={[PANEL_W, PANEL_H]} />
+              <meshBasicMaterial
+                ref={frontMat}
+                map={front}
+                transparent
+                depthWrite={false}
+              />
+            </mesh>
+          )}
+          <mesh
+            geometry={getFrameGeometry()}
+            material={getFrameMaterial(after ? GOLD : "#4d483f")}
+            position={[0, 0, 0.004]}
           />
-        </mesh>
-        <Text
-          font={INTER}
-          fontSize={0.085}
-          letterSpacing={0.24}
-          color={after ? GOLD : "#8a847a"}
-          position={[0, -1.14, 0.05]}
-          anchorX="center"
-        >
-          {caption}
-        </Text>
-        {hotspot && <Hotspot id={hotspot} position={[0.85, 0.6, 0.25]} size={0.07} />}
-      </group>
-    </Float>
+          <Text
+            font={INTER}
+            fontSize={0.095}
+            letterSpacing={0.26}
+            color={after ? GOLD : "#8a847a"}
+            position={[0, -(PANEL_H / 2 + MAT + 0.19), 0.01]}
+            anchorX="center"
+          >
+            {after ? "AFTER" : "BEFORE"}
+          </Text>
+        </group>
+      </Float>
+      <BlobShadow position={[0, 0.012, 0]} scale={2.6} />
+    </group>
   );
 }
 
 export function Proof() {
   const { alive, visible } = useChapterVisibility(-52);
+  const gl = useThree((s) => s.gl);
+  const [pair, setPair] = useState({ cur: 0, prev: 0 });
+  const fade = useRef(1);
+  const clock = useRef(0);
+  // Hovering or focusing the button stops the cycle. At a one-second cadence
+  // the destination would otherwise change under a reader's cursor between the
+  // moment he decides to click and the moment he does.
+  const held = useRef(false);
+
+  const shown = useExperience(
+    (s) => s.progress > CHAPTERS[3].range[0] && s.progress < 0.7,
+  );
+  const mounted = useExperience(
+    (s) => s.progress > CHAPTERS[3].range[0] - 0.05 && s.progress < 0.75,
+  );
+
+  // Eight photographs, warmed once the gallery is within range rather than at
+  // canvas boot — it sits two thirds of the way down the journey, so this
+  // keeps ~350KB off the homepage's first seconds while still leaving about
+  // twenty units of scroll to decode in.
+  useEffect(() => {
+    if (!visible) return;
+    for (let i = 0; i < CLIENT_SETS.length; i++) {
+      loadTexture(proofSrc(i, "before"), gl, 8).catch(() => {});
+      loadTexture(proofSrc(i, "after"), gl, 8).catch(() => {});
+    }
+  }, [visible, gl]);
+
+  // The crossfade is armed HERE, after the commit that actually puts the new
+  // man in the frame — not inside the useFrame that schedules him. React does
+  // not commit synchronously from a rAF callback, so zeroing the fade at
+  // schedule time can catch a frame that is still holding the previous pair
+  // and flash the man from two sets ago.
+  useLayoutEffect(() => {
+    fade.current = 0;
+  }, [pair]);
+
+  useFrame((_, delta) => {
+    if (!alive.current) return;
+    if (fade.current < 1) {
+      fade.current = Math.min(1, fade.current + (delta * 1000) / FADE_MS);
+    }
+    // Reduced motion holds the first man on the wall; the gallery is proof,
+    // not a slideshow, and every set is reachable in full on /results.
+    if (useExperience.getState().calm || held.current) return;
+    clock.current += delta;
+    if (clock.current * 1000 < FLIP_MS) return;
+    clock.current = 0;
+    setPair((p) => ({ cur: (p.cur + 1) % CLIENT_SETS.length, prev: p.cur }));
+  });
+
+  const set = CLIENT_SETS[pair.cur];
+  const href = set.href;
+
   return (
     <ChapterAlive.Provider value={alive}>
-    <group position={[0, 0, -52]}>
-      <GalleryFrame
-        position={[-1.9, 1.8, 0]}
-        rotationY={0.32}
-        after={false}
-        caption="BEFORE"
-        hotspot="proof-client"
-        floating={visible}
-      />
-      <GalleryFrame
-        position={[1.9, 1.8, 0]}
-        rotationY={-0.32}
-        after
-        caption="AFTER"
-        hotspot="proof-truth"
-        floating={visible}
-      />
-      <BlobShadow position={[-1.9, 0.012, 0]} scale={3} />
-      <BlobShadow position={[1.9, 0.012, 0]} scale={3} />
-      <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
-    </group>
+      <group position={[0, 0, -52]}>
+        <ProofPanel
+          side="before"
+          cur={pair.cur}
+          prev={pair.prev}
+          fade={fade}
+          floating={visible}
+        />
+        <ProofPanel
+          side="after"
+          cur={pair.cur}
+          prev={pair.prev}
+          fade={fade}
+          floating={visible}
+        />
+        <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
+
+        {/* In the gap between the frames: who this is, and the way into his
+            story. Out by 0.70 — the dolly crosses this z at progress ≈ 0.75. */}
+        {mounted && (
+          <Html
+            position={[0, PROOF_Y, 0.3]}
+            center
+            pointerEvents="none"
+            zIndexRange={[8, 0]}
+            style={{ opacity: shown ? 1 : 0, transition: "opacity 420ms ease" }}
+          >
+            <div className="flex flex-col items-center gap-2 text-center">
+              <span className={EYEBROW}>{set.eyebrow}</span>
+              {href && (
+                <button
+                  type="button"
+                  tabIndex={shown ? 0 : -1}
+                  aria-hidden={!shown}
+                  onClick={() => requestNavigate(href)}
+                  // The hold lives on the button itself, not on the wrapper:
+                  // the wrapper inherits pointer-events:none from <Html> so the
+                  // gap between the frames stays click-through to the canvas.
+                  onPointerEnter={() => {
+                    held.current = true;
+                  }}
+                  onPointerLeave={() => {
+                    held.current = false;
+                  }}
+                  onFocus={() => {
+                    held.current = true;
+                  }}
+                  onBlur={() => {
+                    held.current = false;
+                  }}
+                  className={BTN_SCENE}
+                  style={{ pointerEvents: shown ? "auto" : "none" }}
+                >
+                  {set.linkLabel}
+                </button>
+              )}
+            </div>
+          </Html>
+        )}
+      </group>
     </ChapterAlive.Provider>
   );
 }
