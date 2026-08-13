@@ -53,11 +53,7 @@ const DEMO_PAIRS = [
   {
     before: "/aditya/before/before_transformation_01.png",
     after: "/aditya/after/after_transformation_01.jpg",
-  },
-  {
-    before: "/aditya/before/before_transformation.png",
-    after: "/aditya/after/after_transformation_02.jpg",
-  },
+  }
 ] as const;
 
 /** Each photo well is ~370px at the 980px cap, ~42vw below it. */
