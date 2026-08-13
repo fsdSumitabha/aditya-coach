@@ -335,26 +335,50 @@ export default function TransformationStage({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
+  // threshold 0 — ANY sliver on screen counts as in view. A threshold means the
+  // observer reports against the SECTION's own box, and this section is a full
+  // viewport tall, so a fractional threshold could read "out of view" while the
+  // photographs were plainly on screen.
   useEffect(() => {
     const el = sectionRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.2 },
+      { threshold: 0 },
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  // Keyed on `index`, so a manual move restarts the dwell rather than ending
-  // the cycle — the reader gets a full beat on the man he picked.
+  // The dwell is BANKED, not restarted. Pausing stores how much of the beat is
+  // left; resuming continues from there. Starting a fresh full interval on every
+  // resume was the subtle half of the bug: a cursor crossing the photographs a
+  // few times reset the countdown each pass, so the set never turned and
+  // autoplay looked broken even though the timer was running the whole time.
+  const remainingRef = useRef(intervalMs);
+  const startedAtRef = useRef(0);
+
+  // A new set always earns a full beat. Declared BEFORE the timer effect so it
+  // runs first when `index` changes.
+  useEffect(() => {
+    remainingRef.current = intervalMs;
+  }, [index, intervalMs]);
+
   useEffect(() => {
     if (!autoplays || reducedMotion || paused) return;
+    startedAtRef.current = Date.now();
     const t = window.setTimeout(() => {
       setDir(1);
       setIndex((i) => (i + 1) % SETS.length);
-    }, intervalMs);
-    return () => window.clearTimeout(t);
+    }, remainingRef.current);
+    return () => {
+      window.clearTimeout(t);
+      // Only time the timer actually RAN is spent; paused time is not.
+      remainingRef.current = Math.max(
+        0,
+        remainingRef.current - (Date.now() - startedAtRef.current),
+      );
+    };
   }, [index, paused, reducedMotion, intervalMs, autoplays]);
 
   // Hover-pause is scoped to the photographs, not the section. The section is
@@ -399,12 +423,9 @@ export default function TransformationStage({
   );
 
   const set = SETS[index];
-  const counter = `${String(index + 1).padStart(2, "0")} / ${String(
-    SETS.length,
-  ).padStart(2, "0")}`;
 
-  // One line, not a stack: eyebrow · counter · headline-as-link. Everything
-  // the vertical budget can give goes to the photographs instead.
+  // One line, not a stack: the headline links through. Everything the vertical
+  // budget can give goes to the photographs instead.
   const story = (
     <span className="inline-flex flex-wrap items-baseline justify-center gap-x-2.5 gap-y-1">
 
@@ -506,8 +527,14 @@ export default function TransformationStage({
           </div>
         </div>
 
-        {/* ---- Set navigation: prev / dots / next move the WHOLE set ---- */}
-        <div className="mt-3 flex items-center justify-center gap-1.5 nav:mt-4">
+        {/* ---- Set navigation: prev / dots / next move the WHOLE set ----
+             Also a hover-pause region, so the set cannot turn under a cursor
+             that is on its way to a dot. */}
+        <div
+          className="mt-3 flex items-center justify-center gap-1.5 nav:mt-4"
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
+        >
           <button
             type="button"
             onClick={prev}

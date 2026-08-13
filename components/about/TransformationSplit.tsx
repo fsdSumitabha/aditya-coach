@@ -248,33 +248,87 @@ export default function TransformationSplit({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  // Don't burn frames (or advance unseen pairs) once scrolled past.
+  // Don't burn frames (or advance unseen pairs) once scrolled past. threshold 0
+  // — any sliver on screen counts; a fractional threshold is measured against
+  // this section's own tall box and can read "out of view" while the frames are
+  // plainly visible.
   useEffect(() => {
     const el = sectionRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.15 },
+      { threshold: 0 },
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  // Keyed on `index`, so any manual move also restarts the dwell — the reader
-  // gets a full beat on the pair he picked before autoplay takes over again.
+  // The dwell is BANKED, not restarted. Pausing stores how much of the beat is
+  // left; resuming continues from there. Starting a fresh full interval on every
+  // resume meant a cursor crossing the frames a few times reset the countdown
+  // each pass, so the pair never turned and autoplay looked broken.
+  const remainingRef = useRef(intervalMs);
+  const startedAtRef = useRef(0);
+
+  // A new pair always earns a full beat. Declared BEFORE the timer effect so it
+  // runs first when `index` changes.
+  useEffect(() => {
+    remainingRef.current = intervalMs;
+  }, [index, intervalMs]);
+
   useEffect(() => {
     if (reducedMotion || paused) return;
+    startedAtRef.current = Date.now();
     const t = window.setTimeout(
       () => setIndex((i) => (i + 1) % DEMO_PAIRS.length),
-      intervalMs,
+      remainingRef.current,
     );
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      // Only time the timer actually RAN is spent; paused time is not.
+      remainingRef.current = Math.max(
+        0,
+        remainingRef.current - (Date.now() - startedAtRef.current),
+      );
+    };
   }, [index, paused, reducedMotion, intervalMs]);
 
   const next = useCallback(
     () => setIndex((i) => (i + 1) % DEMO_PAIRS.length),
     [],
   );
+
+  // Hover-pause is scoped to the frames and the controls, NOT the whole
+  // section. Listening on the section meant a cursor resting anywhere in that
+  // full-width band — including the empty margins either side of the diptych —
+  // held autoplay off indefinitely. Pointer events filtered to a real mouse: a
+  // tap on a touch screen also raises enter, and whether a matching leave ever
+  // follows is browser-dependent, so a phone stays out of this path entirely.
+  const onPointerEnter = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType === "mouse") setHovering(true);
+  }, []);
+  const onPointerLeave = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType === "mouse") setHovering(false);
+  }, []);
+  const hoverPause = {
+    onPointerEnter,
+    onPointerLeave,
+  };
+
+  // Only a KEYBOARD walk-through pauses. Clicking the arrow or a tick also
+  // focuses the button it hit, and a plain focus check left autoplay paused
+  // from that click until the reader happened to click elsewhere on the page —
+  // i.e. autoplay died permanently on the first manual interaction.
+  const onFocusCapture = useCallback((e: React.FocusEvent<HTMLElement>) => {
+    const el = e.target as HTMLElement | null;
+    let keyboard = false;
+    try {
+      keyboard = !!el?.matches?.(":focus-visible");
+    } catch {
+      keyboard = false; // no :focus-visible support — fall back to not pausing
+    }
+    setFocused(keyboard);
+  }, []);
 
   // Progressive enhancement: the plaque is a real in-page anchor, so it works
   // with JS off. JS only upgrades the jump to a smooth scroll + focus move.
@@ -297,9 +351,7 @@ export default function TransformationSplit({
     <section
       ref={sectionRef}
       aria-labelledby="tsplit-label"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onFocusCapture={() => setFocused(true)}
+      onFocusCapture={onFocusCapture}
       onBlurCapture={() => setFocused(false)}
       className="bg-void grain aurora relative overflow-hidden border-b border-hairline-soft"
     >
@@ -317,7 +369,8 @@ export default function TransformationSplit({
         </div>
 
         {/* ---- The diptych: two hung frames, a deliberate gap between ---- */}
-        <div className="relative mx-auto mt-6 max-w-[980px] nav:mt-8">
+        {/* Hover-pause region #1 — the frames themselves. */}
+        <div className="relative mx-auto mt-6 max-w-[980px] nav:mt-8" {...hoverPause}>
           {/* The gap is sized to hold the medallion and the plaque on desktop;
               on a phone they straddle the seam, which is why both carry a
               backdrop blur and their own dark ground. */}
@@ -380,7 +433,9 @@ export default function TransformationSplit({
         </div>
 
         {/* ---- Slideshow controls — off the frames, on their own line ---- */}
-        <div className="mt-5 flex items-center justify-center gap-1">
+        {/* Hover-pause region #2 — so the pair cannot turn under a cursor
+            that is on its way to a tick. */}
+        <div className="mt-5 flex items-center justify-center gap-1" {...hoverPause}>
           {DEMO_PAIRS.map((pair, i) => (
             <button
               key={pair.before}
