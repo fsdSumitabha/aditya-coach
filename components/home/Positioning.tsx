@@ -1,4 +1,3 @@
-import type { SVGProps } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
@@ -8,25 +7,22 @@ import VideoFrame from "@/components/home/VideoFrame";
 // ============================================================
 // HOME — positioning block, rendered BELOW the 3D journey.
 //
-// Answers the brief's §1 in plain HTML: he is not a gym coach and not a
-// nutritionist. What he actually works on is the man people meet —
-// grooming, style and appearance, body language, presence, communication,
-// social skill, etiquette, confidence, charisma, self-presentation.
+// Answers the brief's §1 in plain HTML: what he actually works on is the man
+// people meet — grooming, style and appearance, body language, presence,
+// communication, social skill, etiquette, confidence, charisma,
+// self-presentation.
 //
-// Order: the correction (what it is not) → THE WORK (what it is, the
-// positive core) → the film → conversion. The negative half stays short;
-// the positive half is the showpiece.
+// Order: THE WORK (what it is, the positive core) → the film → conversion.
+//
+// This used to open with a correction section — "I'm not a gym coach. I'm not
+// a nutritionist." over a struck-through list of training plans, diet charts,
+// supplement stacks and motivation. Removed at the owner's request, 13 Aug
+// 2026: the page now leads with what the work IS rather than spending the
+// first screen after the journey on what it is not. The same reconciliation
+// still happens below, in one line, at the end of THE WORK.
 //
 // All copy is written in Aditya's voice and tagged [review] for his audit.
 // ============================================================
-
-/* [review] — what he is repeatedly mistaken for */
-const NOT_THIS = [
-  "Training plans",
-  "Diet charts",
-  "Supplement stacks",
-  "Motivation",
-];
 
 /* [review] — THE POSITIVE CORE. Every discipline he actually coaches,
    grouped so the list reads as one system instead of a word cloud. */
@@ -67,70 +63,10 @@ const DISCIPLINES = [
   },
 ];
 
-/** Decorative dismissal mark. */
-function XMark(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  );
-}
-
 export default function Positioning() {
   return (
     <>
-
-      {/* ============ A. THE CORRECTION — short, then pivot ============ */}
-      <section
-        id="what-i-do"
-        className="cv-auto grain relative overflow-hidden border-t border-hairline-soft bg-void"
-      >
-        <div className="container-site section">
-          <Reveal className="mx-auto max-w-[760px] text-center">
-            <div className="flex items-center justify-center gap-4">
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
-              <p className="eyebrow">WHAT THIS IS{/* [review] */}</p>
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-14" />
-            </div>
-            <SplitHeading
-              as="h2"
-              text="I'm not a gym coach. I'm not a nutritionist."
-              className="type-h2 text-primary mt-5"
-            />
-            <p className="type-lead mt-6 text-secondary">
-              Those men handle your workout and your plate. Necessary work.
-              It is not my work.
-            </p>{/* [review] */}
-            <p className="type-lead mt-4 text-primary">
-              I work on the man people actually meet.
-            </p>{/* [review] */}
-          </Reveal>
-
-          {/* compact dismissal row — the negative half stays deliberately short */}
-          <Reveal index={1} className="mt-10">
-            <ul className="flex list-none flex-wrap items-center justify-center gap-x-6 gap-y-3">
-              {NOT_THIS.map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <XMark className="h-3.5 w-3.5 shrink-0 text-muted" />
-                  <span className="type-small text-muted line-through decoration-[rgba(167,161,153,0.4)]">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============ B. THE WORK — the positive core (showpiece) ============ */}
+      {/* ============ A. THE WORK — the positive core (showpiece) ============ */}
       <section className="cv-auto relative overflow-hidden border-t border-hairline-soft bg-base">
         {/* ONE ghost watermark for the block */}
         <span
@@ -197,7 +133,7 @@ export default function Positioning() {
         </div>
       </section>
 
-      {/* ============ C. IN MY WORDS — the film ============ */}
+      {/* ============ B. IN MY WORDS — the film ============ */}
       <section className="cv-auto border-t border-hairline-soft bg-alt">
         <div className="container-site section">
           <Reveal className="mx-auto max-w-[720px] text-center">
@@ -225,7 +161,7 @@ export default function Positioning() {
         </div>
       </section>
 
-      {/* ============ D. CONVERSION ============ */}
+      {/* ============ C. CONVERSION ============ */}
       <FinalCta
         heading="Build the presence people take seriously."
         sub="Forty-five minutes on WhatsApp. We find what is actually holding you back, and the order to fix it in."
