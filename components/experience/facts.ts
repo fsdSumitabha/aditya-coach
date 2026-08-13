@@ -24,8 +24,12 @@ export const FACTS: Record<string, Fact> = {
     title: "100kg. Zero confidence.",
     body: "This was me. 100kg. Zero confidence. The decision to change was the hardest part. Everything else followed.",
     attribution: "— Aditya, before coaching",
-    cam: [-2.6, 1.7, -12.6],
-    look: [-1.7, 1.2, -16],
+    // Framed on the panel, not on the figure that used to stand here: sat on
+    // the panel's own normal 3.6 units out, aiming 0.35 to its right so the
+    // photograph lands left of centre and the fact card (right, 380px) never
+    // covers it. Re-derive both of these if PANEL_X/PANEL_Y ever move.
+    cam: [-0.37, 1.5, -12.5],
+    look: [-1.15, 1.5, -16],
   },
   "man-after": {
     id: "man-after",
@@ -33,8 +37,8 @@ export const FACTS: Record<string, Fact> = {
     title: "Rebuilt from the ground up.",
     body: "I am not a celebrity trainer. I am not a gym influencer. I am someone who rebuilt himself completely from the ground up. From 100kg with zero confidence to coaching some of the most successful men in Kolkata. I did not just change how I looked — I changed how I show up." /* [review] final line added per direction doc §7 */,
     cta: { label: "My story →", href: "/about" },
-    cam: [2.7, 1.8, -12.7],
-    look: [1.7, 1.3, -16],
+    cam: [1.07, 1.5, -12.5],
+    look: [1.85, 1.5, -16],
   },
   // ---- THE COMPLETE REBUILD (his framework, §6 — step lines verbatim) ----
   "order-1": {
