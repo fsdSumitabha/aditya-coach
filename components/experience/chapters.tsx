@@ -10,12 +10,17 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float, Html, Text } from "@react-three/drei";
 import * as THREE from "three";
-import Hotspot from "./Hotspot";
-import { CHAPTERS, FACTS } from "./facts";
+import {
+  CHAPTERS,
+  FACTS,
+  OFFERS,
+  REBUILD_STEPS,
+  SCENE,
+  type Offer,
+} from "./facts";
 import { useExperience } from "./store";
 import { BTN_SCENE, EYEBROW, requestNavigate } from "./ui";
 import { ChapterAlive, useChapterAlive, useChapterVisibility } from "./visibility";
-import { LEGAL } from "@/lib/legal";
 import { CLIENT_SETS, glTexture } from "@/lib/transformations";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -535,13 +540,12 @@ const TICK = 0.22; // corner bracket arm
 const TICK_OUT = 0.06; // how far the brackets sit outside the hairline
 
 /**
- * The whole frame — a hairline rectangle plus four corner brackets — is twelve
- * rectangles merged into ONE ShapeGeometry, so it is a single draw call of
- * ~24 triangles rather than twelve meshes. Built once and shared by both
- * panels; only the material colour differs.
+ * A hairline rectangle — optionally with four corner brackets — merged into
+ * ONE ShapeGeometry, so a whole frame is a single draw call of 8 or 24
+ * triangles rather than four or twelve meshes. Cached by size, and used by
+ * every framed object in the journey: both photo diptychs, the audit gateway
+ * and the three programme columns.
  */
-let frameGeometry: THREE.ShapeGeometry | null = null;
-
 function rect(cx: number, cy: number, w: number, h: number) {
   const s = new THREE.Shape();
   s.moveTo(cx - w / 2, cy - h / 2);
@@ -552,29 +556,40 @@ function rect(cx: number, cy: number, w: number, h: number) {
   return s;
 }
 
-function getFrameGeometry() {
-  if (frameGeometry) return frameGeometry;
-  const rx = PANEL_W / 2 + MAT;
-  const ry = PANEL_H / 2 + MAT;
+const outlineCache = new Map<string, THREE.ShapeGeometry>();
+
+function getOutline(w: number, h: number, brackets = false) {
+  const key = `${w}|${h}|${brackets}`;
+  const hit = outlineCache.get(key);
+  if (hit) return hit;
+  const rx = w / 2;
+  const ry = h / 2;
   const shapes = [
-    rect(0, ry, rx * 2 + LINE, LINE), // top
-    rect(0, -ry, rx * 2 + LINE, LINE), // bottom
-    rect(-rx, 0, LINE, ry * 2 + LINE), // left
-    rect(rx, 0, LINE, ry * 2 + LINE), // right
+    rect(0, ry, w + LINE, LINE), // top
+    rect(0, -ry, w + LINE, LINE), // bottom
+    rect(-rx, 0, LINE, h + LINE), // left
+    rect(rx, 0, LINE, h + LINE), // right
   ];
-  const bx = rx + TICK_OUT;
-  const by = ry + TICK_OUT;
-  for (const sx of [-1, 1]) {
-    for (const sy of [-1, 1]) {
-      shapes.push(rect(sx * (bx - TICK / 2), sy * by, TICK, LINE));
-      shapes.push(rect(sx * bx, sy * (by - TICK / 2), LINE, TICK));
+  if (brackets) {
+    const bx = rx + TICK_OUT;
+    const by = ry + TICK_OUT;
+    for (const sx of [-1, 1]) {
+      for (const sy of [-1, 1]) {
+        shapes.push(rect(sx * (bx - TICK / 2), sy * by, TICK, LINE));
+        shapes.push(rect(sx * bx, sy * (by - TICK / 2), LINE, TICK));
+      }
     }
   }
-  frameGeometry = new THREE.ShapeGeometry(shapes);
-  return frameGeometry;
+  const g = new THREE.ShapeGeometry(shapes);
+  outlineCache.set(key, g);
+  return g;
 }
 
-/** One unlit material per frame colour, shared across panels. */
+/** The photo frame: the panel plus its mat, with brackets. */
+const getFrameGeometry = () =>
+  getOutline(PANEL_W + MAT * 2, PANEL_H + MAT * 2, true);
+
+/** One unlit material per frame colour, shared across every framed object. */
 const frameMaterials = new Map<string, THREE.MeshBasicMaterial>();
 
 function getFrameMaterial(color: string) {
@@ -664,8 +679,8 @@ export function TheMan() {
   return (
     <ChapterAlive.Provider value={alive}>
       <group position={[0, 0, -16]}>
-        <ManPortrait after={false} caption="BEFORE" factId="man-before" floating={visible} />
-        <ManPortrait after caption="AFTER" factId="man-after" floating={visible} />
+        <ManPortrait after={false} caption={SCENE.before} factId="man-before" floating={visible} />
+        <ManPortrait after caption={SCENE.after} factId="man-after" floating={visible} />
         {/* Dead centre of the diptych, in the gap between the two frames.
             Out by 0.225: the dolly crosses this z at progress ≈ 0.25. */}
         <SceneButton
@@ -681,14 +696,9 @@ export function TheMan() {
 
 /* ====== CHAPTER 2 — THE ORDER: the foundation assembles itself ====== */
 
-// THE COMPLETE REBUILD (Aditya's framework, direction doc §6)
-const SLABS = [
-  { label: "LIFESTYLE", num: "01", w: 4.0, d: 2.6, id: "order-1" },
-  { label: "BODY", num: "02", w: 3.4, d: 2.25, id: "order-2" },
-  { label: "NUTRITION", num: "03", w: 2.8, d: 1.9, id: "order-3" },
-  { label: "PERFORMANCE", num: "04", w: 2.2, d: 1.55, id: "order-4" },
-  { label: "PRESENCE", num: "05", w: 1.6, d: 1.2, id: "order-5" },
-];
+// THE COMPLETE REBUILD (Aditya's framework, direction doc §6).
+// Labels, numbers and the taper live in REBUILD_STEPS — facts.ts.
+const SLABS = REBUILD_STEPS;
 const SLAB_H = 0.48;
 
 function Slab({ index }: { index: number }) {
@@ -782,7 +792,7 @@ export function TheOrder() {
         position={[0, 0.12, 1.9]}
         anchorX="center"
       >
-        EVERYTHING SITS ON THIS
+        {SCENE.foundation}
       </Text>
       {/* Above the apex — the only clear space in this shot. Below the stack
           the anchor projects past the bottom of a phone screen, and beside it
@@ -906,7 +916,7 @@ function ProofPanel({
             position={[0, -(PANEL_H / 2 + MAT + 0.19), 0.01]}
             anchorX="center"
           >
-            {after ? "AFTER" : "BEFORE"}
+            {after ? SCENE.after : SCENE.before}
           </Text>
         </group>
       </Float>
@@ -1037,191 +1047,177 @@ export function Proof() {
   );
 }
 
-/* ====== CHAPTER 4 — THE DECISION: three stelae + the blueprint ====== */
+/* ====== CHAPTER 4 — THE DECISION: the gateway, then the three ====== */
 
-function Stele({
-  position,
-  height,
-  featured,
-  label,
-  sub,
-  id,
+// TWO LEVELS IN DEPTH, because that is the actual shape of the offer.
+//
+//   LEVEL 1 · z +1.6 — the Transformation Audit, alone at the front, lit,
+//     gold-framed, the only object here carrying a price. It is not one of
+//     four choices; it is the way in to all of them.
+//   LEVEL 2 · z -1.4 — the three programmes it routes a man into. Lifestyle
+//     Coaching and Personality & Presence flank. Complete Transformation
+//     stands between them and is the ONLY column tall enough to clear the
+//     gateway, which is how the flagship reads as the flagship — by rising
+//     over the gate rather than by wearing a badge.
+//
+// The four steles this replaces stood in one scattered row at a single depth,
+// so the gateway looked like a fourth product. Each was also two boxes plus a
+// rim (24 triangles and two standard materials apiece); these are a single
+// quad plus the shared hairline outline — 10 triangles, one material each.
+//
+// Every word here comes from OFFERS in facts.ts.
+
+const GATE_Z = 1.6;
+const GATE_W = 1.7;
+const GATE_H = 2.4;
+
+const PILLAR_Z = -1.4;
+/** left · centre · right, matching the order of OFFERS.pillars */
+const PILLAR_X = [-1.9, 0, 1.9];
+const PILLAR_W = [1.5, 1.7, 1.5];
+// The flagship is 3.8 so its head and its label clear the 2.4 gateway in
+// front of it; the other two are deliberately shorter than the gate, because
+// on their own they are a part of the thing, not the thing.
+const PILLAR_H = [2.6, 3.8, 2.6];
+
+/**
+ * One standing panel — the gateway or a programme. A flat quad rather than a
+ * box: the camera never leaves the front of this room, so the sides of a box
+ * were geometry nobody could see.
+ */
+function OfferPanel({
+  offer,
+  x,
+  z,
+  w,
+  h,
+  featured = false,
 }: {
-  position: [number, number, number];
-  height: number;
+  offer: Offer;
+  x: number;
+  z: number;
+  w: number;
+  h: number;
   featured?: boolean;
-  label: string;
-  sub: string;
-  id: string;
 }) {
   const group = useRef<THREE.Group>(null);
-  const [hover, setHover] = useState(false);
-  const setFocus = useExperience((s) => s.setFocus);
-  const focused = useExperience((s) => s.focus === id);
   const alive = useChapterAlive();
+  const described = useExperience((s) => s.hover === offer.id);
 
   useFrame((_, delta) => {
     if (alive && !alive.current) return;
     if (!group.current) return;
+    // the panel lifts a little under the pointer — 0.12, well inside the
+    // kit's "nothing moves more than 4px on hover"
     const damp = 1 - Math.exp(-7 * delta);
-    const lift = hover || focused ? 0.14 : 0;
-    group.current.position.y += (position[1] + lift - group.current.position.y) * damp;
+    const lift = described ? 0.12 : 0;
+    group.current.position.y += (lift - group.current.position.y) * damp;
   });
 
+  const line = featured ? (described ? GOLD_LIGHT : GOLD) : described ? GOLD : "#4d483f";
+
   return (
-    <group
-      ref={group}
-      position={position}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHover(true);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        setHover(false);
-        document.body.style.cursor = "";
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setFocus(focused ? null : id);
-      }}
-    >
-      <mesh position={[0, height / 2, 0]}>
-        <boxGeometry args={[1.45, height, 0.26]} />
-        <meshStandardMaterial
-          color={featured ? "#161206" : STONE}
-          roughness={featured ? 0.35 : 0.6}
-          metalness={featured ? 0.7 : 0.35}
+    <group position={[x, 0, z]}>
+      <group ref={group} {...describes(offer.id)}>
+        <mesh position={[0, h / 2, 0]}>
+          <planeGeometry args={[w, h]} />
+          <meshStandardMaterial
+            color={featured ? "#191305" : STONE}
+            roughness={featured ? 0.4 : 0.62}
+            metalness={featured ? 0.6 : 0.32}
+          />
+        </mesh>
+        <mesh
+          geometry={getOutline(w, h, featured)}
+          material={getFrameMaterial(line)}
+          position={[0, h / 2, 0.004]}
         />
-      </mesh>
-      {/* gold rim */}
-      <mesh position={[0, height / 2, -0.02]}>
-        <boxGeometry args={[1.53, height + 0.08, 0.18]} />
-        <meshStandardMaterial
-          color={GOLD}
-          metalness={1}
-          roughness={0.3}
-          emissive={GOLD}
-          emissiveIntensity={featured ? (hover || focused ? 2.6 : 1.5) : hover || focused ? 1.2 : 0.35}
-        />
-      </mesh>
-      <Text
-        font={FRAUNCES}
-        fontSize={0.155}
-        letterSpacing={0.06}
-        color={featured ? GOLD_LIGHT : IVORY}
-        position={[0, height - 0.42, 0.145]}
-        anchorX="center"
-        maxWidth={1.2}
-        textAlign="center"
-      >
-        {label}
-      </Text>
-      <Text
-        font={INTER}
-        fontSize={0.075}
-        letterSpacing={0.14}
-        color={featured ? GOLD : "#8a847a"}
-        position={[0, height - 0.85, 0.145]}
-        anchorX="center"
-        maxWidth={1.2}
-        textAlign="center"
-      >
-        {sub}
-      </Text>
-      {featured && (
+
+        {/* Text sits in the UPPER part of every panel on purpose. The scroll
+            overlay owns the bottom third of the screen, so anything set low on
+            these panels ends up reading through its scrim. */}
+        {offer.eyebrow && (
+          <Text
+            font={INTER}
+            fontSize={0.066}
+            letterSpacing={0.3}
+            color={GOLD}
+            position={[0, h - 0.22, 0.012]}
+            anchorX="center"
+          >
+            {offer.eyebrow}
+          </Text>
+        )}
+        <Text
+          font={FRAUNCES}
+          fontSize={featured ? 0.155 : 0.13}
+          letterSpacing={0.04}
+          color={featured ? GOLD_LIGHT : IVORY}
+          position={[0, h - (featured ? 0.48 : 0.26), 0.012]}
+          anchorX="center"
+          anchorY="top"
+          // The gateway's own name may overhang its frame by a hair rather
+          // than break across two lines; the programmes wrap inside theirs.
+          maxWidth={featured ? 1.9 : 1.5}
+          textAlign="center"
+        >
+          {offer.label}
+        </Text>
         <Text
           font={INTER}
-          fontSize={0.07}
-          letterSpacing={0.3}
-          color={GOLD}
-          position={[0, 0.3, 0.145]}
+          fontSize={featured ? 0.072 : 0.062}
+          letterSpacing={0.13}
+          color={featured ? GOLD : "#8a847a"}
+          // clears two wrapped lines of label above it
+          position={[0, h - (featured ? 0.82 : 0.62), 0.012]}
           anchorX="center"
+          anchorY="top"
+          maxWidth={1.9}
+          textAlign="center"
         >
-          RECOMMENDED
+          {offer.sub}
         </Text>
-      )}
-      <BlobShadow position={[0, 0.012 - position[1], 0]} scale={2.4} />
+      </group>
+      <BlobShadow position={[0, 0.012, 0]} scale={featured ? 2.8 : 2.2} />
     </group>
   );
 }
 
 export function Decision() {
-  const book = useRef<THREE.Group>(null);
-  const { alive, visible } = useChapterVisibility(-70);
-  const calm = useExperience((s) => s.calm);
-
-  useFrame((state) => {
-    if (!alive.current) return;
-    // Reduced motion: the folio stops turning.
-    if (useExperience.getState().calm) return;
-    if (book.current) book.current.rotation.y = state.clock.elapsedTime * 0.35;
-  });
+  const { alive } = useChapterVisibility(-70);
 
   return (
     <ChapterAlive.Provider value={alive}>
-    <group position={[0, 0, -70]}>
-      {/* the gate + the three programs (direction doc §4 + §9) */}
-      <Stele
-        position={[0, 0, 0]}
-        height={3.05}
-        featured
-        label="Transformation Audit"
-        sub={`${LEGAL.CONSULT_PRICE} · 45 MINUTES · ONLINE`}
-        id="offer-audit"
-      />
-      <Stele
-        position={[-3.4, 0, -0.9]}
-        height={2.25}
-        label="Lifestyle Coaching"
-        sub="MONTHLY · PRICE AFTER YOUR AUDIT"
-        id="offer-lifestyle"
-      />
-      <Stele
-        position={[-1.7, 0, -0.4]}
-        height={2.45}
-        label="Personality & Presence"
-        sub="MONTHLY · PRICE AFTER YOUR AUDIT"
-        id="offer-presence"
-      />
-      <Stele
-        position={[2.6, 0, -0.5]}
-        height={2.85}
-        label="Complete Transformation"
-        sub="PREMIUM · THE FULL SYSTEM"
-        id="offer-complete"
-      />
+      <group position={[0, 0, -70]}>
+        {/* LEVEL 2 — the three programmes, behind */}
+        {OFFERS.pillars.map((offer, i) => (
+          <OfferPanel
+            key={offer.id}
+            offer={offer}
+            x={PILLAR_X[i]}
+            z={PILLAR_Z}
+            w={PILLAR_W[i]}
+            h={PILLAR_H[i]}
+          />
+        ))}
+        <pointLight position={[0, 4.2, 0.6]} intensity={5} color={GOLD_LIGHT} distance={12} />
 
-      {/* the free blueprint — a floating golden folio off to the side */}
-      <group position={[-1.6, 1.1, 4]}>
-        <Float
-          speed={1.6}
-          rotationIntensity={0.25}
-          floatIntensity={0.7}
-          enabled={visible && !calm}
-        >
-          <group ref={book}>
-            <mesh>
-              <boxGeometry args={[0.5, 0.68, 0.06]} />
-              <meshStandardMaterial color="#161206" roughness={0.4} metalness={0.5} />
-            </mesh>
-            <mesh position={[-0.24, 0, 0]}>
-              <boxGeometry args={[0.05, 0.68, 0.075]} />
-              <meshStandardMaterial
-                color={GOLD}
-                metalness={1}
-                roughness={0.25}
-                emissive={GOLD}
-                emissiveIntensity={1.1}
-              />
-            </mesh>
-          </group>
-        </Float>
-        <Hotspot id="blueprint" position={[0.45, 0.35, 0.15]} size={0.07} />
+        {/* LEVEL 1 — the gateway, in front and lit hardest */}
+        <OfferPanel
+          offer={OFFERS.gate}
+          x={0}
+          z={GATE_Z}
+          w={GATE_W}
+          h={GATE_H}
+          featured
+        />
+        <pointLight
+          position={[0, 1.9, GATE_Z + 2.4]}
+          intensity={7}
+          color={GOLD_LIGHT}
+          distance={8}
+        />
       </group>
-
-      <pointLight position={[0, 4, 2.8]} intensity={8} color={GOLD_LIGHT} distance={12} />
-    </group>
     </ChapterAlive.Provider>
   );
 }

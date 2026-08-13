@@ -26,8 +26,12 @@ const KEYS: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // path visible around it.
   { p: v(0, 2.5, -26.2), t: v(0, 1.35, -34) }, // front-on: the stack assembled
   { p: v(2.8, 1.9, -44.5), t: v(-0.6, 1.8, -52) }, // sweep the proof gallery
-  { p: v(-2.4, 1.8, -59), t: v(0.4, 1.5, -70) }, // approach the offers
-  { p: v(0, 2.0, -63.5), t: v(0, 1.4, -70) }, // the decision, front and centre
+  { p: v(-2.6, 2.0, -57.0), t: v(0.3, 1.4, -70) }, // approach the offers
+  // The decision, front and centre. The final scene is now TWO levels in
+  // depth — the audit gateway at z -68.4 and the three programs behind it at
+  // -71.4 — so this key stands back far enough for both to be in one frame
+  // and for the flagship column to be seen clearing the gate.
+  { p: v(0, 1.95, -62.0), t: v(0, 1.25, -70) },
 ];
 
 // Portrait art direction: phones lose ~60% of the horizontal frustum, so the
@@ -43,8 +47,11 @@ const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // edges of a phone screen. -23.0 gives 2.7 and room to watch it build.
   { p: v(0, 2.9, -23.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
   { p: v(0, 1.8, -41.0), t: v(0, 1.7, -52) }, // proof gallery, both frames visible
-  { p: v(0, 1.8, -57.5), t: v(0, 1.5, -70) }, // approach the offers
-  { p: v(0, 2.0, -59.6), t: v(0, 1.5, -70) }, // decision — audit centred, wings peek in
+  { p: v(0, 1.9, -55.0), t: v(0, 1.4, -70) }, // approach the offers
+  // Decision — the gateway centred, the three programs behind it. Two units
+  // further back than the landscape key: the programs sit at x ±1.9 and a
+  // phone's frustum only reaches ±2.74 at this depth.
+  { p: v(0, 1.95, -60.0), t: v(0, 1.3, -70) },
 ];
 
 /** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */

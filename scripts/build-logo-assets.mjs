@@ -13,6 +13,7 @@
  * crop the pieces we actually use, and write:
  *
  *   public/logo/aku-mark.png     AKU monogram          -> header, footer, overlay
+ *   public/logo/aku-wordmark.png AKU + name, no tagline -> header, overlay, footer
  *   public/logo/aku-lockup.png   full stacked lockup   -> large uses
  *   public/logo/aku-lockup.svg   full lockup as SVG    -> hand-off / print / e-mail
  *   public/apple-touch-icon.png  180x180 on warm black -> iOS home screen
@@ -34,7 +35,15 @@ const SRC = path.join(ROOT, "design", "aku_logo-master.svg");
 
 /** Content boxes measured off the master (1600x900 user space). */
 const MARK = { left: 321, top: 162, width: 947, height: 310 };
+const NAME = { left: 223, top: 527, width: 1167, height: 46 };
 const LOCKUP = { left: 223, top: 162, width: 1167, height: 543 };
+
+/**
+ * Gap between monogram and name in the wordmark variant. The master leaves 56
+ * units of air there, which is right for a poster and too loose at nav size —
+ * tightening it buys back height that goes into the name instead of whitespace.
+ */
+const WORDMARK_GAP = 34;
 
 /** Warm black behind the app icons — matches --bg-void. */
 const VOID = { r: 11, g: 11, b: 12, alpha: 1 };
@@ -109,9 +118,46 @@ const lockupPng = await sharp(flatPng)
   .png({ compressionLevel: 9, palette: true })
   .toBuffer();
 
+/**
+ * The wordmark: monogram + name, nothing else. The "LIFESTYLE & PERSONALITY
+ * COACH" tagline and the diamond rule above it are dropped — at nav size they
+ * collapse into a grey smudge. The two blocks are recomposed over a tighter
+ * gap rather than cropped as one band, so none of the master's internal
+ * whitespace is carried along; every pixel of height goes to artwork.
+ */
+const wordmarkPng = await (async () => {
+  const mark = await sharp(flatPng).extract(MARK).png().toBuffer();
+  const name = await sharp(flatPng).extract(NAME).png().toBuffer();
+  const width = Math.max(MARK.width, NAME.width);
+  const height = MARK.height + WORDMARK_GAP + NAME.height;
+  // Compose at full size and resize in a second pass — sharp runs resize
+  // before composite within one pipeline, which would shrink the canvas out
+  // from under the layers.
+  const composed = await sharp({
+    create: { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+  })
+    .composite([
+      { input: mark, left: Math.round((width - MARK.width) / 2), top: 0 },
+      {
+        input: name,
+        left: Math.round((width - NAME.width) / 2),
+        top: MARK.height + WORDMARK_GAP,
+      },
+    ])
+    .png()
+    .toBuffer();
+
+  return sharp(composed)
+    .resize({ width: 960 })
+    .png({ compressionLevel: 9, palette: true })
+    .toBuffer();
+})();
+const wordmarkMeta = await sharp(wordmarkPng).metadata();
+
 const { writeFileSync } = await import("node:fs");
 writeFileSync(path.join(ROOT, "public", "logo", "aku-mark.png"), markPng);
 writeFileSync(path.join(ROOT, "public", "logo", "aku-lockup.png"), lockupPng);
+writeFileSync(path.join(ROOT, "public", "logo", "aku-wordmark.png"), wordmarkPng);
 
 // The cleaned lockup re-wrapped as SVG, so the brand file that ships is the
 // same artwork minus the "02." label and the frame. Alpha is already baked in,
@@ -130,6 +176,11 @@ await appIcon(markFull, 180, "apple-touch-icon.png");
 await appIcon(markFull, 512, "icon-512.png");
 
 const kb = (b) => `${(b.length / 1024).toFixed(1)} KB`;
-console.log(`logo/aku-mark.png    ${kb(markPng)}`);
-console.log(`logo/aku-lockup.png  ${kb(lockupPng)}`);
+console.log(`logo/aku-mark.png      ${kb(markPng)}`);
+console.log(`logo/aku-lockup.png    ${kb(lockupPng)}`);
+console.log(
+  `logo/aku-wordmark.png  ${kb(wordmarkPng)}  ` +
+    `${wordmarkMeta.width}x${wordmarkMeta.height}  ` +
+    `<Image width={${wordmarkMeta.width}} height={${wordmarkMeta.height}}>`,
+);
 console.log(`apple-touch-icon.png + icon-512.png rebuilt`);

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useExperience } from "./store";
+import { SCENE } from "./facts";
 import { forceFlat, forceThree, reportFallback } from "./flags";
 import { NAVIGATE_EVENT } from "./ui";
 import Overlay from "./Overlay";
@@ -29,7 +30,7 @@ function Poster() {
         style={{ animationDuration: "1.4s" }}
       />
       <p className="text-[11px] font-medium tracking-[0.24em] text-[#8a847a]">
-        ENTERING THE ATELIER
+        {SCENE.loading}
       </p>
     </div>
   );

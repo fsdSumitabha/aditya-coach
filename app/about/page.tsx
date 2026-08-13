@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import FadeIn from "@/components/about/FadeIn";
+import StoryHero from "@/components/about/StoryHero";
 import TransformationSplit from "@/components/about/TransformationSplit";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
@@ -14,7 +14,7 @@ import Reveal from "@/components/Reveal";
 import Marquee from "@/components/Marquee";
 import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
-import { ArrowRightIcon, CheckIcon, InstagramIcon, PinIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
+import { ArrowRightIcon, CheckIcon, InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 
@@ -40,19 +40,6 @@ const WHATSAPP_URL = waLink(
 );
 
 // ---- Image constants (top-level, swappable; explicit dims reserve aspect-ratio → CLS < 0.1) ----
-// Hero is the real portrait now (public/aditya/img_about_hero.jpg — 840×1120,
-// downscaled from the 2873×3831 original; the image optimizer serves
-// resized WebP variants on demand).
-const IMG_ABOUT_HERO = {
-  src: "/aditya/img_about_hero_cropped.jpg",
-  // must match the file on disk (385×633) — these reserve the box shape before
-  // the photo lands, and a wrong ratio makes the hero jump on load
-  w: 385,
-  h: 633,
-  // 10px JPEG, inlined — covers the gap before the preloaded portrait paints.
-  blurDataURL:
-    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAQMEBf/EAB8QAAICAgIDAQAAAAAAAAAAAAECAxEABBIhBRMxcf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAMAwEAAhEDEQA/ADt7EuqF5RtIK7awB+Yldssoa1Fi6JHWWza0cvkTFKOSBAQPneZ8mlH7G4l1FmhfzC7IAv/Z",
-} as const;
 const IMG_TL_BEFORE = {
   src: "/aditya/before/before_transformation.png",
   // true file ratio is 4:5 (800×1000) — declared dims must match or the
@@ -183,109 +170,20 @@ export default function AboutPage() {
       {/* Sits above the hero: the proof lands before the claim. Carries no
           heading — the page's single <h1> is the hero below, and a heading
           here would put an <h2> ahead of it. Its bridge control scrolls to
-          #story (Section 2). ⚠️ still wired to /public/demo stock frames —
+          #story (Section 1). ⚠️ still wired to /public/demo stock frames —
           see the DEMO ASSETS note in the component. */}
       <TransformationSplit />
 
-      {/* ============ Section 1 — HERO ("The Fade-In") ============ */}
-      {/* aurora + grain atmosphere; overflow-hidden pens the drifting ghost word. */}
-      <section className="bg-void glow-top grain aurora relative overflow-hidden">
-        {/* ONE ghost word, low behind the hero — from the H1's own vocabulary. */}
-        <span
-          aria-hidden="true"
-          className="ghost-word sd-ghost-drift -bottom-6 left-0 right-0 text-center"
-        >
-          REBUILT
-        </span>
-
-        {/* Full-viewport cinematic open — the page breathes before it speaks */}
-        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 nav:py-20">
-          <div className="grid items-center gap-10 nav:grid-cols-[minmax(0,1fr)_minmax(0,340px)] nav:gap-16">
-            {/* Text block — mobile: after the portrait; desktop: left column */}
-            <div className="order-2 nav:order-1">
-              <FadeIn className="flex items-center gap-4" delayMs={120}>
-                <span aria-hidden="true" className="h-px w-10 bg-hairline-gold" />
-                <p className="eyebrow">MY STORY{/* [review] */}</p>
-              </FadeIn>
-              {/* Hero H1 — LCP text, paints at final state frame 1. Never animated. */}
-              <h1 className="font-display mt-5 max-w-[15ch] text-[clamp(2.5rem,5.2vw,4.4rem)] font-medium leading-[1.05] tracking-[-0.025em] text-primary">
-                I rebuilt myself from the ground up. Now I do it for other men.
-              </h1>
-              <FadeIn as="p" className="type-lead text-secondary mt-6 max-w-[48ch]" delayMs={200}>
-                {/* [review] — sharpened 2026-07-21 to the complete-transformation
-                    identity; the "Not a celebrity trainer. Not an influencer." opening stays. */}
-                Not a celebrity trainer. Not an influencer. A man who rebuilt his
-                own body, discipline and confidence — and now does the same for
-                other men.
-              </FadeIn>
-              <FadeIn
-                as="p"
-                className="type-small text-muted mt-6 flex items-center gap-2"
-                delayMs={280}
-              >
-                <PinIcon className="h-4 w-4 shrink-0 text-gold-500" />
-                Kolkata · Coaching worldwide online
-              </FadeIn>
-              {/* No hero buttons — the persistent header [Book] gold button covers instant conversion. */}
-            </div>
-
-            {/* Portrait — mobile: leads (face builds trust fastest); desktop: right column.
-                The portrait is this page's LCP element, so it paints statically
-                (A2 LCP < 2.5s beats the 900ms fade); the "slow fade" entrance
-                survives on the gold hairline frame only. */}
-            {/* Width caps set the rendered height: the portrait is 385×633 (0.608),
-                so 340px wide → ~559px tall, matching the left column's block. */}
-            <div className="order-1 relative mx-auto w-full max-w-[280px] nav:order-2 nav:mx-0 nav:max-w-[340px] nav:justify-self-end">
-              <FadeIn
-                className="pointer-events-none absolute inset-0 rounded-[18px] border border-hairline-gold"
-                durationMs={900}
-                y={0}
-              >
-                <span aria-hidden="true" />
-              </FadeIn>
-              {/* One restrained gold moment: 1px gold hairline frame.
-                  Inner clip lets the portrait settle-zoom on scroll (transform
-                  only — the LCP still paints frame 1). */}
-              <div className="overflow-hidden rounded-[16px] p-1.5">
-                <Image
-                  src={IMG_ABOUT_HERO.src}
-                  width={IMG_ABOUT_HERO.w}
-                  height={IMG_ABOUT_HERO.h}
-                  alt="Aditya Kumar Upadhyay, men's lifestyle coach, Kolkata — present-day portrait, composed and direct to camera"
-                  placeholder="blur"
-                  blurDataURL={IMG_ABOUT_HERO.blurDataURL}
-                  // no `preload`: the split opener now sits above this, so the
-                  // portrait is a viewport down and is no longer the LCP —
-                  // preloading it would race the real LCP frames for bandwidth.
-                  className="sd-zoom block h-auto w-full rounded-[16px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* quiet scroll cue, pinned to the hero's base */}
-          <FadeIn
-            delayMs={700}
-            className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2"
-          >
-            <div
-              aria-hidden="true"
-              className="flex flex-col items-center gap-2 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
-            >
-              <span className="type-caption tracking-[0.24em] text-muted">
-                THE STORY BEGINS BELOW
-                {/* [review] */}
-              </span>
-              <span className="block h-9 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      {/* ============ Section 1 — MY STORY (hero + the full founder story) ============ */}
+      {/* Owns the page's single <h1> and carries id="story", the landing point
+          for the opener's bridge control. Copy is verbatim from
+          docs/aditya_personal_story.md — see the component header. */}
+      <StoryHero />
 
       {/* ============ Section 2 — THE FOUNDER STORY ("The Centerpiece") ============ */}
-      {/* id="story" — the landing point for the opener's bridge control. */}
+      {/* id="story" moved to <StoryHero /> above, which now tells this story in
+          full — an id can only exist once per document. */}
       <section
-        id="story"
         className="bg-surface-1 grain aurora relative overflow-hidden border-y border-hairline-soft"
       >
         <div className="container-site section-lg">

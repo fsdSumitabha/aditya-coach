@@ -86,12 +86,12 @@ export default function Footer() {
               className="inline-flex w-fit"
             >
               <Image
-                src="/logo/aku_logo.svg"
+                src="/logo/aku-wordmark.png"
                 alt=""
-                width={1600}
-                height={900}
-                unoptimized
-                className="h-20 w-auto opacity-90 transition-opacity hover:opacity-100"
+                width={960}
+                height={321}
+                sizes="288px"
+                className="h-24 w-auto opacity-90 transition-opacity hover:opacity-100"
               />
             </Link>
             <p className="type-body text-primary font-display">{BRAND_LINE}</p>

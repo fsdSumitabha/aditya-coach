@@ -88,17 +88,16 @@ export default function Header() {
             className="wordmark flex items-center"
             aria-label="Aditya Kumar Upadhyay — home"
           >
-            {/* The AKU monogram, cropped from public/logo/aku_logo.svg by
-                scripts/build-logo-assets.mjs. The full stacked lockup cannot
-                be used at header height — see that script's header. */}
+            {/* AKU + name, tagline dropped — built by scripts/build-logo-assets.mjs.
+                56px is the most a 68px bar takes with clearance either side. */}
             <Image
-              src="/logo/aku_logo.svg"
+              src="/logo/aku-wordmark.png"
               alt=""
-              width={1600}
-              height={900}
-              unoptimized
+              width={960}
+              height={321}
               priority
-              className="h-[52px] w-auto"
+              sizes="168px"
+              className="h-[56px] w-auto"
             />
           </Link>
 
@@ -156,12 +155,12 @@ export default function Header() {
             onClick={close}
           >
             <Image
-              src="/logo/aku_logo.svg"
+              src="/logo/aku-wordmark.png"
               alt=""
-              width={1600}
-              height={900}
-              unoptimized
-              className="h-[52px] w-auto"
+              width={960}
+              height={321}
+              sizes="168px"
+              className="h-[56px] w-auto"
             />
           </Link>
           <button

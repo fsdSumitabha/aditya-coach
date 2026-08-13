@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useExperience } from "./store";
-import { CHAPTERS, FACTS } from "./facts";
+import { CHAPTERS, FACTS, OVERLAY_CTAS, SCENE } from "./facts";
 
 import { BTN_GOLD, BTN_OUTLINE, EYEBROW } from "./ui";
 
@@ -120,21 +120,29 @@ export default function Overlay() {
             </p>
             {chapter.id === "arrival" && (
               <div className="pointer-events-auto mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href="/tools#blueprint" className={BTN_GOLD}>
-                  Get My Free Blueprint
+                <Link href={OVERLAY_CTAS.blueprint.href} className={BTN_GOLD}>
+                  {OVERLAY_CTAS.blueprint.label}
                 </Link>
-                <Link href="/book" className={BTN_OUTLINE}>
-                  Book Your Transformation Audit
+                <Link href={OVERLAY_CTAS.book.href} className={BTN_OUTLINE}>
+                  {OVERLAY_CTAS.book.label}
                 </Link>
               </div>
             )}
+            {/* The final scene is two levels — the gateway in front, the three
+                programmes behind — so this chapter's two buttons are one per
+                level: book the audit, or go read the coaching page. The free
+                blueprint keeps its slot on the arrival chapter above.
+                These live here rather than anchored in the scene because the
+                overlay owns the bottom third of the screen and the header the
+                top tenth, leaving no band inside the render where a button
+                clears both the gateway and the flagship column on a phone. */}
             {chapter.id === "decision" && (
               <div className="pointer-events-auto mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href="/book" className={BTN_GOLD}>
-                  Book Your Transformation Audit
+                <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
+                  {OVERLAY_CTAS.book.label}
                 </Link>
-                <Link href="/tools#blueprint" className={BTN_OUTLINE}>
-                  Get My Free Blueprint
+                <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
+                  {OVERLAY_CTAS.programs.label}
                 </Link>
               </div>
             )}
@@ -159,7 +167,7 @@ export default function Overlay() {
               className="flex flex-col items-center gap-2"
             >
               <span className="text-[11px] font-medium tracking-[0.2em] text-[#8a847a]">
-                SCROLL TO EXPLORE
+                {SCENE.scrollHint}
               </span>
               <span className="block h-8 w-px bg-gradient-to-b from-[#c9a24b] to-transparent" />
             </motion.div>
@@ -234,7 +242,7 @@ export default function Overlay() {
               ref={closeBtnRef}
               type="button"
               onClick={() => setFocus(null)}
-              aria-label="Close"
+              aria-label={SCENE.close}
               className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(255,255,255,0.12)] text-[#a7a199] transition-colors hover:border-[rgba(201,162,75,0.4)] hover:text-[#f4f1ea]"
             >
               ✕

@@ -1,7 +1,26 @@
-// ---- The museum's fact layer ----
+// ============================================================
+// THE 3D JOURNEY — ALL OF ITS COPY, IN ONE FILE.
+//
+// Every word the homepage canvas shows a visitor is in here. Nothing below
+// components/experience/ hardcodes a user-visible string; the .tsx files hold
+// geometry, camera and behaviour only. To change a label, change it HERE and
+// nothing else.
+//
+//   CHAPTERS      the five scroll chapters — eyebrow, title, sub, and the
+//                 progress window each one owns
+//   FACTS         the copy an object reads out when it is pointed at
+//   OFFERS        the final scene — the audit gate and the three programs
+//   REBUILD_STEPS the five stacking slabs
+//   SCENE         one-off labels (BEFORE / AFTER / the loader / the rail)
+//   OVERLAY_CTAS  the buttons the scroll overlay puts on screen
+//
+// The one exception is the price, which is never written out anywhere: it is
+// read from LEGAL.CONSULT_PRICE so a change is a single edit in lib/legal.ts.
+//
 // Repositioned per Aditya's direction doc (2026-07-21): Complete
 // Transformation Coach for Men — "harder to ignore". His verbatim lines are
 // used untouched; copy written in his voice is marked [review].
+// ============================================================
 
 import { LEGAL } from "@/lib/legal";
 
@@ -12,7 +31,13 @@ export type Fact = {
   body: string;
   attribution?: string;
   cta?: { label: string; href: string };
-  /** camera pose when focused */
+  /**
+   * Close-up camera pose for this object. Read by CameraRig when a fact is
+   * FOCUSED — which nothing in the scene currently does: every object now
+   * describes itself on hover instead, and the actions are explicit buttons.
+   * Kept so click-to-focus can be switched back on without re-deriving ten
+   * camera poses; harmless while unused.
+   */
   cam: [number, number, number];
   look: [number, number, number];
 };
@@ -153,6 +178,96 @@ export const FACTS: Record<string, Fact> = {
     cam: [-1.2, 1.5, -63.2],
     look: [-1.6, 1.0, -66],
   },
+};
+
+// ============================================================
+// THE FINAL SCENE — one gateway, then three programs.
+//
+// The shape of the offer, in the shape of the room:
+//
+//   LEVEL 1 (front, lit, closest to the visitor)
+//     The Transformation Audit. Not one of four choices — the way IN to all
+//     of them. Nobody buys a program without it, so it stands alone at the
+//     front of the room and it is the only thing here carrying a price.
+//
+//   LEVEL 2 (behind it)
+//     The three programs the audit routes a man into. Lifestyle Coaching and
+//     Personality & Presence flank; Complete Transformation stands between
+//     them and towers over the gate, because it IS the two of them together.
+//     Its column is the only object tall enough to clear the gateway, which
+//     is how the flagship reads as the flagship without a badge.
+//
+// Depth, height and width are in chapters.tsx — this is the wording.
+// ============================================================
+
+export type Offer = {
+  /** matches a FACTS key — that entry is what it says on hover */
+  id: string;
+  eyebrow?: string;
+  label: string;
+  sub: string;
+};
+
+export const OFFERS: { gate: Offer; pillars: Offer[] } = {
+  gate: {
+    id: "offer-audit",
+    eyebrow: "START HERE" /* CTA vocabulary */,
+    label: "Transformation Audit",
+    sub: `${LEGAL.CONSULT_PRICE} · 45 MINUTES · ONLINE`,
+  },
+  // Order is left → centre → right on the floor. Changing the order here
+  // changes where a program stands.
+  pillars: [
+    {
+      id: "offer-lifestyle",
+      label: "Lifestyle Coaching",
+      sub: "MONTHLY · PRICE AFTER YOUR AUDIT",
+    },
+    {
+      id: "offer-complete",
+      label: "Complete Transformation",
+      sub: "PREMIUM · THE FULL SYSTEM",
+    },
+    {
+      id: "offer-presence",
+      label: "Personality & Presence",
+      sub: "MONTHLY · PRICE AFTER YOUR AUDIT",
+    },
+  ],
+};
+
+// ---- THE COMPLETE REBUILD — the five slabs that stack (his framework, §6) --
+// `w` and `d` are the slab's width and depth in world units, not copy: they
+// taper so the stack reads as a pyramid with lifestyle carrying everything.
+export const REBUILD_STEPS = [
+  { id: "order-1", num: "01", label: "LIFESTYLE", w: 4.0, d: 2.6 },
+  { id: "order-2", num: "02", label: "BODY", w: 3.4, d: 2.25 },
+  { id: "order-3", num: "03", label: "NUTRITION", w: 2.8, d: 1.9 },
+  { id: "order-4", num: "04", label: "PERFORMANCE", w: 2.2, d: 1.55 },
+  { id: "order-5", num: "05", label: "PRESENCE", w: 1.6, d: 1.2 },
+];
+
+// ---- One-off labels rendered inside the canvas or over it ----
+export const SCENE = {
+  /** plates under the two photographs in chapters 1 and 3 */
+  before: "BEFORE",
+  after: "AFTER",
+  /** engraved in front of the stack */
+  foundation: "EVERYTHING SITS ON THIS",
+  /** while the three.js chunk downloads */
+  loading: "ENTERING THE ATELIER",
+  /** the first-screen scroll hint */
+  scrollHint: "SCROLL TO EXPLORE",
+  /** aria-label on the close control of a focused fact card */
+  close: "Close",
+};
+
+// ---- Buttons the scroll overlay puts on screen, per chapter ----
+// Labels come from the CTA vocabulary in AGENTS.md; invent nothing new here.
+export const OVERLAY_CTAS = {
+  book: { label: "Book Your Transformation Audit", href: "/book" },
+  blueprint: { label: "Get My Free Blueprint", href: "/tools#blueprint" },
+  programs: { label: "See the Programs", href: "/programs" },
 };
 
 // Chapter overlay copy + progress windows on the journey [0..1]
