@@ -34,6 +34,28 @@ export const SPLIT_PDF = `${BASE_PATH}/downloads/fat-loss-training-split.pdf`; /
 export const PERSONALITY_PDF = `${BASE_PATH}/downloads/personality-audit-blueprint.pdf`; /* TODO: replace with the real Personality Audit Blueprint PDF */
 export const OG_IMAGE = `${BASE_PATH}/og-image.jpg`; /* TODO: replace — 1200×630, <300KB, face + tagline */
 
+/**
+ * THE FILM — "in my words", the section directly below the 3D journey.
+ *
+ * `FILM.src` is null until the footage exists, and while it is null the
+ * section renders its branded poster placeholder instead. Drop the three files
+ * into public/video/, fill this in, and the section starts playing itself the
+ * moment the journey scrolls off the top — no other change needed.
+ *
+ * Captions are REQUIRED, not optional: most Instagram traffic watches on mute,
+ * and the film is muted for its first play by definition (browsers do not let
+ * an unattended video make noise).
+ */
+export const FILM: {
+  src: string | null;
+  poster: string;
+  captions: string;
+} = {
+  src: null /* TODO: `${BASE_PATH}/video/in-my-words.mp4` */,
+  poster: `${BASE_PATH}/video/in-my-words-poster.jpg`,
+  captions: `${BASE_PATH}/video/in-my-words.en.vtt`,
+};
+
 // ---- WhatsApp deep-link helper (wa.me cannot auto-send; user taps send) ----
 export function waLink(
   text = "Hi Aditya, I found your page and want to know more about your coaching.",

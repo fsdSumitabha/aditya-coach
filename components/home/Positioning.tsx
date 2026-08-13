@@ -66,7 +66,43 @@ const DISCIPLINES = [
 export default function Positioning() {
   return (
     <>
-      {/* ============ A. THE WORK — the positive core (showpiece) ============ */}
+      {/* ============ A. IN MY WORDS — the film ============
+          FIRST section under the journey, and it starts itself the moment it
+          arrives: the 3D track is a 7.2-viewport sticky, so the instant this
+          section is half on screen is the instant the animation ended. The
+          footage is never inside the canvas — see VideoFrame for why, and for
+          the autoplay rules it obeys.
+          NOTE: no `cv-auto` here. content-visibility would skip this section's
+          layout while it is off screen, and its intersection observer needs it
+          measured to fire on time. */}
+      <section className="border-t border-hairline-soft bg-alt">
+        <div className="container-site section">
+          <Reveal className="mx-auto max-w-[720px] text-center">
+            <p className="eyebrow">IN MY WORDS{/* [review] */}</p>
+            <SplitHeading
+              as="h2"
+              text="Ninety seconds. No slides."
+              className="type-h2 text-primary mt-4"
+            />
+            <p className="type-lead mt-5 text-secondary">
+              If you would rather hear this from me than read it, start here.
+            </p>{/* [review] */}
+          </Reveal>
+
+          <Reveal index={1} className="reveal-blur mx-auto mt-10 max-w-[900px] md:mt-14">
+            <VideoFrame
+              label="FILM — IN MY WORDS"
+              w={1280}
+              h={720}
+              runtime="90 SEC"
+              alt="Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans."
+              caption="Shot in one take. No script, no slides — what the work is, in his own words."
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ============ B. THE WORK — the positive core (showpiece) ============ */}
       <section className="cv-auto relative overflow-hidden border-t border-hairline-soft bg-base">
         {/* ONE ghost watermark for the block */}
         <span
@@ -129,34 +165,6 @@ export default function Positioning() {
                 The order I work through it in →{/* [review] */}
               </Link>
             </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============ B. IN MY WORDS — the film ============ */}
-      <section className="cv-auto border-t border-hairline-soft bg-alt">
-        <div className="container-site section">
-          <Reveal className="mx-auto max-w-[720px] text-center">
-            <p className="eyebrow">IN MY WORDS{/* [review] */}</p>
-            <SplitHeading
-              as="h2"
-              text="Ninety seconds. No slides."
-              className="type-h2 text-primary mt-4"
-            />
-            <p className="type-lead mt-5 text-secondary">
-              If you would rather hear this from me than read it, start here.
-            </p>{/* [review] */}
-          </Reveal>
-
-          <Reveal index={1} className="reveal-blur mx-auto mt-10 max-w-[900px] md:mt-14">
-            <VideoFrame
-              label="FILM — IN MY WORDS"
-              w={1280}
-              h={720}
-              runtime="90 SEC"
-              alt="Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans."
-              caption="Shot in one take. No script, no slides — what the work is, in his own words."
-            />
           </Reveal>
         </div>
       </section>

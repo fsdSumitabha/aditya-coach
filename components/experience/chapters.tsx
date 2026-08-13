@@ -1071,14 +1071,22 @@ const GATE_Z = 1.6;
 const GATE_W = 1.7;
 const GATE_H = 2.4;
 
-const PILLAR_Z = -1.4;
+// The programmes stand a full FIVE units behind the gateway, not one. At the
+// old spacing the journey ended on the gateway with the three crowded right
+// up against its back, and there was no room left to travel: the camera could
+// not come forward without being on top of them. The room is now long enough
+// that the last stretch of scroll is a real move — over the gate and down the
+// hall to the three. See the last two KEYS in CameraRig.
+const PILLAR_Z = -5.0;
 /** left · centre · right, matching the order of OFFERS.pillars */
 const PILLAR_X = [-1.9, 0, 1.9];
 const PILLAR_W = [1.5, 1.7, 1.5];
-// The flagship is 3.8 so its head and its label clear the 2.4 gateway in
-// front of it; the other two are deliberately shorter than the gate, because
-// on their own they are a part of the thing, not the thing.
-const PILLAR_H = [2.6, 3.8, 2.6];
+// The flagship is 4.6 so its head AND its label clear the 2.4 gateway from
+// thirteen units back on the first beat — that sliver over the gate is the
+// only hint the visitor gets that there is more behind it. The other two are
+// deliberately shorter than the gate, because on their own they are a part of
+// the thing, not the thing.
+const PILLAR_H = [3.0, 4.6, 3.0];
 
 /**
  * One standing panel — the gateway or a programme. A flat quad rather than a
@@ -1189,7 +1197,7 @@ export function Decision() {
   return (
     <ChapterAlive.Provider value={alive}>
       <group position={[0, 0, -70]}>
-        {/* LEVEL 2 — the three programmes, behind */}
+        {/* LEVEL 2 — the three programmes, down the hall */}
         {OFFERS.pillars.map((offer, i) => (
           <OfferPanel
             key={offer.id}
@@ -1200,7 +1208,12 @@ export function Decision() {
             h={PILLAR_H[i]}
           />
         ))}
-        <pointLight position={[0, 4.2, 0.6]} intensity={5} color={GOLD_LIGHT} distance={12} />
+        <pointLight
+          position={[0, 5.0, PILLAR_Z + 2.4]}
+          intensity={7}
+          color={GOLD_LIGHT}
+          distance={13}
+        />
 
         {/* LEVEL 1 — the gateway, in front and lit hardest */}
         <OfferPanel

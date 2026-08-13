@@ -3,9 +3,9 @@
 // Book a Consultation (→ /book) with the free Blueprint fallback (→ /tools).
 
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
+import JourneySection from "@/components/about/JourneySection";
 import StoryHero from "@/components/about/StoryHero";
 import TransformationSplit from "@/components/about/TransformationSplit";
 import FinalCta from "@/components/FinalCta";
@@ -39,19 +39,8 @@ const WHATSAPP_URL = waLink(
   "Hi Aditya, I read your story on your site and want to talk.",
 );
 
-// ---- Image constants (top-level, swappable; explicit dims reserve aspect-ratio → CLS < 0.1) ----
-const IMG_TL_BEFORE = {
-  src: "/aditya/before/before_transformation.png",
-  // true file ratio is 4:5 (800×1000) — declared dims must match or the
-  // reserved box has the wrong shape and the layout jumps when it loads
-  w: 480,
-  h: 600,
-    blurDataURL:
-      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHxAAAgIBBQEBAAAAAAAAAAAAAQIDEQAEBRIiMSFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAABADH/2gAMAwEAAhEDEQA/AMGzIYtWkgsEAvdfALq8YfXbiXbhOnC+tuPMhMxj3bTQLRRhZse1eIovRfzGUQb/2Q==",
- } as const;
 
-
-// ---- §5 credibility strip ("Why men trust the work") ----
+// ---- §4 credibility strip ("Why men trust the work") ----
 // [review] No invented stats or credentials — the only figure is the
 // client-supplied 100kg. Restrained trust rows, shown before /results link-out.
 const TRUST_POINTS = [
@@ -133,32 +122,6 @@ const coachingServiceJsonLd = {
   url: `${SITE_ORIGIN}/about`,
 };
 
-/* Chapter marker — the page reads as a numbered narrative (a real sequence:
-   story → journey → belief → who → proof), so the numbering encodes order.
-   Plain markup: wrap in <Reveal> where it stands alone. [review] framing. */
-function Chapter({
-  num,
-  label,
-  center,
-}: {
-  num: string;
-  label: string;
-  center?: boolean;
-}) {
-  return (
-    <div
-      className={`flex items-center gap-4 ${center ? "justify-center" : ""}`}
-    >
-      <span className="font-display text-[1.5rem] leading-none text-gold-500">
-        {num}
-      </span>
-      {/* the rule draws itself in as the chapter scrolls into view */}
-      <span aria-hidden="true" className="thread-h sd-draw h-px w-10" />
-      <span className="eyebrow">{label}</span>
-    </div>
-  );
-}
-
 export default function AboutPage() {
   return (
     <>
@@ -198,157 +161,17 @@ export default function AboutPage() {
         />
       </div>
 
-      {/* ============ Section 3 — THE TIMELINE ("The Journey") ============ */}
-      {/*
-        [review] REVIEWER NOTE: no hard numbers were invented beyond the
-        client-supplied "100kg" (no kg-loss figures, ages, client counts,
-        years elapsed, or credentials). If the owner wants "lost 40kg" /
-        "over X years" / "coached 100+ men", he supplies the real figures —
-        this timeline stays qualitative on purpose. Node labels marked
-        [review] are editorial framing for his approval.
-      */}
-      {/* overflow-hidden pens the alternating reveal-left/right entries so the
-          transient ±28px offset can never trip horizontal scroll. */}
-      <section className="bg-base cv-auto overflow-hidden">
-        <div className="container-site section">
-          <div className="max-w-2xl">
-            <Reveal className="mb-5">
-              <Chapter num="02" label="THE JOURNEY" />
-            </Reveal>
-            <SplitHeading
-              as="h2"
-              text="The Long Way Back."
-              className="type-h2 text-primary"
-            />
-            {/* [review] */}
-            <Reveal as="p" delayMs={150} className="type-lead text-secondary mt-4">
-              {/* [review] */}
-              Nobody handed me this. I built it one decision at a time.
-            </Reveal>
-          </div>
+      {/* ============ Section 3 — MY JOURNEY ("Earned, not learned") ============ */}
+      {/* Was a four-node biographical timeline with the 100kg photo; now pure
+          argument, no imagery. Copy is verbatim from docs/aditya_journey.md —
+          see the component header. */}
+      <JourneySection />
 
-          <div className="relative mt-12 nav:mt-16">
-            {/* The gold thread — draws itself (scaleY) as the journey scrolls in. */}
-            <div
-              aria-hidden="true"
-              className="thread-v sd-draw absolute bottom-1 left-[11px] top-1"
-            />
-
-            <ol className="space-y-12 nav:space-y-16">
-              {/* Node 1 — 100kg. Zero confidence. */}
-              <Reveal as="li" index={0} className="reveal-left relative pl-12 nav:pl-16">
-                <span
-                  aria-hidden="true"
-                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
-                />
-                <p className="eyebrow">THE STARTING POINT{/* [review] */}</p>
-                <h3 className="type-h3 text-primary mt-2">100kg. Zero confidence.</h3>
-                <p className="type-body text-primary mt-3 max-w-[58ch]">
-                  This was me. 100kg. Zero confidence.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] */}
-                  Out of breath on the stairs. Avoiding the mirror. Telling
-                  myself I&apos;d start Monday — every Sunday.
-                </p>
-                {/* wipes itself open as the node scrolls in (sd-wipe on the
-                    frame — the Reveal owns the parent li, never this element) */}
-                <div className="sd-wipe mt-5 max-w-[280px]">
-                  <Image
-                    src={IMG_TL_BEFORE.src}
-                    width={IMG_TL_BEFORE.w}
-                    height={IMG_TL_BEFORE.h}
-                    alt="Aditya at his 100kg starting point, before the transformation"
-                    placeholder="blur"
-                    blurDataURL={IMG_TL_BEFORE.blurDataURL}
-                    className="rounded-2xl"
-                  />
-                </div>
-              </Reveal>
-
-              {/* Node 2 — The decision. */}
-              <Reveal as="li" index={1} className="reveal-right relative pl-12 nav:pl-16">
-                <span
-                  aria-hidden="true"
-                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
-                />
-                <p className="eyebrow">THE TURN{/* [review] */}</p>
-                <h3 className="type-h3 text-primary mt-2">The decision.</h3>
-                <p className="type-body text-primary mt-3 max-w-[58ch]">
-                  The decision to change was the hardest part. Everything else
-                  followed.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] */}
-                  No dramatic rock bottom. Just one morning I decided I was
-                  done living below what I knew I could be.
-                </p>
-              </Reveal>
-
-              {/* Node 3 — The rebuild. (the Right Order of Change, now taught
-                  only on /method — the philosophy section here was removed) */}
-              <Reveal as="li" index={2} className="reveal-left relative pl-12 nav:pl-16">
-                <span
-                  aria-hidden="true"
-                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
-                />
-                <p className="eyebrow">THE REBUILD{/* [review] */}</p>
-                <h3 className="type-h3 text-primary mt-2">The rebuild.</h3>
-                <p className="type-body text-primary mt-3 max-w-[58ch]">
-                  {/* [review] */}
-                  I didn&apos;t start with a diet. I started with how I lived.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] */}
-                  When I woke up. How I slept. How I moved. The habits I ran
-                  every day. The body followed the lifestyle — never the other
-                  way round.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] — added 2026-07-21: the change was never only the body */}
-                  And the body was only half of it. The discipline held. The
-                  confidence followed. I started carrying myself like a
-                  different man.
-                </p>
-              </Reveal>
-
-              {/* Node 4 — Coaching successful men in Kolkata. */}
-              <Reveal as="li" index={3} className="reveal-right relative pl-12 nav:pl-16">
-                <span
-                  aria-hidden="true"
-                  className="tl-dot absolute left-[7px] top-1.5 h-[9px] w-[9px] rounded-full bg-gold-500 shadow-[0_0_12px_rgba(201,162,75,0.5)]"
-                />
-                <p className="eyebrow">WHERE IT LED{/* [review] */}</p>
-                <h3 className="type-h3 text-primary mt-2">
-                  Coaching successful men in Kolkata.
-                </h3>
-                <p className="type-body text-primary mt-3 max-w-[58ch]">
-                  From there to coaching some of the most successful men in
-                  Kolkata.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] */}
-                  Businessmen. Entrepreneurs. Professionals who had everything
-                  — and still felt something was missing. I help them get it
-                  back.
-                </p>
-                <p className="type-body text-secondary mt-2 max-w-[58ch]">
-                  {/* [review] — added 2026-07-21: not just the body, how he shows up */}
-                  And what I rebuild with them isn&apos;t only the body. It&apos;s
-                  how they carry themselves, how they lead, how they show up in
-                  every room they walk into.
-                </p>
-              </Reveal>
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ Section 5 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
+      {/* ============ Section 4 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
       {/* Restrained trust rows — no invented stats/credentials. Carries the proof
           job now that the before/after section is gone; links out to /results
           where the client transformations live. [review] framing throughout. */}
-      {/* bg-alt: §4 above is bg-surface-1, so this keeps the alternation. */}
+      {/* bg-alt: §3 above is bg-base, so this keeps the alternation. */}
       <section className="bg-alt cv-auto border-y border-hairline-soft">
         <div className="container-site section">
           <div className="text-center">

@@ -65,7 +65,11 @@ function supportsWebGL(): boolean {
   }
 }
 
-const TRACK_VH = 6.2; // journey length: 6.2 viewport heights
+// Journey length in viewport heights. Raised from 6.2 when the final chapter
+// gained its second beat — the last 11.5% of progress is now a real camera
+// move over the gateway and down to the three programmes, and it needs about
+// three quarters of a screen of scrolling to read as a move rather than a cut.
+const TRACK_VH = 7.2;
 
 /** Strict Mode double-mounts and Fast Refresh remounts churn WebGL contexts in
  *  dev, producing failures no visitor will ever see. Never auto-demote there. */
