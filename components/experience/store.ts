@@ -9,6 +9,14 @@ type ExperienceState = {
   target: number;
   /** id of the focused fact, or null when free-roaming */
   focus: string | null;
+  /**
+   * id of the fact being *pointed at* — the man's two portraits and the five
+   * rebuild slabs read their description out on hover now, instead of hiding
+   * it behind a marker you had to find and click. Unlike `focus` this never
+   * moves the camera and never traps focus; it is a label, not a destination.
+   * Touch has no hover, so tapping those objects toggles the same state.
+   */
+  hover: string | null;
   quality: Quality;
   /**
    * Set once by Home3D for phones and coarse-pointer devices, which start on
@@ -31,6 +39,7 @@ type ExperienceState = {
   setTarget: (t: number) => void;
   setProgress: (p: number) => void;
   setFocus: (id: string | null) => void;
+  setHover: (id: string | null) => void;
   setQuality: (q: Quality) => void;
   lockQuality: () => void;
   setWebglFailed: () => void;
@@ -40,6 +49,7 @@ export const useExperience = create<ExperienceState>((set) => ({
   progress: 0,
   target: 0,
   focus: null,
+  hover: null,
   quality: "high",
   qualityLocked: false,
   calm: false,
@@ -48,6 +58,7 @@ export const useExperience = create<ExperienceState>((set) => ({
   setTarget: (target) => set({ target }),
   setProgress: (progress) => set({ progress }),
   setFocus: (focus) => set({ focus }),
+  setHover: (hover) => set({ hover }),
   setQuality: (quality) => set({ quality }),
   lockQuality: () => set({ qualityLocked: true }),
   setWebglFailed: () => set({ webglFailed: true }),

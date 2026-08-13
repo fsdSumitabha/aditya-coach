@@ -17,8 +17,14 @@ import { FACTS } from "./facts";
 const KEYS: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 1.7, 9), t: v(0, 1.5, 0) }, // arrival — the seal
   { p: v(2.4, 1.6, -8.5), t: v(-0.4, 1.2, -16) }, // drift toward the two figures
-  { p: v(-2.6, 1.9, -24.5), t: v(0.6, 1.4, -34) }, // approach the foundation from the left
-  { p: v(0, 2.7, -29.5), t: v(0, 1.4, -34) }, // front-on: the stack assembled
+  { p: v(-3.0, 2.0, -22.0), t: v(0.6, 1.4, -34) }, // approach the foundation from the left
+  // Front-on, and standing WELL back. This key used to sit at z -29.5, which
+  // is 4.7 units off a stack that is 2.7 tall, 4 wide and 2.6 deep — the
+  // pyramid filled ~75% of the frame height and the slabs flew in from x ±3.2
+  // and y +11, entirely outside it. You could not watch the thing assemble.
+  // At -26.2 the stack reads at ~45% of frame height with the whole approach
+  // path visible around it.
+  { p: v(0, 2.5, -26.2), t: v(0, 1.35, -34) }, // front-on: the stack assembled
   { p: v(2.8, 1.9, -44.5), t: v(-0.6, 1.8, -52) }, // sweep the proof gallery
   { p: v(-2.4, 1.8, -59), t: v(0.4, 1.5, -70) }, // approach the offers
   { p: v(0, 2.0, -63.5), t: v(0, 1.4, -70) }, // the decision, front and centre
@@ -31,8 +37,11 @@ const KEYS: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
 const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 1.7, 10.5), t: v(0, 1.6, 0) }, // arrival — seal recentres via chapters.tsx
   { p: v(0, 1.6, -6.5), t: v(0, 1.3, -16) }, // both figures, straight on
-  { p: v(0, 1.9, -22.5), t: v(0, 1.2, -34) }, // foundation approach, centred
-  { p: v(0, 2.9, -25.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
+  { p: v(0, 2.0, -20.5), t: v(0, 1.2, -34) }, // foundation approach, centred
+  // Same pull-back as the landscape key. At -25.0 the visible half-width was
+  // 2.2 against a bottom slab that reaches ±2.0 — the base was touching both
+  // edges of a phone screen. -23.0 gives 2.7 and room to watch it build.
+  { p: v(0, 2.9, -23.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
   { p: v(0, 1.8, -41.0), t: v(0, 1.7, -52) }, // proof gallery, both frames visible
   { p: v(0, 1.8, -57.5), t: v(0, 1.5, -70) }, // approach the offers
   { p: v(0, 2.0, -59.6), t: v(0, 1.5, -70) }, // decision — audit centred, wings peek in

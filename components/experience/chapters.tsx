@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Float, Text } from "@react-three/drei";
+import { Float, Html, Text } from "@react-three/drei";
 import * as THREE from "three";
 import Hotspot from "./Hotspot";
+import { CHAPTERS, FACTS } from "./facts";
 import { useExperience } from "./store";
+import { BTN_SCENE, requestNavigate } from "./ui";
 import { ChapterAlive, useChapterAlive, useChapterVisibility } from "./visibility";
 import { LEGAL } from "@/lib/legal";
 
@@ -73,6 +75,107 @@ function BlobShadow({
       scale={scale}
     />
   );
+}
+
+/* ---------- shared: in-scene button ---------- */
+
+/**
+ * A real, focusable DOM button anchored to a point in the scene — drei's
+ * <Html> projects the anchor and pins the element there at a constant screen
+ * size, so the label stays legible on a phone where 3D text at this distance
+ * would render about eight pixels tall.
+ *
+ * It replaces the pulsing gold markers on the two chapters below: those made
+ * you find a small sphere and guess that it was clickable, and then the click
+ * did two unrelated things at once (moved the camera AND opened copy). Now the
+ * objects themselves describe on hover, and one obvious button per chapter
+ * goes to the page.
+ *
+ * Mounted across a window slightly wider than its shown range so the opacity
+ * transition has something to animate between; `pointerEvents` stays off until
+ * it is fully in.
+ */
+function SceneButton({
+  position,
+  label,
+  href,
+  range,
+}: {
+  position: [number, number, number];
+  label: string;
+  href: string;
+  /**
+   * Progress window in which the button is shown. It starts with the chapter
+   * but must END BEFORE the dolly reaches the anchor's own z — the camera
+   * flies straight through both of these chapters, and an anchor at or behind
+   * the near plane swings across the screen before drei hides it.
+   */
+  range: readonly [number, number];
+}) {
+  // Primitive selectors: zustand only re-renders when the boolean flips, so
+  // this does NOT re-render on every damped progress write.
+  const mounted = useExperience(
+    (s) => s.progress > range[0] - 0.05 && s.progress < range[1] + 0.05,
+  );
+  const shown = useExperience(
+    (s) => s.progress > range[0] && s.progress < range[1],
+  );
+  if (!mounted) return null;
+
+  return (
+    <Html
+      position={position}
+      center
+      pointerEvents="none"
+      zIndexRange={[8, 0]}
+      style={{
+        opacity: shown ? 1 : 0,
+        transition: "opacity 420ms ease",
+      }}
+    >
+      <button
+        type="button"
+        tabIndex={shown ? 0 : -1}
+        aria-hidden={!shown}
+        onClick={() => requestNavigate(href)}
+        className={BTN_SCENE}
+        style={{ pointerEvents: shown ? "auto" : "none" }}
+      >
+        {label}
+      </button>
+    </Html>
+  );
+}
+
+/** Labels and destinations come from FACTS so the 3D scene, the fact cards and
+ *  the server-rendered fallback can never drift apart. */
+const ABOUT_CTA = FACTS["man-after"].cta ?? { label: "My story →", href: "/about" };
+const METHOD_CTA =
+  FACTS["order-1"].cta ?? { label: "See the full method →", href: "/method" };
+
+/* ---------- shared: pointer-to-describe ---------- */
+
+/**
+ * Props that make an object read its own fact out on hover. Touch never fires
+ * a hover, so a tap toggles the same state.
+ */
+function describes(id: string) {
+  const set = (next: string | null) => useExperience.getState().setHover(next);
+  return {
+    onPointerOver: (e: { stopPropagation: () => void }) => {
+      e.stopPropagation();
+      set(id);
+      document.body.style.cursor = "pointer";
+    },
+    onPointerOut: () => {
+      if (useExperience.getState().hover === id) set(null);
+      document.body.style.cursor = "";
+    },
+    onClick: (e: { stopPropagation: () => void }) => {
+      e.stopPropagation();
+      set(useExperience.getState().hover === id ? null : id);
+    },
+  };
 }
 
 /* ---------- shared: the transformation portraits ---------- */
@@ -208,6 +311,93 @@ function usePortraitTexture(after: boolean) {
 
 /* ================= CHAPTER 0 — ARRIVAL: the gold seal ================= */
 
+/** Generic image → texture, cached by src so a remount never re-decodes. */
+const imageTextures = new Map<string, THREE.Texture>();
+
+function useImageTexture(src: string) {
+  // src is a module constant at every call site, so the initial value is the
+  // whole story — no render-phase adjustment needed.
+  const [tex, setTex] = useState<THREE.Texture | null>(
+    () => imageTextures.get(src) ?? null,
+  );
+
+  useEffect(() => {
+    if (imageTextures.has(src)) return;
+    let cancelled = false;
+    new THREE.TextureLoader().load(src, (t) => {
+      if (cancelled) {
+        t.dispose();
+        return;
+      }
+      t.colorSpace = THREE.SRGBColorSpace;
+      imageTextures.set(src, t);
+      setTex(t);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return tex;
+}
+
+const AKU_MARK = `${BASE}/logo/aku-mark.png`;
+const MARK_ASPECT = 480 / 157; // the shipped wordmark's own proportions
+const EMBLEM_R = 0.6; // clears the inner ring (r 0.86) with room to spare
+const EMBLEM_T = 0.09; // struck thickness
+const MARK_W = 0.86;
+
+/**
+ * The centrepiece inside the two turning rings: a struck gold medallion
+ * carrying the AKU wordmark, replacing the abstract brilliant-cut diamond that
+ * used to sit here. It is his mark, not a gem.
+ *
+ * Built as a rim + two faces rather than a capped cylinder because the caps'
+ * generated UVs mirror each other — the wordmark would have read backwards on
+ * one side of a spin. Each face is its own group turned 180°, so the mark is
+ * the right way round from either side. ~200 triangles.
+ */
+function AkuEmblem() {
+  const mark = useImageTexture(AKU_MARK);
+
+  return (
+    <>
+      {/* milled rim */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[EMBLEM_R, EMBLEM_R, EMBLEM_T, 48, 1, true]} />
+        <meshStandardMaterial color={GOLD} metalness={1} roughness={0.24} />
+      </mesh>
+
+      {[1, -1].map((s) => (
+        <group key={s} rotation={[0, s > 0 ? 0 : Math.PI, 0]}>
+          {/* struck face — dark, so the gold wordmark reads against it */}
+          <mesh position={[0, 0, EMBLEM_T / 2]}>
+            <circleGeometry args={[EMBLEM_R, 48]} />
+            <meshStandardMaterial color="#171308" metalness={0.85} roughness={0.36} />
+          </mesh>
+          {/* inner bevel line */}
+          <mesh position={[0, 0, EMBLEM_T / 2 + 0.002]}>
+            <ringGeometry args={[EMBLEM_R - 0.075, EMBLEM_R - 0.055, 48]} />
+            <meshStandardMaterial
+              color={GOLD_LIGHT}
+              metalness={1}
+              roughness={0.2}
+              emissive={GOLD}
+              emissiveIntensity={0.3}
+            />
+          </mesh>
+          {mark && (
+            <mesh position={[0, 0, EMBLEM_T / 2 + 0.006]}>
+              <planeGeometry args={[MARK_W, MARK_W / MARK_ASPECT]} />
+              <meshBasicMaterial map={mark} transparent depthWrite={false} />
+            </mesh>
+          )}
+        </group>
+      ))}
+    </>
+  );
+}
+
 export function Arrival() {
   const outer = useRef<THREE.Mesh>(null);
   const mid = useRef<THREE.Mesh>(null);
@@ -257,32 +447,9 @@ export function Arrival() {
           <torusGeometry args={[0.86, 0.022, 8, 64]} />
           <meshStandardMaterial color={GOLD_LIGHT} metalness={1} roughness={0.18} />
         </mesh>
-        {/* the centerpiece: a brilliant-cut diamond — a man, cut and polished */}
+        {/* the centrepiece: his own mark, struck in gold */}
         <group ref={inner}>
-          {/* crown (table → girdle) */}
-          <mesh position={[0, 0.16, 0]}>
-            <cylinderGeometry args={[0.17, 0.48, 0.28, 8, 1]} />
-            <meshStandardMaterial
-              color={GOLD}
-              metalness={0.95}
-              roughness={0.22}
-              emissive={GOLD}
-              emissiveIntensity={0.55}
-              flatShading
-            />
-          </mesh>
-          {/* pavilion (girdle → culet) */}
-          <mesh position={[0, -0.26, 0]} rotation={[Math.PI, 0, 0]}>
-            <coneGeometry args={[0.48, 0.56, 8]} />
-            <meshStandardMaterial
-              color={GOLD_LIGHT}
-              metalness={0.95}
-              roughness={0.18}
-              emissive={GOLD}
-              emissiveIntensity={0.4}
-              flatShading
-            />
-          </mesh>
+          <AkuEmblem />
         </group>
       </Float>
       <BlobShadow position={[0, -1.53, 0]} scale={3.2} />
@@ -371,19 +538,23 @@ function getFrameMaterial(color: string) {
 function ManPortrait({
   after,
   caption,
-  hotspot,
+  factId,
   floating,
 }: {
   after: boolean;
   caption: string;
-  hotspot: string;
+  /** the fact this panel reads out while it is pointed at */
+  factId: string;
   floating: boolean;
 }) {
   const tex = usePortraitTexture(after);
   const calm = useExperience((s) => s.calm);
+  const described = useExperience((s) => s.hover === factId);
   // Gold is spent on the rebuild; the starting point gets a dim hairline.
   // The photographs themselves are never tinted or graded — "no filters".
+  // Pointing at a panel lifts its frame rather than its photograph.
   const line = after ? GOLD : "#4d483f";
+  const frameColor = described ? (after ? GOLD_LIGHT : "#8a847a") : line;
   const side = after ? 1 : -1;
 
   return (
@@ -394,8 +565,13 @@ function ManPortrait({
         floatIntensity={0.3}
         enabled={floating && !calm}
       >
-        {/* the diptych opens toward the camera path */}
-        <group position={[0, PANEL_Y, 0]} rotation={[0, -side * 0.22, 0]}>
+        {/* the diptych opens toward the camera path; the whole panel is the
+            hit target now, so there is nothing small to find */}
+        <group
+          position={[0, PANEL_Y, 0]}
+          rotation={[0, -side * 0.22, 0]}
+          {...describes(factId)}
+        >
           {/* mount board — one quad, so the hairline reads as a frame around
               a print rather than a rectangle drawn on the void */}
           <mesh position={[0, 0, -0.006]}>
@@ -408,7 +584,7 @@ function ManPortrait({
           </mesh>
           <mesh
             geometry={getFrameGeometry()}
-            material={getFrameMaterial(line)}
+            material={getFrameMaterial(frameColor)}
             position={[0, 0, 0.004]}
           />
           <Text
@@ -421,7 +597,6 @@ function ManPortrait({
           >
             {caption}
           </Text>
-          <Hotspot id={hotspot} position={[-side * 0.86, 0.45, 0.22]} size={0.07} />
         </group>
       </Float>
       <BlobShadow position={[0, 0.011, 0]} scale={2.4} />
@@ -438,8 +613,16 @@ export function TheMan() {
   return (
     <ChapterAlive.Provider value={alive}>
       <group position={[0, 0, -16]}>
-        <ManPortrait after={false} caption="BEFORE" hotspot="man-before" floating={visible} />
-        <ManPortrait after caption="AFTER" hotspot="man-after" floating={visible} />
+        <ManPortrait after={false} caption="BEFORE" factId="man-before" floating={visible} />
+        <ManPortrait after caption="AFTER" factId="man-after" floating={visible} />
+        {/* Dead centre of the diptych, in the gap between the two frames.
+            Out by 0.225: the dolly crosses this z at progress ≈ 0.25. */}
+        <SceneButton
+          position={[0, PANEL_Y, 0.3]}
+          label={ABOUT_CTA.label}
+          href={ABOUT_CTA.href}
+          range={[CHAPTERS[1].range[0], 0.225]}
+        />
       </group>
     </ChapterAlive.Provider>
   );
@@ -463,6 +646,7 @@ function Slab({ index }: { index: number }) {
   const finalY = SLAB_H / 2 + index * (SLAB_H + 0.06);
   const side = index % 2 === 0 ? 1 : -1;
   const alive = useChapterAlive();
+  const described = useExperience((st) => st.hover === s.id);
 
   useFrame((_, delta) => {
     // The assembly window (progress 0.30–0.52) sits well inside the visible
@@ -484,12 +668,16 @@ function Slab({ index }: { index: number }) {
   });
 
   return (
-    <group ref={group} position={[0, finalY + 6, 0]}>
+    <group ref={group} position={[0, finalY + 6, 0]} {...describes(s.id)}>
       <mesh>
         <boxGeometry args={[s.w, SLAB_H, s.d]} />
-        <meshStandardMaterial color={STONE} roughness={0.55} metalness={0.35} />
+        <meshStandardMaterial
+          color={described ? "#1d1a14" : STONE}
+          roughness={0.55}
+          metalness={0.35}
+        />
       </mesh>
-      {/* gold edge trim */}
+      {/* gold edge trim — the layer being pointed at lights its own seam */}
       <mesh position={[0, -SLAB_H / 2 + 0.02, 0]}>
         <boxGeometry args={[s.w + 0.035, 0.03, s.d + 0.035]} />
         <meshStandardMaterial
@@ -497,7 +685,7 @@ function Slab({ index }: { index: number }) {
           metalness={1}
           roughness={0.25}
           emissive={GOLD}
-          emissiveIntensity={0.9}
+          emissiveIntensity={described ? 2.4 : 0.9}
         />
       </mesh>
       <Text
@@ -521,7 +709,6 @@ function Slab({ index }: { index: number }) {
       >
         {s.num}
       </Text>
-      <Hotspot id={s.id} position={[s.w / 2 + 0.22, 0, 0.2]} size={0.07} />
     </group>
   );
 }
@@ -546,6 +733,16 @@ export function TheOrder() {
       >
         EVERYTHING SITS ON THIS
       </Text>
+      {/* Above the apex — the only clear space in this shot. Below the stack
+          the anchor projects past the bottom of a phone screen, and beside it
+          the portrait frustum clips at x ±2.7. Out by 0.50: the dolly crosses
+          this z at progress ≈ 0.56 on its way to the gallery. */}
+      <SceneButton
+        position={[0, 3.05, 1.2]}
+        label={METHOD_CTA.label}
+        href={METHOD_CTA.href}
+        range={[CHAPTERS[2].range[0], 0.5]}
+      />
     </group>
     </ChapterAlive.Provider>
   );

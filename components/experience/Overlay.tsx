@@ -6,16 +6,9 @@ import { useEffect, useRef } from "react";
 import { useExperience } from "./store";
 import { CHAPTERS, FACTS } from "./facts";
 
-const easeExpo = [0.16, 1, 0.3, 1] as const;
+import { BTN_GOLD, BTN_OUTLINE, EYEBROW } from "./ui";
 
-// The museum carries its own night palette — explicit literals so global
-// theme experiments (e.g. the daylight refresh) never break legibility here.
-const EYEBROW =
-  "font-body text-[11px] font-semibold uppercase tracking-[0.16em] text-[#c9a24b]";
-const BTN_GOLD =
-  "inline-flex min-h-[52px] items-center justify-center rounded-[10px] px-7 font-semibold text-[#0b0b0c] [background:linear-gradient(180deg,#e6d19a_0%,#c9a24b_45%,#a9832f_100%)] shadow-[0_8px_30px_rgba(201,162,75,0.25)] transition-transform duration-200 hover:-translate-y-0.5";
-const BTN_OUTLINE =
-  "inline-flex min-h-[52px] items-center justify-center rounded-[10px] border-[1.5px] border-[rgba(244,241,234,0.6)] px-7 font-semibold text-[#f4f1ea] transition-colors duration-200 hover:bg-[rgba(244,241,234,0.08)]";
+const easeExpo = [0.16, 1, 0.3, 1] as const;
 
 function activeChapter(progress: number): number {
   for (let i = 0; i < CHAPTERS.length; i++) {
@@ -30,7 +23,12 @@ export default function Overlay() {
   const nearStart = useExperience((s) => s.progress < 0.035);
   const focus = useExperience((s) => s.focus);
   const setFocus = useExperience((s) => s.setFocus);
+  const hover = useExperience((s) => s.hover);
   const fact = focus ? FACTS[focus] : null;
+  // The described object's copy, shown while it is pointed at. Non-modal and
+  // click-through: it is a label on the thing under the cursor, not a dialog,
+  // so it never steals focus and never needs dismissing.
+  const described = !fact && hover ? FACTS[hover] : null;
   const chapter = chapterIdx >= 0 ? CHAPTERS[chapterIdx] : null;
 
   const cardRef = useRef<HTMLElement>(null);
@@ -84,7 +82,7 @@ export default function Overlay() {
     <div className="pointer-events-none absolute inset-0 z-10">
       {/* -------- chapter titles -------- */}
       <AnimatePresence mode="wait">
-        {chapter && !fact && (
+        {chapter && !fact && !described && (
           <motion.div
             key={chapter.id}
             initial={{ opacity: 0, y: 26 }}
@@ -189,6 +187,33 @@ export default function Overlay() {
           </button>
         ))}
       </div>
+
+      {/* -------- description, while an object is pointed at -------- */}
+      <AnimatePresence>
+        {described && (
+          <motion.div
+            key={described.id}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.28, ease: easeExpo }}
+            className="absolute inset-x-4 bottom-6 rounded-2xl border border-[rgba(201,162,75,0.22)] bg-[rgba(11,11,12,0.86)] p-5 backdrop-blur-md sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-1/2 sm:w-[350px] sm:-translate-y-1/2 sm:p-6"
+          >
+            <p className={EYEBROW}>{described.eyebrow}</p>
+            <p className="font-display mt-2 text-[1.25rem] font-medium leading-tight text-[#f4f1ea]">
+              {described.title}
+            </p>
+            <p className="mt-2 text-[0.92rem] leading-[1.6] text-[#a7a199]">
+              {described.body}
+            </p>
+            {described.attribution && (
+              <p className="mt-2 text-[0.78rem] font-medium leading-snug text-[#8a847a]">
+                {described.attribution}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* -------- fact card -------- */}
       <AnimatePresence>

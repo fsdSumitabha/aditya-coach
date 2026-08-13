@@ -8,8 +8,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { useExperience } from "./store";
 import { forceFlat, forceThree, reportFallback } from "./flags";
+import { NAVIGATE_EVENT } from "./ui";
 import Overlay from "./Overlay";
 import StaticFallback from "./StaticFallback";
 
@@ -73,6 +75,19 @@ export default function Home3D() {
   const trackRef = useRef<HTMLDivElement>(null);
   const focusAnchor = useRef<number | null>(null);
   const aliveRef = useRef(false);
+  const router = useRouter();
+
+  // Buttons rendered inside the Canvas live in react-three-fiber's own React
+  // root, where the app router's context does not reach — so they raise this
+  // and the push happens out here, in the normal tree.
+  useEffect(() => {
+    const onNavigate = (e: Event) => {
+      const href = (e as CustomEvent<string>).detail;
+      if (typeof href === "string" && href.startsWith("/")) router.push(href);
+    };
+    window.addEventListener(NAVIGATE_EVENT, onNavigate);
+    return () => window.removeEventListener(NAVIGATE_EVENT, onNavigate);
+  }, [router]);
 
   /** Single exit to the 2D journey — every trigger says why, in the console. */
   const demote = useCallback((reason: string) => {
@@ -164,6 +179,10 @@ export default function Home3D() {
       const travel = el.offsetHeight - window.innerHeight;
       const t = travel > 0 ? Math.min(1, Math.max(0, -rect.top / travel)) : 0;
       st.setTarget(t);
+      // Pointer-out never fires when an object scrolls out from under a
+      // stationary cursor (R3F only raycasts on pointer moves), and on touch
+      // there is no pointer-out at all — so scrolling clears the description.
+      if (useExperience.getState().hover) useExperience.getState().setHover(null);
       // a meaningful scroll releases the focused fact
       if (
         useExperience.getState().focus &&

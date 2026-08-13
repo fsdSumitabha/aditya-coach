@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     // round-trip on 4G, protecting the LCP < 2.5s target (A2).
     inlineCss: true,
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;
