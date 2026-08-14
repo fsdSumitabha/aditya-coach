@@ -193,36 +193,37 @@ export default function ProgramsPage() {
 
             {/* ============ 1. HERO — "Work With Me." ============ */}
             <section className="bg-void aurora grain relative overflow-hidden">
-                {/* Full-viewport opener — a short H1 earns a commanding scale */}
-                <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16">
-                    <div className="max-w-[820px] mx-auto text-center">
-                        <div className="mb-6 flex items-center justify-center gap-4">
-                            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+                {/* Compact opener — roughly half the viewport, so the programs
+            below sit above the fold on a phone */}
+                <div className="container-site relative z-10 flex min-h-[calc(52dvh-var(--header-h))] flex-col justify-center py-10 md:py-12">
+                    <div className="max-w-[760px] mx-auto text-center">
+                        <div className="mb-4 flex items-center justify-center gap-3">
+                            <span aria-hidden="true" className="thread-h sd-draw h-px w-8" />
                             <p className="eyebrow">THE PROGRAMS{/* [review] */}</p>
-                            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+                            <span aria-hidden="true" className="thread-h sd-draw h-px w-8" />
                         </div>
                         {/* Hero H1 — never animated (LCP paints at final state frame 1) */}
-                        <h1 className="font-display text-[clamp(3rem,7vw,5.4rem)] font-medium leading-[1.02] tracking-[-0.03em] text-primary">
+                        <h1 className="font-display text-[clamp(2.2rem,4.6vw,3.4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-primary">
                             Work With Me.
                         </h1>
                         <Reveal delayMs={80}>
                             {/* [review] — hero sub repositioned around the one complete-transformation system */}
-                            <p className="type-lead text-secondary mt-6">
+                            <p className="type-body text-secondary mt-3 max-w-[54ch] mx-auto">
                                 Three ways in. One system — body, lifestyle, mindset,
                                 personality, presence. Start with the audit, then we build.
                             </p>
                         </Reveal>
-                        <div className="gold-line max-w-[220px] mx-auto mt-8" aria-hidden="true" />
+                        <div className="gold-line max-w-[180px] mx-auto mt-5" aria-hidden="true" />
                         <Reveal delayMs={140}>
                             {/* [review] */}
-                            <p className="type-caption text-muted mt-6">
+                            <p className="type-caption text-muted mt-4">
                                 Kolkata · Coaching worldwide online · Every transformation starts
                                 with the Transformation Audit.
                             </p>
                         </Reveal>
-                        <Reveal delayMs={200} className="mt-10">
+                        <Reveal delayMs={200} className="mt-6">
                             {/* [review] — hero CTA pair */}
-                            <div className="flex flex-col items-center gap-5">
+                            <div className="flex flex-col items-center gap-3">
                                 <CtaLink
                                     href={BOOK_URL}
                                     className="btn-gold shine-loop w-full sm:w-auto"

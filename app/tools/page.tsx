@@ -68,28 +68,28 @@ export default function ToolsPage() {
 
       {/* ---- 1. HERO — no photo, no CTA button; the tools below ARE the CTAs ---- */}
       <section className="bg-void grain aurora relative overflow-hidden">
-        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 text-center">
-          <div className="mb-6 flex items-center justify-center gap-4">
-            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+        <div className="container-site relative z-10 flex min-h-[calc(52dvh-var(--header-h))] flex-col justify-center pt-10 pb-16 text-center md:pt-12 md:pb-18">
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-8" />
             <p className="eyebrow">FREE TOOLS{/* [review] */}</p>
-            <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
+            <span aria-hidden="true" className="thread-h sd-draw h-px w-8" />
           </div>
-          <h1 className="font-display mx-auto max-w-[15ch] text-[clamp(2.6rem,6vw,4.8rem)] font-medium leading-[1.04] tracking-[-0.03em] text-primary">
+          <h1 className="font-display mx-auto max-w-[16ch] text-[clamp(2.1rem,4.4vw,3.4rem)] font-medium leading-[1.06] tracking-[-0.03em] text-primary">
             Start Here. Completely Free.
           </h1>
           <Reveal
             as="p"
             delayMs={100}
-            className="type-lead text-secondary mt-5 max-w-[52ch] mx-auto"
+            className="type-body text-secondary mt-3 max-w-[54ch] mx-auto"
           >
             Four free tools to start rebuilding your body, your presence and
             your discipline today — no payment, no catch.{/* [review] */}
           </Reveal>
-          <Reveal delayMs={200} className="mt-8">
+          <Reveal delayMs={200} className="mt-6">
             {/* [review] micro-nav anchor chips */}
             <nav
               aria-label="Free tools on this page"
-              className="flex flex-wrap justify-center gap-3"
+              className="flex flex-wrap justify-center gap-2.5"
             >
               <a href="#blueprint" className={chipClass}>
                 Lifestyle Blueprint
@@ -103,16 +103,16 @@ export default function ToolsPage() {
           {/* quiet cue at the panel's base */}
           <Reveal
             delayMs={500}
-            className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2"
+            className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2"
           >
             <div
               aria-hidden="true"
-              className="flex flex-col items-center gap-2 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
+              className="flex flex-col items-center gap-1.5 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
             >
               <span className="type-caption tracking-[0.24em] text-muted">
                 PICK YOUR TOOL{/* [review] */}
               </span>
-              <span className="block h-9 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
+              <span className="block h-6 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
             </div>
           </Reveal>
         </div>

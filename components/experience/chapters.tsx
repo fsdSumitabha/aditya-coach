@@ -1112,7 +1112,11 @@ const GATE_H = 2.4;
 const PILLAR_Z = -5.0;
 /** left · centre · right, matching the order of OFFERS.pillars */
 const PILLAR_X = [-1.9, 0, 1.9];
-const PILLAR_W = [1.5, 1.7, 1.5];
+// The flagship went 1.7 → 2.0 so a whole disc fits inside its frame at the
+// same diameter as the two halves either side of it. The outer two are
+// untouched, so the row still ends at x ±2.65 — a phone's frustum reaches
+// ±2.80 at this depth and that margin is the tightest constraint in the scene.
+const PILLAR_W = [1.5, 2.0, 1.5];
 // Each card is now tall enough to carry its mandala UNDER its name without the
 // ornament dropping into the bottom third of the screen, which the scroll
 // overlay owns. The flagship stays the tallest of the three so its head still
@@ -1122,59 +1126,98 @@ const PILLAR_H = [3.4, 4.0, 3.4];
 
 /* ---------- the programme mandalas ---------- */
 
-// Each of the three programme cards carries its own mandala, drawn on a 2D
-// canvas and uploaded as a single texture. Procedural rather than a shipped
-// PNG for three reasons: nothing new to download, the line weight can be tuned
-// for the size these actually render at (~200px on a desktop, ~100px on a
-// phone), and the flagship's mandala can be built from the OTHER TWO cards'
-// motifs — Complete Transformation alternates the lotus of Lifestyle Coaching
-// with the leaf of Personality & Presence in the same ring, because it is the
-// two of them together. That is the whole idea, drawn.
+// Each of the three programme cards carries a mandala, drawn on a 2D canvas
+// and uploaded as one texture. Procedural rather than a shipped PNG so nothing
+// new has to download and the line weight can be tuned for the size these
+// actually render at (~190px on a desktop, ~750 device px on a phone).
+//
+// THE WHOLE IDEA IS THE CROP.
+//
+//   Lifestyle Coaching   shows the RIGHT half of a disc, cut off by its own
+//                        left edge. Every petal is a lotus.
+//   Personality &        shows the LEFT half of a disc, cut off by its own
+//   Presence             right edge. Every petal is a leaf.
+//   Complete             shows a WHOLE disc — lotus down its left side, leaf
+//   Transformation       down its right. It is literally the card on its left
+//                        joined to the card on its right.
+//
+// So the two flanking programmes read as fragments of something, and the thing
+// they are fragments of is standing complete between them. That is the offer,
+// drawn: Complete Transformation IS the other two. Nothing here is a badge.
+//
+// Consequence worth knowing before you touch this: NOTHING ROTATES. The split
+// down the flagship is positional — turn it and the lotus no longer sits on
+// the side facing the lotus card, and a half would spin its cut edge into
+// view. Life in this scene comes from the lift and the brighten on hover.
 //
 // The gateway deliberately has none. It is not one of the three.
 
 type Motif = "lotus" | "leaf";
+/** which half of the disc survives the card's edge — `full` keeps all of it */
+type Crop = "left" | "right" | "full";
 
-/** id → [inner-ring motif, outer-ring motif], petal count */
-const MANDALAS: Record<string, { motifs: [Motif, Motif]; petals: number }> = {
-  "offer-lifestyle": { motifs: ["lotus", "lotus"], petals: 12 },
-  "offer-complete": { motifs: ["lotus", "leaf"], petals: 16 },
-  "offer-presence": { motifs: ["leaf", "leaf"], petals: 14 },
+/**
+ * id → [the motif on the disc's LEFT side, the motif on its RIGHT side],
+ * petal count, and the crop. The count is deliberately the same for all three
+ * so the rings line up across the row and the halves read as halves of the
+ * disc in the middle rather than as three unrelated ornaments.
+ */
+const MANDALAS: Record<string, { motifs: [Motif, Motif]; petals: number; crop: Crop }> = {
+  "offer-lifestyle": { motifs: ["lotus", "lotus"], petals: 16, crop: "right" },
+  "offer-complete": { motifs: ["lotus", "leaf"], petals: 16, crop: "full" },
+  "offer-presence": { motifs: ["leaf", "leaf"], petals: 16, crop: "left" },
 };
 
-const MANDALA_PX = 512;
+/** disc diameter and the height its centre sits at, shared by all three */
+const MANDALA_D = 1.72;
+const MANDALA_Y = 1.42;
+
+const MANDALA_PX = 640;
 const mandalaCache = new Map<string, THREE.Texture>();
 
+/**
+ * @param ink  null draws the real gold palette; a colour flattens every stroke
+ *             to it, which is how the emboss passes below are drawn.
+ * Draws around the CURRENT origin — the caller translates, because the halves
+ * put the disc's centre on a canvas edge rather than in the middle.
+ */
 function drawMandala(
   ctx: CanvasRenderingContext2D,
   size: number,
   motifs: [Motif, Motif],
   petals: number,
+  ink: string | null,
 ) {
   const R = size / 2;
   const u = size / 512; // stroke widths are authored at 512 and scale from there
-  ctx.translate(R, R);
+  const GOLD_ = ink ?? GOLD;
+  const LIGHT_ = ink ?? GOLD_LIGHT;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.strokeStyle = GOLD;
-  ctx.fillStyle = GOLD;
+  ctx.strokeStyle = GOLD_;
+  ctx.fillStyle = GOLD_;
 
-  const ring = (n: number, fn: (i: number) => void, offset = 0) => {
+  /** `f` is the petal's position round the circle, 0..1 clockwise from noon */
+  const ring = (n: number, fn: (i: number, f: number) => void, offset = 0) => {
     for (let i = 0; i < n; i++) {
+      const f = (i + offset) / n;
       ctx.save();
-      ctx.rotate(((i + offset) / n) * Math.PI * 2);
-      fn(i);
+      ctx.rotate(f * Math.PI * 2);
+      fn(i, f);
       ctx.restore();
     }
   };
 
-  const circle = (r: number, lw: number, color = GOLD) => {
+  /** f < 0.5 is the right side of the disc, f >= 0.5 the left */
+  const sideMotif = (f: number) => motifs[f < 0.5 ? 1 : 0];
+
+  const circle = (r: number, lw: number, color = GOLD_) => {
     ctx.beginPath();
     ctx.lineWidth = lw * u;
     ctx.strokeStyle = color;
     ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = GOLD;
+    ctx.strokeStyle = GOLD_;
   };
 
   const dot = (r: number, y: number) => {
@@ -1198,22 +1241,55 @@ function drawMandala(
     ctx.lineWidth = lw * u;
     ctx.moveTo(0, -a);
     if (motif === "lotus") {
-      // wide shoulders closing to a soft point — the flower
-      ctx.bezierCurveTo(s, -(a + L * 0.52), s * 0.32, -b, 0, -b);
-      ctx.bezierCurveTo(-s * 0.32, -b, -s, -(a + L * 0.52), 0, -a);
+      // Held wide, then closed across a ROUNDED tip rather than drawn to a
+      // point. The blunt tip is doing most of the work: at this size a pointed
+      // lotus and a leaf are the same pointed oval, and the whole design rests
+      // on being able to tell one card's petal from the other's.
+      const t = s * 0.42;
+      ctx.bezierCurveTo(s, -(a + L * 0.34), s * 0.95, -(a + L * 0.72), t, -(b - L * 0.09));
+      ctx.quadraticCurveTo(0, -b, -t, -(b - L * 0.09));
+      ctx.bezierCurveTo(-s * 0.95, -(a + L * 0.72), -s, -(a + L * 0.34), 0, -a);
     } else {
       // narrow, sharp at both ends — the leaf
-      ctx.bezierCurveTo(s, -(a + L * 0.3), s, -(a + L * 0.72), 0, -b);
-      ctx.bezierCurveTo(-s, -(a + L * 0.72), -s, -(a + L * 0.3), 0, -a);
+      ctx.bezierCurveTo(s, -(a + L * 0.28), s, -(a + L * 0.72), 0, -b);
+      ctx.bezierCurveTo(-s, -(a + L * 0.72), -s, -(a + L * 0.28), 0, -a);
     }
     ctx.closePath();
     ctx.stroke();
   };
 
+  /**
+   * Lengthwise fan lines converging on the tip. This is what the outer spikes
+   * of a drawn mandala are filled with, and it is the single detail that most
+   * separates one from a flat outline — a nested outline just reads as a
+   * double border.
+   */
+  const fan = (a: number, b: number, s: number, lines: number) => {
+    const L = b - a;
+    for (let i = 1; i <= lines; i++) {
+      const f = (i / (lines + 1)) * 2 - 1; // -1 … +1 across the petal
+      ctx.beginPath();
+      ctx.lineWidth = 0.85 * u;
+      ctx.moveTo(f * s * 0.6, -(a + L * 0.14));
+      ctx.quadraticCurveTo(f * s * 0.46, -(a + L * 0.62), 0, -(b - L * 0.08));
+      ctx.stroke();
+    }
+  };
+
+  /**
+   * How wide each motif is allowed to be, as a multiple of the arc it owns.
+   * Above 1 the petals overlap their neighbours and interlace; below 1 they
+   * stand apart with daylight between them. The gap between these two numbers
+   * is the ONLY thing making a lotus card look different from a leaf one at
+   * the size these render — the tip curves are far too fine to read from a
+   * scrolling camera. Do not close it.
+   */
+  const SPREAD: Record<Motif, number> = { lotus: 1.35, leaf: 0.68 };
+
   /** the motif plus the detail that tells the two apart at a glance */
   const petalDetailed = (a: number, b: number, n: number, motif: Motif, lw: number) => {
     const L = b - a;
-    const s = spreadFor(a, n, motif === "lotus" ? 1.12 : 0.8);
+    const s = spreadFor(a, n, SPREAD[motif]);
     petal(a, b, s, motif, lw);
     petal(a + L * 0.16, b - L * 0.2, s * 0.55, motif, lw * 0.62);
     if (motif === "lotus") {
@@ -1227,113 +1303,132 @@ function drawMandala(
     }
   };
 
-  // ---- centre ----
-  dot(R * 0.02, 0);
-  ctx.strokeStyle = GOLD_LIGHT;
-  ring(8, () => petal(R * 0.042, R * 0.165, spreadFor(R * 0.042, 8, 3.4), "lotus", 1.5));
-  ctx.strokeStyle = GOLD;
-  circle(R * 0.178, 1.1, GOLD_LIGHT);
-  ring(8, () => petal(R * 0.182, R * 0.275, spreadFor(R * 0.182, 8, 1.15), "leaf", 1.3), 0.5);
-  circle(R * 0.295, 1.5);
-  circle(R * 0.318, 0.9);
+  // ---- core: fine and dense, so the middle is somewhere to look ----
+  dot(R * 0.026, 0);
+  ctx.strokeStyle = LIGHT_;
+  ring(8, () => petal(R * 0.05, R * 0.135, spreadFor(R * 0.05, 8, 3.2), "lotus", 1.4));
+  ctx.strokeStyle = GOLD_;
+  circle(R * 0.148, 1.0, LIGHT_);
+  ring(12, () => petal(R * 0.152, R * 0.235, spreadFor(R * 0.152, 12, 1.25), "leaf", 1.2), 0.5);
+  circle(R * 0.252, 1.4);
+  circle(R * 0.272, 0.8);
 
   // ---- bead ring ----
-  ring(28, () => dot(R * 0.0105, -R * 0.34));
-  circle(R * 0.362, 0.9);
+  ring(24, () => dot(R * 0.0095, -R * 0.292));
+  circle(R * 0.312, 0.8);
 
   // ---- ray band ----
   ring(petals * 3, () => {
     ctx.beginPath();
-    ctx.lineWidth = 1.1 * u;
-    ctx.moveTo(0, -R * 0.372);
-    ctx.lineTo(0, -R * 0.408);
+    ctx.lineWidth = 1.0 * u;
+    ctx.moveTo(0, -R * 0.322);
+    ctx.lineTo(0, -R * 0.358);
     ctx.stroke();
   });
-  circle(R * 0.418, 1.6);
+  circle(R * 0.372, 1.5);
 
-  // ---- MAIN RING — the card's identity ----
-  ring(petals, (i) => petalDetailed(R * 0.428, R * 0.69, petals, motifs[i % 2], 2.2));
-  circle(R * 0.705, 1.9);
-  circle(R * 0.732, 0.9);
+  // ---- MAIN RING — the card's identity, and the side it faces ----
+  ring(petals, (_i, f) => petalDetailed(R * 0.382, R * 0.6, petals, sideMotif(f), 2.1));
+  circle(R * 0.615, 1.7);
+  circle(R * 0.638, 0.8);
 
   // ---- scalloped collar ----
-  // The arc radius is the BAND it has to live in (0.732R → 0.782R), not the
+  // The arc radius is the BAND it has to live in (0.638R → 0.684R), not the
   // gap between neighbours: sized to the gap it swells straight through the
   // crown outside it.
   ring(
     petals * 2,
     () => {
       ctx.beginPath();
-      ctx.lineWidth = 1.2 * u;
-      ctx.arc(0, -R * 0.746, R * 0.028, Math.PI, 0);
+      ctx.lineWidth = 1.1 * u;
+      ctx.arc(0, -R * 0.652, R * 0.026, Math.PI, 0);
       ctx.stroke();
     },
     0.5,
   );
-  circle(R * 0.782, 1.2);
+  circle(R * 0.684, 1.1);
 
-  // ---- outer crown, interleaved with the main ring ----
+  // ---- CROWN — long spikes, most of the outer third of the radius ----
+  // This band is what carries the design. It used to run 0.782R → 0.99R, a
+  // fifth of the radius, and at that length it read as the teeth of a cog
+  // rather than as the outer petals of a mandala. It now runs from 0.684R,
+  // and every spike is filled with fan lines converging on its tip.
   ring(
     petals,
-    (i) => {
-      const m = motifs[(i + 1) % 2];
-      const s = spreadFor(R * 0.782, petals, m === "lotus" ? 0.8 : 0.62);
-      petal(R * 0.782, R * 0.988, s, m, 2.0);
-      petal(R * 0.818, R * 0.945, s * 0.5, m, 1.1);
+    (_i, f) => {
+      const m = sideMotif(f);
+      const s = spreadFor(R * 0.684, petals, m === "lotus" ? 1.15 : 0.62);
+      petal(R * 0.684, R * 0.995, s, m, 2.0);
+      fan(R * 0.684, R * 0.995, s, m === "lotus" ? 3 : 1);
     },
     0.5,
   );
-  ring(petals, () => dot(R * 0.014, -R * 0.805));
+  // short secondary spikes standing in the gaps between the long ones
+  ring(petals, (_i, f) =>
+    petal(R * 0.69, R * 0.828, spreadFor(R * 0.684, petals, 0.4), sideMotif(f), 1.2),
+  );
+  ring(petals, () => dot(R * 0.013, -R * 0.702));
 }
+
+// --- the emboss ---
+// Three passes of the same drawing: a hard shadow down-right, a thin catch of
+// light up-left, then the metal on top. That is what makes the line sit PROUD
+// of the card face instead of printed flat on it. Offsets are in 512-space and
+// scale with MANDALA_PX; they stay small on purpose — a wide offset stops
+// reading as relief and starts reading as a badly registered second copy.
+const EMBOSS: { dx: number; dy: number; ink: string | null; alpha: number }[] = [
+  { dx: 3.0, dy: 3.0, ink: "#000000", alpha: 0.92 },
+  { dx: -2.0, dy: -2.0, ink: "#fff3cf", alpha: 0.32 },
+  { dx: 0, dy: 0, ink: null, alpha: 1 },
+];
 
 function getMandala(id: string) {
   const hit = mandalaCache.get(id);
   if (hit) return hit;
   const spec = MANDALAS[id];
   if (!spec) return null;
+  const half = spec.crop !== "full";
   const c = document.createElement("canvas");
-  c.width = c.height = MANDALA_PX;
+  // A half is baked at half width rather than drawn full and clipped in 3D:
+  // the canvas throws away the invisible side once, here, instead of the GPU
+  // blending a texture that is 50% empty on every frame.
+  c.width = half ? MANDALA_PX / 2 : MANDALA_PX;
+  c.height = MANDALA_PX;
   const ctx = c.getContext("2d");
   if (!ctx) return null;
-  drawMandala(ctx, MANDALA_PX, spec.motifs, spec.petals);
+  // Where the disc's centre lands: the middle of a full canvas, and hard on
+  // the cut edge of a half — crop "right" keeps the right side, so the centre
+  // goes to x 0.
+  const cx = spec.crop === "right" ? 0 : spec.crop === "left" ? MANDALA_PX / 2 : MANDALA_PX / 2;
+  const u = MANDALA_PX / 512;
+  for (const pass of EMBOSS) {
+    ctx.save();
+    ctx.globalAlpha = pass.alpha;
+    ctx.translate(cx + pass.dx * u, MANDALA_PX / 2 + pass.dy * u);
+    drawMandala(ctx, MANDALA_PX, spec.motifs, spec.petals, pass.ink);
+    ctx.restore();
+  }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   mandalaCache.set(id, tex);
   return tex;
 }
 
-/** Turns about a minute and a half per revolution — present, never a spinner. */
-const MANDALA_RPS = 0.045;
-
-function CardMandala({
-  id,
-  size,
-  y,
-  lit,
-  spin,
-}: {
-  id: string;
-  size: number;
-  y: number;
-  lit: boolean;
-  /** +1 / -1 so the pair either side of the flagship turn against each other */
-  spin: number;
-}) {
-  const mesh = useRef<THREE.Mesh>(null);
-  const alive = useChapterAlive();
+function CardMandala({ id, cardW, lit }: { id: string; cardW: number; lit: boolean }) {
   const tex = getMandala(id);
-
-  useFrame((_, delta) => {
-    if (alive && !alive.current) return;
-    if (useExperience.getState().calm) return; // reduced motion: it holds still
-    if (mesh.current) mesh.current.rotation.z += delta * MANDALA_RPS * spin;
-  });
-
-  if (!tex) return null;
+  const spec = MANDALAS[id];
+  if (!tex || !spec) return null;
+  const half = spec.crop !== "full";
+  const pw = half ? MANDALA_D / 2 : MANDALA_D;
+  // A half hangs its cut edge on the card's own edge, so the card is visibly
+  // what crops the disc. That is what makes it read as a fragment of something
+  // bigger rather than as a semicircle someone chose to draw.
+  const x =
+    spec.crop === "right" ? -cardW / 2 + pw / 2 : spec.crop === "left" ? cardW / 2 - pw / 2 : 0;
   return (
-    <mesh ref={mesh} position={[0, y, 0.008]}>
-      <planeGeometry args={[size, size]} />
-      <meshBasicMaterial map={tex} transparent opacity={lit ? 1 : 0.78} depthWrite={false} />
+    <mesh position={[x, MANDALA_Y, 0.008]}>
+      <planeGeometry args={[pw, MANDALA_D]} />
+      <meshBasicMaterial map={tex} transparent opacity={lit ? 1 : 0.82} depthWrite={false} />
     </mesh>
   );
 }
@@ -1350,16 +1445,18 @@ function OfferPanel({
   w,
   h,
   featured = false,
+  prominent = false,
 }: {
   offer: Offer;
   x: number;
   z: number;
   w: number;
   h: number;
+  /** the gateway: gold frame, corner brackets, the only priced object here */
   featured?: boolean;
+  /** the flagship programme: same treatment as its neighbours, set larger */
+  prominent?: boolean;
 }) {
-  /** left card turns one way, right card the other, flagship the slow way */
-  const spin = x === 0 ? 0.6 : x < 0 ? 1 : -1;
   const group = useRef<THREE.Group>(null);
   const alive = useChapterAlive();
   const described = useExperience((s) => s.hover === offer.id);
@@ -1393,22 +1490,20 @@ function OfferPanel({
           position={[0, h / 2, 0.004]}
         />
 
-        {/* The mandala sits under the card's own name, filling the face below
-            it. Sized to the card, so the flagship's is the largest of the
-            three. The gateway gets none — see MANDALAS. */}
-        {!featured && (
-          <CardMandala
-            id={offer.id}
-            size={w * 0.9}
-            y={h - 1.45}
-            lit={described}
-            spin={spin}
-          />
+        {/* All three discs share a diameter and a height off the floor, so the
+            row reads as one composition and the halves read as halves of the
+            whole one between them. The gateway gets none — see MANDALAS. */}
+        {MANDALAS[offer.id] && (
+          <CardMandala id={offer.id} cardW={w} lit={described} />
         )}
 
         {/* Text sits in the UPPER part of every panel on purpose. The scroll
             overlay owns the bottom third of the screen, so anything set low on
-            these panels ends up reading through its scrim. */}
+            these panels ends up reading through its scrim.
+
+            Every maxWidth is derived from the card it is set on. It used to be
+            a pair of constants, and the gateway's 1.9 on a 1.7-wide card is
+            exactly why its own name hung over its frame instead of breaking. */}
         {offer.eyebrow && (
           <Text
             font={INTER}
@@ -1417,22 +1512,32 @@ function OfferPanel({
             color={GOLD}
             position={[0, h - 0.22, 0.012]}
             anchorX="center"
+            maxWidth={w - 0.2}
+            textAlign="center"
           >
             {offer.eyebrow}
           </Text>
         )}
         <Text
           font={FRAUNCES}
-          fontSize={featured ? 0.155 : 0.13}
+          fontSize={featured ? 0.155 : prominent ? 0.15 : 0.13}
           letterSpacing={0.04}
           color={featured ? GOLD_LIGHT : IVORY}
           position={[0, h - (featured ? 0.48 : 0.26), 0.012]}
           anchorX="center"
           anchorY="top"
-          // The gateway's own name may overhang its frame by a hair rather
-          // than break across two lines; the programmes wrap inside theirs.
-          maxWidth={featured ? 1.9 : 1.5}
+          maxWidth={w - 0.3}
           textAlign="center"
+          // Struck into the face rather than printed on it: a dark shadow
+          // thrown down-right off the glyphs, which is the same relief the
+          // mandala under them is drawn with. Percentages are of fontSize, so
+          // this holds at every size on the row.
+          outlineWidth="3%"
+          outlineOffsetX="2%"
+          outlineOffsetY="-2%"
+          outlineBlur="4%"
+          outlineColor="#000000"
+          outlineOpacity={0.7}
         >
           {offer.label}
         </Text>
@@ -1441,12 +1546,18 @@ function OfferPanel({
           fontSize={featured ? 0.072 : 0.062}
           letterSpacing={0.13}
           color={featured ? GOLD : "#8a847a"}
-          // clears two wrapped lines of label above it
-          position={[0, h - (featured ? 0.82 : 0.62), 0.012]}
+          // clears two wrapped lines of the label above it at its largest size
+          position={[0, h - (featured ? 0.95 : 0.7), 0.012]}
           anchorX="center"
           anchorY="top"
-          maxWidth={1.9}
+          maxWidth={w - 0.2}
           textAlign="center"
+          outlineWidth="4%"
+          outlineOffsetX="2%"
+          outlineOffsetY="-2%"
+          outlineBlur="5%"
+          outlineColor="#000000"
+          outlineOpacity={0.6}
         >
           {offer.sub}
         </Text>
@@ -1471,6 +1582,7 @@ export function Decision() {
             z={PILLAR_Z}
             w={PILLAR_W[i]}
             h={PILLAR_H[i]}
+            prominent={i === 1}
           />
         ))}
         <pointLight
