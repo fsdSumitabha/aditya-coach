@@ -43,11 +43,18 @@ export type Fact = {
 };
 
 export const FACTS: Record<string, Fact> = {
+  // Both figures read from docs/aditya_personal_story.md and
+  // docs/aditya_journey.md — his own words, kept as close to verbatim as a
+  // hover card allows. The joins between his lines are mine. [review]
+  //
+  // The two titles are a matched pair and should stay one: the before is the
+  // back of the room, the after is walking into any room and belonging there.
+  // That contrast IS the scene. Do not rewrite one without the other.
   "man-before": {
     id: "man-before",
     eyebrow: "The starting point",
-    title: "100kg. Zero confidence.",
-    body: "This was me. 100kg. Zero confidence. The decision to change was the hardest part. Everything else followed.",
+    title: "The kid at the back of every room.",
+    body: "I was sixteen when I lost my father. That was the day I made a silent decision — I would figure this out myself. I started with the only thing I could control: my body. At my heaviest, close to 100 kilograms.",
     attribution: "— Aditya, before coaching",
     // Framed on the panel, not on the figure that used to stand here: sat on
     // the panel's own normal 3.6 units out, aiming 0.35 to its right so the
@@ -59,8 +66,8 @@ export const FACTS: Record<string, Fact> = {
   "man-after": {
     id: "man-after",
     eyebrow: "The rebuild",
-    title: "Rebuilt from the ground up.",
-    body: "I am not a celebrity trainer. I am not a gym influencer. I am someone who rebuilt himself completely from the ground up. From 100kg with zero confidence to coaching some of the most successful men in Kolkata. I did not just change how I looked — I changed how I show up." /* [review] final line added per direction doc §7 */,
+    title: "The man who walks in and belongs there.",
+    body: "Eight years of testing every method on myself before it ever reached a client. The body transformation was the easy part. The harder work was becoming the man who could walk into any room and belong there — from the kid who could not make eye contact to coaching some of the most successful men in Kolkata. Every single thing I teach has been earned, not learned." /* [review] — aditya_personal_story.md + aditya_journey.md */,
     cta: { label: "My story →", href: "/about" },
     cam: [1.07, 1.5, -12.5],
     look: [1.85, 1.5, -16],
@@ -239,12 +246,20 @@ export const OFFERS: { gate: Offer; pillars: Offer[] } = {
 // ---- THE COMPLETE REBUILD — the five slabs that stack (his framework, §6) --
 // `w` and `d` are the slab's width and depth in world units, not copy: they
 // taper so the stack reads as a pyramid with lifestyle carrying everything.
+//
+// The taper is 0.45 per layer, not the 0.6 it used to be. PERFORMANCE is the
+// longest word in the set and it sits on the second-narrowest slab, so a
+// steeper taper ran it off the front of its own face. The base stays 4.0 —
+// the stack's footprint and its framing are unchanged — and only the upper
+// layers widen, which is enough for every label to set at the same size.
+// If a longer word than PERFORMANCE (11 characters) is ever added here,
+// widen from the top down rather than letting faceLayout shrink it.
 export const REBUILD_STEPS = [
   { id: "order-1", num: "01", label: "LIFESTYLE", w: 4.0, d: 2.6 },
-  { id: "order-2", num: "02", label: "BODY", w: 3.4, d: 2.25 },
-  { id: "order-3", num: "03", label: "NUTRITION", w: 2.8, d: 1.9 },
-  { id: "order-4", num: "04", label: "PERFORMANCE", w: 2.2, d: 1.55 },
-  { id: "order-5", num: "05", label: "PRESENCE", w: 1.6, d: 1.2 },
+  { id: "order-2", num: "02", label: "BODY", w: 3.55, d: 2.35 },
+  { id: "order-3", num: "03", label: "NUTRITION", w: 3.1, d: 2.1 },
+  { id: "order-4", num: "04", label: "PERFORMANCE", w: 2.65, d: 1.85 },
+  { id: "order-5", num: "05", label: "PRESENCE", w: 2.2, d: 1.6 },
 ];
 
 // ---- One-off labels rendered inside the canvas or over it ----

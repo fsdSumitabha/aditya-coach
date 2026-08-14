@@ -701,10 +701,42 @@ export function TheMan() {
 const SLABS = REBUILD_STEPS;
 const SLAB_H = 0.48;
 
+// --- Face layout: the numeral sits in a left gutter, the label takes the rest.
+//
+// These used to be two fixed x positions, which only worked on the wide slabs.
+// The stack tapers hard — PERFORMANCE is set on a 2.2-wide face and PRESENCE on
+// a 1.6 — so at the top the numeral and the word ran straight into each other
+// with no air between them. Deriving both from the room each face actually has
+// keeps a guaranteed gap, and means a longer word in REBUILD_STEPS re-flows
+// instead of colliding.
+const NUM_SIZE = 0.16;
+const LABEL_SIZE = 0.185; // design size; only ever shrinks from here
+const LABEL_TRACK = 0.12; // letterSpacing, em
+// Fraunces uppercase advance, measured off a render: ~0.75em. Worth keeping
+// slightly generous — the clamp below is the only thing stopping a label
+// running off the front of its slab, and it can only do that if this is not
+// an under-estimate.
+const ADV = 0.75;
+const NUM_INSET = 0.22; // numeral's left margin on the face
+const TEXT_GAP = 0.18; // the air between numeral and label
+const FACE_EDGE = 0.14; // right margin
+
+function faceLayout(w: number, label: string) {
+  const numX = -w / 2 + NUM_INSET;
+  const start = numX + 2 * NUM_SIZE * ADV + TEXT_GAP; // earliest the label may begin
+  const room = w / 2 - FACE_EDGE - start;
+  const per = ADV + LABEL_TRACK;
+  const labelSize = Math.min(LABEL_SIZE, room / (label.length * per));
+  const labelW = label.length * per * labelSize;
+  // centre whatever is left over, so short words still sit near the middle
+  return { numX, labelSize, labelX: start + Math.max(0, (room - labelW) / 2) };
+}
+
 function Slab({ index }: { index: number }) {
   const group = useRef<THREE.Group>(null);
   const s = SLABS[index];
   const finalY = SLAB_H / 2 + index * (SLAB_H + 0.06);
+  const face = faceLayout(s.w, s.label);
   const side = index % 2 === 0 ? 1 : -1;
   const alive = useChapterAlive();
   const described = useExperience((st) => st.hover === s.id);
@@ -751,22 +783,22 @@ function Slab({ index }: { index: number }) {
       </mesh>
       <Text
         font={FRAUNCES}
-        fontSize={0.185}
-        letterSpacing={0.12}
+        fontSize={face.labelSize}
+        letterSpacing={LABEL_TRACK}
         color={IVORY}
-        anchorX="center"
+        anchorX="left"
         anchorY="middle"
-        position={[0.14, 0, s.d / 2 + 0.012]}
+        position={[face.labelX, 0, s.d / 2 + 0.012]}
       >
         {s.label}
       </Text>
       <Text
         font={FRAUNCES}
-        fontSize={0.16}
+        fontSize={NUM_SIZE}
         color={GOLD}
-        anchorX="center"
+        anchorX="left"
         anchorY="middle"
-        position={[-s.w / 2 + 0.32, 0, s.d / 2 + 0.012]}
+        position={[face.numX, 0, s.d / 2 + 0.012]}
       >
         {s.num}
       </Text>

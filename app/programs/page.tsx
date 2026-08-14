@@ -255,8 +255,6 @@ export default function ProgramsPage() {
                 />
             </div>
 
-            <WhoThisIsFor />
-
             {/* ============ 2. THE OFFER — AUDIT BAND + THREE PROGRAMS ============ */}
             <section className="bg-base aurora relative overflow-hidden isolate">
                 {/* Ghost watermark — reuses the hero word "Work", decorative, clipped
@@ -669,6 +667,8 @@ export default function ProgramsPage() {
                 </div>
             </section>
 
+            <WhoThisIsFor />
+            
             {/* ============ 4. PRICE-REASSURANCE LINE ============ */}
             <section className="bg-surface-1 border-y border-hairline-soft">
                 <div className="container-site py-12 md:py-16">

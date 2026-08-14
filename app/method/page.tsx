@@ -219,11 +219,6 @@ export default function MethodPage() {
                 Book Your Transformation Audit
               </Link>{/* [review] */}
             </Reveal>
-            <Reveal delayMs={300}>
-              <Link href="/tools" className="btn-outline w-full md:w-auto">
-                Try the free calculator
-              </Link>
-            </Reveal>
           </div>
           <Reveal delayMs={550} className="mt-6">
             <a
