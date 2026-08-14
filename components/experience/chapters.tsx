@@ -1081,12 +1081,230 @@ const PILLAR_Z = -5.0;
 /** left · centre · right, matching the order of OFFERS.pillars */
 const PILLAR_X = [-1.9, 0, 1.9];
 const PILLAR_W = [1.5, 1.7, 1.5];
-// The flagship is 4.6 so its head AND its label clear the 2.4 gateway from
-// thirteen units back on the first beat — that sliver over the gate is the
-// only hint the visitor gets that there is more behind it. The other two are
-// deliberately shorter than the gate, because on their own they are a part of
-// the thing, not the thing.
-const PILLAR_H = [3.0, 4.6, 3.0];
+// Each card is now tall enough to carry its mandala UNDER its name without the
+// ornament dropping into the bottom third of the screen, which the scroll
+// overlay owns. The flagship stays the tallest of the three so its head still
+// shows over the 2.4 gateway on the first beat — that sliver is the only hint
+// the visitor gets that there is more back there.
+const PILLAR_H = [3.4, 4.0, 3.4];
+
+/* ---------- the programme mandalas ---------- */
+
+// Each of the three programme cards carries its own mandala, drawn on a 2D
+// canvas and uploaded as a single texture. Procedural rather than a shipped
+// PNG for three reasons: nothing new to download, the line weight can be tuned
+// for the size these actually render at (~200px on a desktop, ~100px on a
+// phone), and the flagship's mandala can be built from the OTHER TWO cards'
+// motifs — Complete Transformation alternates the lotus of Lifestyle Coaching
+// with the leaf of Personality & Presence in the same ring, because it is the
+// two of them together. That is the whole idea, drawn.
+//
+// The gateway deliberately has none. It is not one of the three.
+
+type Motif = "lotus" | "leaf";
+
+/** id → [inner-ring motif, outer-ring motif], petal count */
+const MANDALAS: Record<string, { motifs: [Motif, Motif]; petals: number }> = {
+  "offer-lifestyle": { motifs: ["lotus", "lotus"], petals: 12 },
+  "offer-complete": { motifs: ["lotus", "leaf"], petals: 16 },
+  "offer-presence": { motifs: ["leaf", "leaf"], petals: 14 },
+};
+
+const MANDALA_PX = 512;
+const mandalaCache = new Map<string, THREE.Texture>();
+
+function drawMandala(
+  ctx: CanvasRenderingContext2D,
+  size: number,
+  motifs: [Motif, Motif],
+  petals: number,
+) {
+  const R = size / 2;
+  const u = size / 512; // stroke widths are authored at 512 and scale from there
+  ctx.translate(R, R);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = GOLD;
+  ctx.fillStyle = GOLD;
+
+  const ring = (n: number, fn: (i: number) => void, offset = 0) => {
+    for (let i = 0; i < n; i++) {
+      ctx.save();
+      ctx.rotate(((i + offset) / n) * Math.PI * 2);
+      fn(i);
+      ctx.restore();
+    }
+  };
+
+  const circle = (r: number, lw: number, color = GOLD) => {
+    ctx.beginPath();
+    ctx.lineWidth = lw * u;
+    ctx.strokeStyle = color;
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = GOLD;
+  };
+
+  const dot = (r: number, y: number) => {
+    ctx.beginPath();
+    ctx.arc(0, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  };
+
+  /**
+   * Half-width at the base, derived from the arc a petal is allowed to occupy
+   * at radius `a` when `n` of them share the circle. Petals sized this way sit
+   * shoulder to shoulder instead of leaving a wheel's worth of gap between
+   * them — that difference is most of what separates a mandala from a cog.
+   */
+  const spreadFor = (a: number, n: number, k: number) => a * Math.tan(Math.PI / n) * k;
+
+  /** one petal pointing at 12 o'clock, from radius a out to radius b */
+  const petal = (a: number, b: number, s: number, motif: Motif, lw: number) => {
+    const L = b - a;
+    ctx.beginPath();
+    ctx.lineWidth = lw * u;
+    ctx.moveTo(0, -a);
+    if (motif === "lotus") {
+      // wide shoulders closing to a soft point — the flower
+      ctx.bezierCurveTo(s, -(a + L * 0.52), s * 0.32, -b, 0, -b);
+      ctx.bezierCurveTo(-s * 0.32, -b, -s, -(a + L * 0.52), 0, -a);
+    } else {
+      // narrow, sharp at both ends — the leaf
+      ctx.bezierCurveTo(s, -(a + L * 0.3), s, -(a + L * 0.72), 0, -b);
+      ctx.bezierCurveTo(-s, -(a + L * 0.72), -s, -(a + L * 0.3), 0, -a);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  };
+
+  /** the motif plus the detail that tells the two apart at a glance */
+  const petalDetailed = (a: number, b: number, n: number, motif: Motif, lw: number) => {
+    const L = b - a;
+    const s = spreadFor(a, n, motif === "lotus" ? 1.12 : 0.8);
+    petal(a, b, s, motif, lw);
+    petal(a + L * 0.16, b - L * 0.2, s * 0.55, motif, lw * 0.62);
+    if (motif === "lotus") {
+      dot(L * 0.055, -(a + L * 0.3));
+    } else {
+      ctx.beginPath();
+      ctx.lineWidth = lw * 0.55 * u;
+      ctx.moveTo(0, -(a + L * 0.18));
+      ctx.lineTo(0, -(b - L * 0.22));
+      ctx.stroke();
+    }
+  };
+
+  // ---- centre ----
+  dot(R * 0.02, 0);
+  ctx.strokeStyle = GOLD_LIGHT;
+  ring(8, () => petal(R * 0.042, R * 0.165, spreadFor(R * 0.042, 8, 3.4), "lotus", 1.5));
+  ctx.strokeStyle = GOLD;
+  circle(R * 0.178, 1.1, GOLD_LIGHT);
+  ring(8, () => petal(R * 0.182, R * 0.275, spreadFor(R * 0.182, 8, 1.15), "leaf", 1.3), 0.5);
+  circle(R * 0.295, 1.5);
+  circle(R * 0.318, 0.9);
+
+  // ---- bead ring ----
+  ring(28, () => dot(R * 0.0105, -R * 0.34));
+  circle(R * 0.362, 0.9);
+
+  // ---- ray band ----
+  ring(petals * 3, () => {
+    ctx.beginPath();
+    ctx.lineWidth = 1.1 * u;
+    ctx.moveTo(0, -R * 0.372);
+    ctx.lineTo(0, -R * 0.408);
+    ctx.stroke();
+  });
+  circle(R * 0.418, 1.6);
+
+  // ---- MAIN RING — the card's identity ----
+  ring(petals, (i) => petalDetailed(R * 0.428, R * 0.69, petals, motifs[i % 2], 2.2));
+  circle(R * 0.705, 1.9);
+  circle(R * 0.732, 0.9);
+
+  // ---- scalloped collar ----
+  // The arc radius is the BAND it has to live in (0.732R → 0.782R), not the
+  // gap between neighbours: sized to the gap it swells straight through the
+  // crown outside it.
+  ring(
+    petals * 2,
+    () => {
+      ctx.beginPath();
+      ctx.lineWidth = 1.2 * u;
+      ctx.arc(0, -R * 0.746, R * 0.028, Math.PI, 0);
+      ctx.stroke();
+    },
+    0.5,
+  );
+  circle(R * 0.782, 1.2);
+
+  // ---- outer crown, interleaved with the main ring ----
+  ring(
+    petals,
+    (i) => {
+      const m = motifs[(i + 1) % 2];
+      const s = spreadFor(R * 0.782, petals, m === "lotus" ? 0.8 : 0.62);
+      petal(R * 0.782, R * 0.988, s, m, 2.0);
+      petal(R * 0.818, R * 0.945, s * 0.5, m, 1.1);
+    },
+    0.5,
+  );
+  ring(petals, () => dot(R * 0.014, -R * 0.805));
+}
+
+function getMandala(id: string) {
+  const hit = mandalaCache.get(id);
+  if (hit) return hit;
+  const spec = MANDALAS[id];
+  if (!spec) return null;
+  const c = document.createElement("canvas");
+  c.width = c.height = MANDALA_PX;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+  drawMandala(ctx, MANDALA_PX, spec.motifs, spec.petals);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  mandalaCache.set(id, tex);
+  return tex;
+}
+
+/** Turns about a minute and a half per revolution — present, never a spinner. */
+const MANDALA_RPS = 0.045;
+
+function CardMandala({
+  id,
+  size,
+  y,
+  lit,
+  spin,
+}: {
+  id: string;
+  size: number;
+  y: number;
+  lit: boolean;
+  /** +1 / -1 so the pair either side of the flagship turn against each other */
+  spin: number;
+}) {
+  const mesh = useRef<THREE.Mesh>(null);
+  const alive = useChapterAlive();
+  const tex = getMandala(id);
+
+  useFrame((_, delta) => {
+    if (alive && !alive.current) return;
+    if (useExperience.getState().calm) return; // reduced motion: it holds still
+    if (mesh.current) mesh.current.rotation.z += delta * MANDALA_RPS * spin;
+  });
+
+  if (!tex) return null;
+  return (
+    <mesh ref={mesh} position={[0, y, 0.008]}>
+      <planeGeometry args={[size, size]} />
+      <meshBasicMaterial map={tex} transparent opacity={lit ? 1 : 0.78} depthWrite={false} />
+    </mesh>
+  );
+}
 
 /**
  * One standing panel — the gateway or a programme. A flat quad rather than a
@@ -1108,6 +1326,8 @@ function OfferPanel({
   h: number;
   featured?: boolean;
 }) {
+  /** left card turns one way, right card the other, flagship the slow way */
+  const spin = x === 0 ? 0.6 : x < 0 ? 1 : -1;
   const group = useRef<THREE.Group>(null);
   const alive = useChapterAlive();
   const described = useExperience((s) => s.hover === offer.id);
@@ -1140,6 +1360,19 @@ function OfferPanel({
           material={getFrameMaterial(line)}
           position={[0, h / 2, 0.004]}
         />
+
+        {/* The mandala sits under the card's own name, filling the face below
+            it. Sized to the card, so the flagship's is the largest of the
+            three. The gateway gets none — see MANDALAS. */}
+        {!featured && (
+          <CardMandala
+            id={offer.id}
+            size={w * 0.9}
+            y={h - 1.45}
+            lit={described}
+            spin={spin}
+          />
+        )}
 
         {/* Text sits in the UPPER part of every panel on purpose. The scroll
             overlay owns the bottom third of the screen, so anything set low on

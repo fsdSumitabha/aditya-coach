@@ -162,32 +162,11 @@ export default function JourneySection() {
             transformed enough of my own life to know with complete confidence
             that what I was doing worked.
           </Reveal>
-          <Reveal as="p" index={2} className="reveal-blur type-lead text-primary mt-6 leading-[1.7]">
-            And that other men needed it.
-          </Reveal>
-          <Reveal as="p" index={3} className="reveal-blur type-body text-secondary mt-6 leading-[1.8]">
-            Not just the men trying to lose weight. Not just the men trying to
-            build muscle.
-          </Reveal>
         </div>
 
-        {/* ---- Who those men are — indented, gold-ruled, not carded ---- */}
-        <div className="mt-10 grid max-w-4xl gap-8 nav:grid-cols-2 nav:gap-10">
-          {THE_TWO_MEN.map((man, i) => (
-            <Reveal
-              key={man}
-              index={i}
-              className={i === 0 ? "reveal-left" : "reveal-right"}
-            >
-              <p className="type-body text-primary border-l border-hairline-gold pl-6 leading-[1.8]">
-                {man}
-              </p>
-            </Reveal>
-          ))}
-        </div>
 
         {/* ---- The ledger: the two spans of time ---- */}
-        <div className="mt-14 grid max-w-3xl gap-6 border-y border-hairline-soft py-8 sm:grid-cols-2">
+        <div className="mt-6 grid max-w-3xl gap-6 border-y border-hairline-soft py-4 sm:grid-cols-1">
           {LEDGER.map((line, i) => (
             <Reveal key={line} index={i}>
               <p className="font-display text-[clamp(1.15rem,2.2vw,1.5rem)] leading-snug text-primary">

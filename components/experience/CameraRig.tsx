@@ -45,7 +45,7 @@ const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // gate is a solid panel on the centre line, so there is no way past it at
   // eye level, and a camera that clipped through it would swell it to fill
   // the screen and then cull it away in one frame.
-  { at: 1, p: v(0, 4.4, -65.5), t: v(0, 2.0, -75) },
+  { at: 1, p: v(0, 4.4, -65.5), t: v(0, 1.4, -75) },
 ];
 
 // Portrait art direction: phones lose ~60% of the horizontal frustum, so the
@@ -69,7 +69,7 @@ const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // ±2.78 at this depth, so the camera cannot come any closer without cutting
   // the outer two off. The extra height is what gets the gateway out of the
   // way instead.
-  { p: v(0, 5.6, -64.0), t: v(0, 2.0, -75) },
+  { p: v(0, 5.6, -64.0), t: v(0, 1.4, -75) },
 ];
 
 /** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */
