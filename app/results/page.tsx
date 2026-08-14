@@ -398,58 +398,13 @@ export default function ResultsPage() {
     <>
       <JsonLd data={breadcrumbSchema} />
 
-      {/* §3.1 HERO — Real Men. Real Results. */}
-      <section className="bg-void aurora grain relative overflow-hidden border-b border-hairline-soft">
-        {/* Full-viewport gallery entrance — the wall of proof deserves a lobby */}
-        <div className="container-site relative z-10 flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center py-16 text-center">
-          <div className="mx-auto max-w-[860px]">
-            <div className="mb-6 flex items-center justify-center gap-4">
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
-              <p className="eyebrow">
-                PROOF{/* [review] optional eyebrow — omit if it competes with the H1 */}
-              </p>
-              <span aria-hidden="true" className="thread-h sd-draw h-px w-12" />
-            </div>
-            {/* Hero H1 is NEVER animated (LCP rule) — paints at final state frame 1 */}
-            <h1 className="font-display text-[clamp(2.8rem,6.5vw,5rem)] font-medium leading-[1.02] tracking-[-0.03em] text-primary">
-              Real Men. Real Results.
-            </h1>
-            <Reveal
-              as="p"
-              delayMs={60}
-              className="type-lead mx-auto mt-6 max-w-[52ch] text-secondary"
-            >
-              No filters. No shortcuts. Just discipline and the right guidance.
-            </Reveal>
-          </div>
-
-          {/* quiet scroll cue at the lobby's base */}
-          <Reveal
-            delayMs={500}
-            className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2"
-          >
-            <div
-              aria-hidden="true"
-              className="flex flex-col items-center gap-2 motion-safe:animate-[wa-breathe_2.4s_ease-in-out_infinite]"
-            >
-              <span className="type-caption tracking-[0.24em] text-muted">
-                THE WALL IS BELOW{/* [review] */}
-              </span>
-              <span className="block h-9 w-px bg-gradient-to-b from-[var(--gold-500)] to-transparent" />
-            </div>
-          </Reveal>
-          {/* No hero CTA — the gallery is the proof; conversion lives at the
-              bottom. Persistent header [Book] gold button covers intent. */}
-        </div>
-      </section>
-
       {/* Decorative ticker directly under the hero — verbatim page phrase,
           aria-hidden internally by <Marquee>; stitched down by a gold thread. */}
       <section className="bg-void">
         <Marquee
           items={["Real Men. Real Results."]}
           speedS={38}
-          className="py-6 md:py-8"
+          className="py-3 md:py-4"
         />
         <div className="container-site">
           <div className="thread-h sd-draw" aria-hidden="true" />

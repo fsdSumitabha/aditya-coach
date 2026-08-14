@@ -194,7 +194,7 @@ export default function FoundationStack() {
           See the coaching that builds this →{/* [review] */}
         </Link>
       </div>
-      <div className="mt-4 grid gap-x-8 gap-y-3 border-t border-hairline-soft pt-4 md:mt-5 md:grid-cols-3 md:pt-5">
+      <div className="mt-4 grid gap-x-8 gap-y-3 border-t border-hairline-soft pt-4 md:grid-cols-3">
         {tier.depth.map((d) => (
           <p key={d.lead} className="type-small text-secondary">
             <strong className="font-semibold text-primary">{d.lead}</strong>{" "}
@@ -306,7 +306,7 @@ export default function FoundationStack() {
                     }}
                   >
                     <div
-                      className="flex items-center gap-3 rounded-md border border-hairline-soft px-4 py-3 text-left shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] md:gap-5 md:px-6 md:py-3.5"
+                      className="@container flex items-center gap-4 rounded-md border border-hairline-soft px-4 py-2.5 text-left shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] md:gap-8 md:px-7 md:py-3"
                       style={{
                         background: t.bg,
                         borderLeft: `3px solid ${t.edge}`,
@@ -316,13 +316,20 @@ export default function FoundationStack() {
                             : undefined,
                       }}
                     >
-                      <span className="type-caption shrink-0 tabular-nums text-gold-500">
+                      <span className="type-caption shrink-0 tabular-nums text-muted">
                         {t.num}
                       </span>
-                      <span className="font-display min-w-0 truncate text-[0.9375rem] tracking-[0.08em] text-primary md:text-lg">
+                      {/* Metal, not paint: the gradient catches light on hover
+                          via filter only — no repaint of the fill itself. */}
+                      <span
+                        className="text-gold-grad font-display min-w-0 truncate text-[1.0625rem] font-semibold tracking-[0.08em] transition-[filter] duration-300 group-hover:[filter:brightness(1.28)_drop-shadow(0_0_14px_rgba(201,162,75,0.45))] group-focus-visible:[filter:brightness(1.28)_drop-shadow(0_0_14px_rgba(201,162,75,0.45))] md:text-[1.625rem]"
+                      >
                         {t.name}
                       </span>
-                      <span className="type-caption hidden truncate text-muted md:inline">
+                      {/* Dropped on the narrow lower bands rather than left to
+                          squeeze the name — the label is the least important
+                          thing in the row and 04/05 have no width to spare. */}
+                      <span className="type-caption hidden truncate text-muted @xl:inline">
                         {t.label}
                       </span>
                       {/* the minute arrow: this band opens something */}
@@ -359,7 +366,7 @@ export default function FoundationStack() {
           {/* ---- detail band: reserved height, crossfades on hover ---- */}
           <div
             id="foundation-detail"
-            className="relative mt-5 hidden min-h-[210px] md:mt-6 md:block"
+            className="relative mt-4 hidden min-h-[176px] md:mt-5 md:block"
           >
             <div
               aria-hidden={active !== null}
