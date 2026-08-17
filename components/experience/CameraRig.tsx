@@ -33,12 +33,24 @@ const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // path visible around it.
   { at: 3 / 6, p: v(0, 2.5, -26.2), t: v(0, 1.35, -34) }, // front-on: the stack assembled
   { at: 4 / 6, p: v(2.8, 1.9, -44.5), t: v(-0.6, 1.8, -52) }, // sweep the proof gallery
-  { at: 5 / 6, p: v(-2.6, 2.0, -57.0), t: v(0.3, 1.4, -70) }, // approach the offers
-  // --- The final chapter is now TWO beats, not one. ---
+  // THE GALLERY → GATEWAY RUN. Originally 0.667 → 0.885: against Home3D's
+  // travel of 6.2 screen-heights (TRACK_VH 7.2 minus the sticky viewport) that
+  // is 1.35 screens of scrolling for one camera move. It now spans 0.0933,
+  // about SIX TENTHS of a screen — deliberately under the one screen asked for,
+  // because the dolly is exponentially damped and lags a fast scroll by roughly
+  // velocity/lambda, so the felt distance always runs longer than the stops.
+  // See the lambda note below; that is the other half of this fix.
+  //
+  // Everything keyed off the crossing point moved with these: CHAPTERS.proof
+  // now closes at 0.70 and decision opens at 0.735, and the gallery's own
+  // button closes by 0.672 because the dolly reaches the proof panels at
+  // ≈0.694 rather than ≈0.75.
+  { at: 0.712, p: v(-2.6, 2.0, -57.0), t: v(0.3, 1.4, -70) }, // approach the offers
+  // --- The final chapter is TWO beats, not one. ---
   // BEAT ONE — the gateway, front and centre, with the three programmes
   // standing well behind it at z -75. Only the flagship column is tall enough
   // to show over the gate from here; that is the hint.
-  { at: 0.885, p: v(0, 1.95, -62.0), t: v(0, 1.25, -70) },
+  { at: 0.76, p: v(0, 1.95, -62.0), t: v(0, 1.25, -70) },
   // BEAT TWO — keep scrolling and the camera RISES and carries on over the
   // gateway, which drops out of the bottom of the frame, leaving the three
   // programmes filling it. Going over rather than through is deliberate: the
@@ -140,7 +152,17 @@ export default function CameraRig() {
     }
 
     // -- 2. damp toward it (slower while focusing for a cinematic settle) --
-    const lambda = focus ? 2.4 : 3.2;
+    //
+    // THE DOLLY LAMBDA IS THE SINGLE BIGGEST LEVER ON HOW LONG THE JOURNEY
+    // FEELS, and it is why shortening the stops alone did not fix it. An
+    // exponential damper trails a moving target by about velocity/lambda, so
+    // at 3.2 the camera was still finishing a move roughly a third of a screen
+    // after the scroll that caused it had stopped — which reads as "I have to
+    // keep scrolling", not as "the camera is easing". At 4.6 it arrives with
+    // the scroll and still eases rather than snapping.
+    // Lower it back toward 3.2 if the movement starts to feel mechanical; this
+    // one number affects every chapter, not just the last two.
+    const lambda = focus ? 2.4 : 4.6;
     const k = 1 - Math.exp(-lambda * delta);
     pos.current.lerp(tmpP.current, k);
     look.current.lerp(tmpT.current, k);

@@ -286,7 +286,26 @@ export const OVERLAY_CTAS = {
 };
 
 // Chapter overlay copy + progress windows on the journey [0..1]
-export const CHAPTERS = [
+export type Chapter = {
+  id: string;
+  /** the stretch of the journey this chapter owns — drives the side rail too */
+  range: readonly [number, number];
+  eyebrow: string;
+  title: string;
+  sub: string;
+  /**
+   * Hold the eyebrow/title/sub back until this point, while the chapter's
+   * BUTTONS stay up for its whole range. Only the decision chapter uses it:
+   * its copy used to appear the moment the chapter opened, which laid a
+   * two-line headline straight across the gateway card — the one object the
+   * visitor is there to read. Now the card gets the screen to itself and the
+   * headline arrives once the camera has risen and the three programmes are
+   * in frame, where there is empty floor beneath them to sit on.
+   */
+  copyFrom?: number;
+};
+
+export const CHAPTERS: Chapter[] = [
   {
     id: "arrival",
     range: [0, 0.1] as const,
@@ -310,14 +329,17 @@ export const CHAPTERS = [
   },
   {
     id: "proof",
-    range: [0.58, 0.72] as const,
+    // Closes as the dolly reaches the frames at ≈0.694 and flies through them.
+    range: [0.58, 0.7] as const,
     eyebrow: "THE PROOF" /* [review] */,
     title: "Real Men. Real Results.",
     sub: "No filters. No shortcuts. Just discipline and the right guidance.",
   },
   {
     id: "decision",
-    range: [0.8, 1] as const,
+    // Opens as the gateway lands at 0.76 — see the stops in CameraRig.
+    range: [0.735, 1] as const,
+    copyFrom: 0.9,
     eyebrow: "ONE DECISION" /* [review] */,
     title: "The man you want to become is waiting for one decision.",
     sub: "There is no point in having a six-pack if you still look at your shoes when you enter a room." /* his line, verbatim §1 */,

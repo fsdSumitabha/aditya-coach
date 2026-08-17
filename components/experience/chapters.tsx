@@ -3,6 +3,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type MutableRefObject,
@@ -164,6 +165,13 @@ function SceneButton({
 const ABOUT_CTA = FACTS["man-after"].cta ?? { label: "My story →", href: "/about" };
 const METHOD_CTA =
   FACTS["order-1"].cta ?? { label: "See the full method →", href: "/method" };
+// The proof gallery's button is deliberately NOT per-client. It used to carry
+// the current set's own slug, which meant its destination changed under the
+// cursor every second — and a link whose target moves while you are deciding
+// whether to press it is a bad link however well it is labelled. One fixed
+// door into /results; the individual stories are all reachable from there.
+const PROOF_CTA =
+  FACTS["proof-client"].cta ?? { label: "See all transformations →", href: "/results" };
 
 /* ---------- shared: pointer-to-describe ---------- */
 
@@ -968,11 +976,14 @@ export function Proof() {
   // moment he decides to click and the moment he does.
   const held = useRef(false);
 
+  // Closes before the dolly reaches z -52 and flies through these frames. That
+  // crossing moved to ≈0.694 when the run to the gateway was shortened, so both
+  // ends came back with it.
   const shown = useExperience(
-    (s) => s.progress > CHAPTERS[3].range[0] && s.progress < 0.7,
+    (s) => s.progress > CHAPTERS[3].range[0] && s.progress < 0.672,
   );
   const mounted = useExperience(
-    (s) => s.progress > CHAPTERS[3].range[0] - 0.05 && s.progress < 0.75,
+    (s) => s.progress > CHAPTERS[3].range[0] - 0.05 && s.progress < 0.7,
   );
 
   // Eight photographs, warmed once the gallery is within range rather than at
@@ -1011,7 +1022,6 @@ export function Proof() {
   });
 
   const set = CLIENT_SETS[pair.cur];
-  const href = set.href;
 
   return (
     <ChapterAlive.Provider value={alive}>
@@ -1032,8 +1042,9 @@ export function Proof() {
         />
         <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
 
-        {/* In the gap between the frames: who this is, and the way into his
-            story. Out by 0.70 — the dolly crosses this z at progress ≈ 0.75. */}
+        {/* In the gap between the frames: who this is, and the one fixed way
+            through to the stories. Out by 0.70 — the dolly crosses this z at
+            progress ≈ 0.75. */}
         {mounted && (
           <Html
             position={[0, PROOF_Y, 0.3]}
@@ -1044,33 +1055,31 @@ export function Proof() {
           >
             <div className="flex flex-col items-center gap-2 text-center">
               <span className={EYEBROW}>{set.eyebrow}</span>
-              {href && (
-                <button
-                  type="button"
-                  tabIndex={shown ? 0 : -1}
-                  aria-hidden={!shown}
-                  onClick={() => requestNavigate(href)}
-                  // The hold lives on the button itself, not on the wrapper:
-                  // the wrapper inherits pointer-events:none from <Html> so the
-                  // gap between the frames stays click-through to the canvas.
-                  onPointerEnter={() => {
-                    held.current = true;
-                  }}
-                  onPointerLeave={() => {
-                    held.current = false;
-                  }}
-                  onFocus={() => {
-                    held.current = true;
-                  }}
-                  onBlur={() => {
-                    held.current = false;
-                  }}
-                  className={BTN_SCENE}
-                  style={{ pointerEvents: shown ? "auto" : "none" }}
-                >
-                  {set.linkLabel}
-                </button>
-              )}
+              <button
+                type="button"
+                tabIndex={shown ? 0 : -1}
+                aria-hidden={!shown}
+                onClick={() => requestNavigate(PROOF_CTA.href)}
+                // The hold lives on the button itself, not on the wrapper: the
+                // wrapper inherits pointer-events:none from <Html> so the gap
+                // between the frames stays click-through to the canvas.
+                onPointerEnter={() => {
+                  held.current = true;
+                }}
+                onPointerLeave={() => {
+                  held.current = false;
+                }}
+                onFocus={() => {
+                  held.current = true;
+                }}
+                onBlur={() => {
+                  held.current = false;
+                }}
+                className={BTN_SCENE}
+                style={{ pointerEvents: shown ? "auto" : "none" }}
+              >
+                {PROOF_CTA.label}
+              </button>
             </div>
           </Html>
         )}
@@ -1124,338 +1133,673 @@ const PILLAR_W = [1.5, 2.0, 1.5];
 // the visitor gets that there is more back there.
 const PILLAR_H = [3.4, 4.0, 3.4];
 
-/* ---------- the programme mandalas ---------- */
+/* ---------- the programme cards: a slab, not a quad ---------- */
 
-// Each of the three programme cards carries a mandala, drawn on a 2D canvas
-// and uploaded as one texture. Procedural rather than a shipped PNG so nothing
-// new has to download and the line weight can be tuned for the size these
-// actually render at (~190px on a desktop, ~750 device px on a phone).
+// These were flat planes with a hairline drawn on them, which is why they read
+// as printed rectangles rather than as objects standing in a room: a plane has
+// no edge for the gold light overhead to find. Each is now an extruded rounded
+// rectangle with a chamfer all the way round, so the corners catch and the
+// card has a visible thickness from the raised camera on the last beat.
 //
-// THE WHOLE IDEA IS THE CROP.
-//
-//   Lifestyle Coaching   shows the RIGHT half of a disc, cut off by its own
-//                        left edge. Every petal is a lotus.
-//   Personality &        shows the LEFT half of a disc, cut off by its own
-//   Presence             right edge. Every petal is a leaf.
-//   Complete             shows a WHOLE disc — lotus down its left side, leaf
-//   Transformation       down its right. It is literally the card on its left
-//                        joined to the card on its right.
-//
-// So the two flanking programmes read as fragments of something, and the thing
-// they are fragments of is standing complete between them. That is the offer,
-// drawn: Complete Transformation IS the other two. Nothing here is a badge.
-//
-// Consequence worth knowing before you touch this: NOTHING ROTATES. The split
-// down the flagship is positional — turn it and the lotus no longer sits on
-// the side facing the lotus card, and a half would spin its cut edge into
-// view. Life in this scene comes from the lift and the brighten on hover.
-//
-// The gateway deliberately has none. It is not one of the three.
+// Cost is trivial — a few hundred triangles each, built once and cached — and
+// it is the only geometry in the scene the visitor gets close enough to judge.
+// Corners are SHARP — the radius here is a hair, only so the chamfer does not
+// come to a needle where two edges meet. Approved design (option A) takes its
+// corners from a printed card, and a rounded card was the first thing rejected.
+const CARD_R = 0.02;
+const CARD_D = 0.09; // how far the slab stands proud
+const CARD_BEVEL = 0.022; // the chamfer that catches the light
 
-type Motif = "lotus" | "leaf";
-/** which half of the disc survives the card's edge — `full` keeps all of it */
+function roundedRect(w: number, h: number, r: number) {
+  const s = new THREE.Shape();
+  const x = w / 2;
+  const y = h / 2;
+  const k = Math.min(r, x, y);
+  s.moveTo(-x + k, -y);
+  s.lineTo(x - k, -y);
+  s.quadraticCurveTo(x, -y, x, -y + k);
+  s.lineTo(x, y - k);
+  s.quadraticCurveTo(x, y, x - k, y);
+  s.lineTo(-x + k, y);
+  s.quadraticCurveTo(-x, y, -x, y - k);
+  s.lineTo(-x, -y + k);
+  s.quadraticCurveTo(-x, -y, -x + k, -y);
+  return s;
+}
+
+const cardCache = new Map<string, THREE.ExtrudeGeometry>();
+
+function getCardGeometry(w: number, h: number) {
+  const key = `${w}|${h}`;
+  const hit = cardCache.get(key);
+  if (hit) return hit;
+  // The bevel grows the silhouette OUTWARD by bevelSize, so the shape is
+  // authored inset by that much and the finished slab measures exactly w × h.
+  const g = new THREE.ExtrudeGeometry(
+    roundedRect(w - CARD_BEVEL * 2, h - CARD_BEVEL * 2, CARD_R),
+    {
+      depth: CARD_D,
+      bevelEnabled: true,
+      bevelThickness: CARD_BEVEL,
+      bevelSize: CARD_BEVEL,
+      bevelSegments: 3,
+      curveSegments: 8,
+    },
+  );
+  // Put the front face on z 0 — measured, not assumed, because where the
+  // bevel leaves the front face is an implementation detail of three.js.
+  // Everything mounted on the card (mandala at 0.008, type at 0.012) keeps
+  // its offsets.
+  g.computeBoundingBox();
+  g.translate(0, 0, -(g.boundingBox?.max.z ?? CARD_D));
+  cardCache.set(key, g);
+  return g;
+}
+
+/* ---------- the card face: frame, filigree, arabesque and type, baked ---------- */
+
+// Approved direction, option A: the frame off the reference card — a complete
+// outer rule, an inner rule breaking short of every corner with a small square
+// terminal, heavy filigree on one diagonal and plain brackets on the other —
+// behind it an eight-fold arabesque built entirely from curves.
+//
+// The whole face is ONE canvas texture: rules, filigree, ornament and type.
+//   · Not layered geometry — every element here is a curve, and none of it is
+//     worth triangulating for a card that renders about 315 device pixels wide.
+//   · Not troika text on top — the type has to run through the same gold
+//     gradient as the linework, and troika paints in one flat colour. Canvas
+//     also brings measureText, which retires the hand-tuned advance-width
+//     constant the 3D type needed to guess its own line breaks.
+//
+// THE CROP IS THE ARGUMENT, and it survives the redesign:
+//
+//   Lifestyle Coaching     the RIGHT half of the disc, cut by its own left edge
+//   Personality & Presence the LEFT half of the same disc, cut by its right
+//   Complete Transformation the WHOLE disc
+//
+// The two flanking cards are halves of the disc standing complete between them,
+// so the flagship reads as the other two joined without a badge saying so.
+// Nothing rotates: turn a half and it spins its cut edge into view.
+
+/** which half of the disc survives the card's edge */
 type Crop = "left" | "right" | "full";
 
-/**
- * id → [the motif on the disc's LEFT side, the motif on its RIGHT side],
- * petal count, and the crop. The count is deliberately the same for all three
- * so the rings line up across the row and the halves read as halves of the
- * disc in the middle rather than as three unrelated ornaments.
- */
-const MANDALAS: Record<string, { motifs: [Motif, Motif]; petals: number; crop: Crop }> = {
-  "offer-lifestyle": { motifs: ["lotus", "lotus"], petals: 16, crop: "right" },
-  "offer-complete": { motifs: ["lotus", "leaf"], petals: 16, crop: "full" },
-  "offer-presence": { motifs: ["leaf", "leaf"], petals: 16, crop: "left" },
+const CROP: Record<string, Crop> = {
+  "offer-lifestyle": "right",
+  "offer-complete": "full",
+  "offer-presence": "left",
 };
 
-/** disc diameter and the height its centre sits at, shared by all three */
-const MANDALA_D = 1.72;
-const MANDALA_Y = 1.42;
+// Texture pixels per world unit. The cards land at ~315 device px wide on both
+// a phone and a desktop (different distances, different frustums, same result),
+// so 256 is a ~1.2x oversample — enough that the hairlines hold, low enough
+// that the three faces together stay under about 6MB of VRAM.
+const FACE_PPU = 256;
 
-const MANDALA_PX = 640;
-const mandalaCache = new Map<string, THREE.Texture>();
+const ARABESQUE_D = 1.84; // disc diameter
+const ARABESQUE_Y = 1.5; // its centre, measured up from the card's bottom edge
+
+const GOLD_STOPS: [number, string][] = [
+  [0, "#f7e9bd"],
+  [0.34, "#c9a24b"],
+  [0.56, "#8f6f26"],
+  [0.78, "#d8b96a"],
+  [1, "#f1dfa6"],
+];
+
+/* --- primitives, all authored in world units --- */
 
 /**
- * @param ink  null draws the real gold palette; a colour flattens every stroke
- *             to it, which is how the emboss passes below are drawn.
- * Draws around the CURRENT origin — the caller translates, because the halves
- * put the disc's centre on a canvas edge rather than in the middle.
+ * A logarithmic spiral as a polyline. This is the backbone of every scroll on
+ * the card: the reference's ornament is drawn with a pen, not constructed on a
+ * grid, and a spiral that tightens as it turns is what a pen actually does.
  */
-function drawMandala(
+function spiralTo(
   ctx: CanvasRenderingContext2D,
-  size: number,
-  motifs: [Motif, Motif],
-  petals: number,
-  ink: string | null,
+  cx: number,
+  cy: number,
+  rStart: number,
+  rEnd: number,
+  aStart: number,
+  sweep: number,
+  steps = 44,
 ) {
-  const R = size / 2;
-  const u = size / 512; // stroke widths are authored at 512 and scale from there
-  const GOLD_ = ink ?? GOLD;
-  const LIGHT_ = ink ?? GOLD_LIGHT;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = GOLD_;
-  ctx.fillStyle = GOLD_;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const a = aStart + sweep * t;
+    const r = rStart * Math.pow(rEnd / rStart, t);
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
 
-  /** `f` is the petal's position round the circle, 0..1 clockwise from noon */
-  const ring = (n: number, fn: (i: number, f: number) => void, offset = 0) => {
-    for (let i = 0; i < n; i++) {
-      const f = (i + offset) / n;
+/** a long keeled blade pointing at 12 o'clock, radius a out to b, ±hw wide */
+function bladeTo(
+  ctx: CanvasRenderingContext2D,
+  a: number,
+  b: number,
+  hw: number,
+  bulge = 0.22,
+) {
+  const L = b - a;
+  ctx.beginPath();
+  ctx.moveTo(0, -a);
+  ctx.bezierCurveTo(hw, -(a + L * bulge), hw * 0.5, -(a + L * 0.72), 0, -b);
+  ctx.bezierCurveTo(-hw * 0.5, -(a + L * 0.72), -hw, -(a + L * bulge), 0, -a);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+/* --- the arabesque --- */
+
+function paintArabesque(ctx: CanvasRenderingContext2D, R: number, lw: (n: number) => void) {
+  const ring = (count: number, fn: (i: number) => void, offset = 0) => {
+    for (let i = 0; i < count; i++) {
       ctx.save();
-      ctx.rotate(f * Math.PI * 2);
-      fn(i, f);
+      ctx.rotate(((i + offset) / count) * Math.PI * 2);
+      fn(i);
       ctx.restore();
     }
   };
-
-  /** f < 0.5 is the right side of the disc, f >= 0.5 the left */
-  const sideMotif = (f: number) => motifs[f < 0.5 ? 1 : 0];
-
-  const circle = (r: number, lw: number, color = GOLD_) => {
+  const circle = (r: number, weight: number) => {
+    lw(weight);
     ctx.beginPath();
-    ctx.lineWidth = lw * u;
-    ctx.strokeStyle = color;
     ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = GOLD_;
   };
-
   const dot = (r: number, y: number) => {
     ctx.beginPath();
     ctx.arc(0, y, r, 0, Math.PI * 2);
     ctx.fill();
   };
-
-  /**
-   * Half-width at the base, derived from the arc a petal is allowed to occupy
-   * at radius `a` when `n` of them share the circle. Petals sized this way sit
-   * shoulder to shoulder instead of leaving a wheel's worth of gap between
-   * them — that difference is most of what separates a mandala from a cog.
-   */
-  const spreadFor = (a: number, n: number, k: number) => a * Math.tan(Math.PI / n) * k;
-
-  /** one petal pointing at 12 o'clock, from radius a out to radius b */
-  const petal = (a: number, b: number, s: number, motif: Motif, lw: number) => {
-    const L = b - a;
+  const tick = (a: number, b: number, weight: number) => {
+    lw(weight);
     ctx.beginPath();
-    ctx.lineWidth = lw * u;
     ctx.moveTo(0, -a);
-    if (motif === "lotus") {
-      // Held wide, then closed across a ROUNDED tip rather than drawn to a
-      // point. The blunt tip is doing most of the work: at this size a pointed
-      // lotus and a leaf are the same pointed oval, and the whole design rests
-      // on being able to tell one card's petal from the other's.
-      const t = s * 0.42;
-      ctx.bezierCurveTo(s, -(a + L * 0.34), s * 0.95, -(a + L * 0.72), t, -(b - L * 0.09));
-      ctx.quadraticCurveTo(0, -b, -t, -(b - L * 0.09));
-      ctx.bezierCurveTo(-s * 0.95, -(a + L * 0.72), -s, -(a + L * 0.34), 0, -a);
-    } else {
-      // narrow, sharp at both ends — the leaf
-      ctx.bezierCurveTo(s, -(a + L * 0.28), s, -(a + L * 0.72), 0, -b);
-      ctx.bezierCurveTo(-s, -(a + L * 0.72), -s, -(a + L * 0.28), 0, -a);
-    }
+    ctx.lineTo(0, -b);
+    ctx.stroke();
+  };
+  /** a leaf hanging off a scroll; sx flips it to the other side of the point */
+  const scrollLeaf = (sx: number, x: number, y: number, len: number, wide: number) => {
+    lw(1.1);
+    ctx.beginPath();
+    ctx.moveTo(sx * x, -y);
+    ctx.bezierCurveTo(
+      sx * (x + wide),
+      -(y + len * 0.28),
+      sx * (x + wide * 1.05),
+      -(y + len * 0.8),
+      sx * (x + wide * 0.1),
+      -(y + len),
+    );
+    ctx.bezierCurveTo(
+      sx * (x - wide * 0.15),
+      -(y + len * 0.62),
+      sx * (x - wide * 0.1),
+      -(y + len * 0.3),
+      sx * x,
+      -y,
+    );
     ctx.closePath();
     ctx.stroke();
   };
 
-  /**
-   * Lengthwise fan lines converging on the tip. This is what the outer spikes
-   * of a drawn mandala are filled with, and it is the single detail that most
-   * separates one from a flat outline — a nested outline just reads as a
-   * double border.
-   */
-  const fan = (a: number, b: number, s: number, lines: number) => {
-    const L = b - a;
-    for (let i = 1; i <= lines; i++) {
-      const f = (i / (lines + 1)) * 2 - 1; // -1 … +1 across the petal
-      ctx.beginPath();
-      ctx.lineWidth = 0.85 * u;
-      ctx.moveTo(f * s * 0.6, -(a + L * 0.14));
-      ctx.quadraticCurveTo(f * s * 0.46, -(a + L * 0.62), 0, -(b - L * 0.08));
-      ctx.stroke();
-    }
-  };
-
-  /**
-   * How wide each motif is allowed to be, as a multiple of the arc it owns.
-   * Above 1 the petals overlap their neighbours and interlace; below 1 they
-   * stand apart with daylight between them. The gap between these two numbers
-   * is the ONLY thing making a lotus card look different from a leaf one at
-   * the size these render — the tip curves are far too fine to read from a
-   * scrolling camera. Do not close it.
-   */
-  const SPREAD: Record<Motif, number> = { lotus: 1.35, leaf: 0.68 };
-
-  /** the motif plus the detail that tells the two apart at a glance */
-  const petalDetailed = (a: number, b: number, n: number, motif: Motif, lw: number) => {
-    const L = b - a;
-    const s = spreadFor(a, n, SPREAD[motif]);
-    petal(a, b, s, motif, lw);
-    petal(a + L * 0.16, b - L * 0.2, s * 0.55, motif, lw * 0.62);
-    if (motif === "lotus") {
-      dot(L * 0.055, -(a + L * 0.3));
-    } else {
-      ctx.beginPath();
-      ctx.lineWidth = lw * 0.55 * u;
-      ctx.moveTo(0, -(a + L * 0.18));
-      ctx.lineTo(0, -(b - L * 0.22));
-      ctx.stroke();
-    }
-  };
-
-  // ---- core: fine and dense, so the middle is somewhere to look ----
-  dot(R * 0.026, 0);
-  ctx.strokeStyle = LIGHT_;
-  ring(8, () => petal(R * 0.05, R * 0.135, spreadFor(R * 0.05, 8, 3.2), "lotus", 1.4));
-  ctx.strokeStyle = GOLD_;
-  circle(R * 0.148, 1.0, LIGHT_);
-  ring(12, () => petal(R * 0.152, R * 0.235, spreadFor(R * 0.152, 12, 1.25), "leaf", 1.2), 0.5);
-  circle(R * 0.252, 1.4);
-  circle(R * 0.272, 0.8);
-
-  // ---- bead ring ----
-  ring(24, () => dot(R * 0.0095, -R * 0.292));
-  circle(R * 0.312, 0.8);
-
-  // ---- ray band ----
-  ring(petals * 3, () => {
-    ctx.beginPath();
-    ctx.lineWidth = 1.0 * u;
-    ctx.moveTo(0, -R * 0.322);
-    ctx.lineTo(0, -R * 0.358);
-    ctx.stroke();
+  // --- core ---
+  dot(R * 0.018, 0);
+  lw(1.5);
+  ring(8, () => bladeTo(ctx, R * 0.03, R * 0.098, R * 0.03, 0.4));
+  circle(R * 0.116, 1.1);
+  ring(24, () => tick(R * 0.124, R * 0.158, 0.8));
+  circle(R * 0.168, 1.0);
+  // tendrils mirrored in pairs, so the core reads woven rather than spun
+  lw(1.5);
+  ring(8, () => {
+    spiralTo(ctx, 0, -R * 0.235, R * 0.095, R * 0.008, -0.5, Math.PI * 2.2);
+    spiralTo(ctx, 0, -R * 0.235, R * 0.095, R * 0.008, Math.PI + 0.5, -Math.PI * 2.2);
   });
-  circle(R * 0.372, 1.5);
-
-  // ---- MAIN RING — the card's identity, and the side it faces ----
-  ring(petals, (_i, f) => petalDetailed(R * 0.382, R * 0.6, petals, sideMotif(f), 2.1));
-  circle(R * 0.615, 1.7);
-  circle(R * 0.638, 0.8);
-
-  // ---- scalloped collar ----
-  // The arc radius is the BAND it has to live in (0.638R → 0.684R), not the
-  // gap between neighbours: sized to the gap it swells straight through the
-  // crown outside it.
+  circle(R * 0.298, 1.3);
+  circle(R * 0.316, 0.7);
+  lw(0.9);
   ring(
-    petals * 2,
+    24,
     () => {
       ctx.beginPath();
-      ctx.lineWidth = 1.1 * u;
-      ctx.arc(0, -R * 0.652, R * 0.026, Math.PI, 0);
+      ctx.arc(0, -R * 0.326, R * 0.021, Math.PI, 0);
       ctx.stroke();
     },
     0.5,
   );
-  circle(R * 0.684, 1.1);
 
-  // ---- CROWN — long spikes, most of the outer third of the radius ----
-  // This band is what carries the design. It used to run 0.782R → 0.99R, a
-  // fifth of the radius, and at that length it read as the teeth of a cog
-  // rather than as the outer petals of a mandala. It now runs from 0.684R,
-  // and every spike is filled with fan lines converging on its tip.
+  // --- the short blades in the bays between the points ---
   ring(
-    petals,
-    (_i, f) => {
-      const m = sideMotif(f);
-      const s = spreadFor(R * 0.684, petals, m === "lotus" ? 1.15 : 0.62);
-      petal(R * 0.684, R * 0.995, s, m, 2.0);
-      fan(R * 0.684, R * 0.995, s, m === "lotus" ? 3 : 1);
+    8,
+    () => {
+      lw(1.7);
+      bladeTo(ctx, R * 0.34, R * 0.63, R * 0.09);
+      lw(1.0);
+      bladeTo(ctx, R * 0.39, R * 0.58, R * 0.034);
+      dot(R * 0.012, -R * 0.365);
+      lw(1.2);
+      spiralTo(ctx, R * 0.072, -R * 0.38, R * 0.1, R * 0.01, -1.35, Math.PI * 2.15);
+      spiralTo(ctx, -R * 0.072, -R * 0.38, R * 0.1, R * 0.01, Math.PI + 1.35, -Math.PI * 2.15);
     },
     0.5,
   );
-  // short secondary spikes standing in the gaps between the long ones
-  ring(petals, (_i, f) =>
-    petal(R * 0.69, R * 0.828, spreadFor(R * 0.684, petals, 0.4), sideMotif(f), 1.2),
-  );
-  ring(petals, () => dot(R * 0.013, -R * 0.702));
+
+  // --- the eight long points, each keeled, with scrollwork off its base ---
+  ring(8, () => {
+    lw(2.0);
+    bladeTo(ctx, R * 0.32, R * 0.985, R * 0.155, 0.26);
+    lw(1.1);
+    bladeTo(ctx, R * 0.42, R * 0.9, R * 0.062);
+    tick(R * 0.48, R * 0.86, 0.8);
+    lw(1.6);
+    spiralTo(ctx, R * 0.1, -R * 0.375, R * 0.175, R * 0.014, -1.15, Math.PI * 2.45);
+    spiralTo(ctx, -R * 0.1, -R * 0.375, R * 0.175, R * 0.014, Math.PI + 1.15, -Math.PI * 2.45);
+    scrollLeaf(1, R * 0.235, R * 0.5, R * 0.2, R * 0.085);
+    scrollLeaf(-1, R * 0.235, R * 0.5, R * 0.2, R * 0.085);
+    scrollLeaf(1, R * 0.15, R * 0.72, R * 0.13, R * 0.055);
+    scrollLeaf(-1, R * 0.15, R * 0.72, R * 0.13, R * 0.055);
+    dot(R * 0.014, -R * 0.995);
+  });
 }
 
-// --- the emboss ---
-// Three passes of the same drawing: a hard shadow down-right, a thin catch of
-// light up-left, then the metal on top. That is what makes the line sit PROUD
-// of the card face instead of printed flat on it. Offsets are in 512-space and
-// scale with MANDALA_PX; they stay small on purpose — a wide offset stops
-// reading as relief and starts reading as a badly registered second copy.
-const EMBOSS: { dx: number; dy: number; ink: string | null; alpha: number }[] = [
-  { dx: 3.0, dy: 3.0, ink: "#000000", alpha: 0.92 },
-  { dx: -2.0, dy: -2.0, ink: "#fff3cf", alpha: 0.32 },
-  { dx: 0, dy: 0, ink: null, alpha: 1 },
-];
+/* --- corner filigree, authored for a top-left corner --- */
 
-function getMandala(id: string) {
-  const hit = mandalaCache.get(id);
-  if (hit) return hit;
-  const spec = MANDALAS[id];
-  if (!spec) return null;
-  const half = spec.crop !== "full";
+function paintFiligree(ctx: CanvasRenderingContext2D, L: number, lw: (n: number) => void) {
+  lw(1.5);
+  ctx.beginPath();
+  ctx.moveTo(L, L * 0.09);
+  ctx.bezierCurveTo(L * 0.5, L * 0.07, L * 0.07, L * 0.5, L * 0.09, L);
+  ctx.stroke();
+  lw(1.1);
+  ctx.beginPath();
+  ctx.moveTo(L * 0.86, L * 0.26);
+  ctx.bezierCurveTo(L * 0.5, L * 0.24, L * 0.24, L * 0.5, L * 0.26, L * 0.86);
+  ctx.stroke();
+  lw(1.4);
+  spiralTo(ctx, L * 0.82, L * 0.4, L * 0.16, L * 0.015, -Math.PI / 2, Math.PI * 2.3);
+  spiralTo(ctx, L * 0.4, L * 0.82, L * 0.16, L * 0.015, 0, -Math.PI * 2.3);
+  // the leaf that fills the elbow
+  lw(1.3);
+  ctx.beginPath();
+  ctx.moveTo(L * 0.3, L * 0.3);
+  ctx.bezierCurveTo(L * 0.66, L * 0.26, L * 0.74, L * 0.42, L * 0.48, L * 0.48);
+  ctx.bezierCurveTo(L * 0.42, L * 0.74, L * 0.26, L * 0.66, L * 0.3, L * 0.3);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(L * 0.55, L * 0.55, L * 0.035, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+/* --- option A's frame --- */
+
+const F_OUT = 0.055; // outer rule, inset from the card edge
+const F_IN = 0.115; // inner rule
+const F_GAP = 0.42; // how far short of each corner the inner rule stops
+const F_TERM = 0.02; // the square terminal capping every broken end
+
+function paintFrameA(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  lw: (n: number) => void,
+) {
+  lw(1.6);
+  ctx.strokeRect(F_OUT, F_OUT, w - F_OUT * 2, h - F_OUT * 2);
+
+  // the inner rule, broken short of every corner
+  lw(1.0);
+  const seg = (x1: number, y1: number, x2: number, y2: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  };
+  seg(F_IN + F_GAP, F_IN, w - F_IN - F_GAP, F_IN);
+  seg(F_IN + F_GAP, h - F_IN, w - F_IN - F_GAP, h - F_IN);
+  seg(F_IN, F_IN + F_GAP, F_IN, h - F_IN - F_GAP);
+  seg(w - F_IN, F_IN + F_GAP, w - F_IN, h - F_IN - F_GAP);
+  const t = F_TERM / 2;
+  for (const [x, y] of [
+    [F_IN + F_GAP, F_IN],
+    [w - F_IN - F_GAP, F_IN],
+    [F_IN + F_GAP, h - F_IN],
+    [w - F_IN - F_GAP, h - F_IN],
+    [F_IN, F_IN + F_GAP],
+    [F_IN, h - F_IN - F_GAP],
+    [w - F_IN, F_IN + F_GAP],
+    [w - F_IN, h - F_IN - F_GAP],
+  ]) {
+    ctx.fillRect(x - t, y - t, F_TERM, F_TERM);
+  }
+
+  // Heavy filigree on ONE diagonal and plain brackets on the other. The
+  // asymmetry is the reference's, and it is what stops the card reading as a
+  // certificate: four matching corners would centre it, two do not.
+  const L = Math.min(w, h) * 0.2;
+  const place = (tx: number, ty: number, sx: number, sy: number, fn: () => void) => {
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.scale(sx, sy);
+    fn();
+    ctx.restore();
+  };
+  const filLw = (n: number) => {
+    ctx.lineWidth = (n * L) / 150;
+  };
+  place(w - F_OUT, F_OUT, -1, 1, () => paintFiligree(ctx, L, filLw));
+  place(F_OUT, h - F_OUT, 1, -1, () => paintFiligree(ctx, L, filLw));
+  const b = L * 0.42;
+  const bracket = () => {
+    lw(1.4);
+    ctx.beginPath();
+    ctx.moveTo(b, 0);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(0, b);
+    ctx.stroke();
+  };
+  place(F_OUT + 0.025, F_OUT + 0.025, 1, 1, bracket);
+  place(w - F_OUT - 0.025, h - F_OUT - 0.025, -1, -1, bracket);
+}
+
+/* --- type --- */
+
+// The 3D text these replace needed a hand-measured advance-width constant to
+// guess its own line breaks. Canvas measures for real, so the wrap is exact and
+// a longer programme name in facts.ts re-flows instead of running off the card.
+let faceFonts: Promise<void> | null = null;
+
+function loadFaceFonts() {
+  if (faceFonts) return faceFonts;
+  faceFonts = (async () => {
+    await Promise.all(
+      [
+        new FontFace("AtelierDisplay", `url(${FRAUNCES})`),
+        new FontFace("AtelierBody", `url(${INTER})`),
+      ].map(async (f) => {
+        await f.load();
+        document.fonts.add(f);
+      }),
+    );
+  })().catch(() => {
+    // A card set in the fallback serif beats a card with no name on it, so a
+    // failed font load must not reject the bake.
+  });
+  return faceFonts;
+}
+
+function wrapTo(ctx: CanvasRenderingContext2D, text: string, maxW: number) {
+  const lines: string[] = [];
+  let cur = "";
+  for (const word of text.split(" ")) {
+    const next = cur ? `${cur} ${word}` : word;
+    if (cur && ctx.measureText(next).width > maxW) {
+      lines.push(cur);
+      cur = word;
+    } else cur = next;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+/** Tracked-out caps, drawn a glyph at a time — ctx.letterSpacing is too new. */
+function trackedWidth(ctx: CanvasRenderingContext2D, s: string, sp: number) {
+  let w = -sp;
+  for (const ch of s) w += ctx.measureText(ch).width + sp;
+  return w;
+}
+
+function drawTracked(
+  ctx: CanvasRenderingContext2D,
+  s: string,
+  cx: number,
+  y: number,
+  sp: number,
+) {
+  let x = cx - trackedWidth(ctx, s, sp) / 2;
+  for (const ch of s) {
+    ctx.fillText(ch, x, y);
+    x += ctx.measureText(ch).width + sp;
+  }
+}
+
+/* --- the bake --- */
+
+const faceCache = new Map<string, THREE.Texture>();
+const faceLoads = new Map<string, Promise<THREE.Texture>>();
+
+async function bakeFace(offer: Offer, w: number, h: number, flagship: boolean) {
+  await loadFaceFonts();
   const c = document.createElement("canvas");
-  // A half is baked at half width rather than drawn full and clipped in 3D:
-  // the canvas throws away the invisible side once, here, instead of the GPU
-  // blending a texture that is 50% empty on every frame.
-  c.width = half ? MANDALA_PX / 2 : MANDALA_PX;
-  c.height = MANDALA_PX;
+  c.width = Math.round(w * FACE_PPU);
+  c.height = Math.round(h * FACE_PPU);
   const ctx = c.getContext("2d");
-  if (!ctx) return null;
-  // Where the disc's centre lands: the middle of a full canvas, and hard on
-  // the cut edge of a half — crop "right" keeps the right side, so the centre
-  // goes to x 0.
-  const cx = spec.crop === "right" ? 0 : spec.crop === "left" ? MANDALA_PX / 2 : MANDALA_PX / 2;
-  const u = MANDALA_PX / 512;
-  for (const pass of EMBOSS) {
+  if (!ctx) throw new Error("no 2d context");
+
+  // Everything below is authored in WORLD UNITS: one scale, then no conversions
+  // anywhere in the drawing code. Stroke weights are the exception — they are
+  // quoted in reference pixels, hence STROKE.
+  ctx.scale(FACE_PPU, FACE_PPU);
+  const STROKE = 1 / 240; // the weights were tuned against a 240px/unit proof
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  const bg = ctx.createLinearGradient(w * 0.1, 0, w * 0.9, h);
+  bg.addColorStop(0, "#1c1913");
+  bg.addColorStop(0.5, "#12100c");
+  bg.addColorStop(1, "#0c0b08");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, w, h);
+
+  // ONE gold gradient across the whole face, shared by the ornament, the frame
+  // and the type — so the light reads as a single source crossing the card
+  // rather than each element carrying its own private highlight.
+  //
+  // Rebuilt per use with the current translation cancelled out. A canvas
+  // gradient is resolved in user space at PAINT time, not at creation, so the
+  // one gradient drawn inside the ornament's own translate would slide with it
+  // and put the gradient's dark stop somewhere across the middle of the disc.
+  const goldFor = (ox: number, oy: number) => {
+    const g = ctx.createLinearGradient(-ox, -oy, w * 0.35 - ox, h - oy);
+    for (const [at, col] of GOLD_STOPS) g.addColorStop(at, col);
+    return g;
+  };
+
+  const R = ARABESQUE_D / 2;
+  const crop = CROP[offer.id] ?? "full";
+  const discX = crop === "right" ? 0 : crop === "left" ? w : w / 2;
+  const discY = h - ARABESQUE_Y;
+
+  // Two passes: a hard shadow down-right, then the metal on top. That is the
+  // relief — struck into the card rather than printed on it.
+  for (const pass of [
+    { d: 1.6 * STROKE, ink: "#000000" as string | null, alpha: 0.85 },
+    { d: 0, ink: null, alpha: 1 },
+  ]) {
     ctx.save();
     ctx.globalAlpha = pass.alpha;
-    ctx.translate(cx + pass.dx * u, MANDALA_PX / 2 + pass.dy * u);
-    drawMandala(ctx, MANDALA_PX, spec.motifs, spec.petals, pass.ink);
+    ctx.translate(pass.d, pass.d);
+    const ink = (ox: number, oy: number) => {
+      const paint = pass.ink ?? goldFor(ox, oy);
+      ctx.strokeStyle = paint;
+      ctx.fillStyle = paint;
+    };
+    // Frame weights are quoted in reference pixels and stay constant. The
+    // ornament's and the filigree's are quoted relative to their OWN size,
+    // exactly as the approved proof authored them — a constant weight there
+    // would come out about twice as heavy as what was signed off.
+    const lw = (n: number) => {
+      ctx.lineWidth = n * STROKE;
+    };
+
+    ctx.save();
+    ctx.globalAlpha = pass.alpha * 0.9;
+    ctx.translate(discX, discY);
+    ink(pass.d + discX, pass.d + discY);
+    paintArabesque(ctx, R, (n) => {
+      ctx.lineWidth = (n * R) / 260;
+    });
+    ctx.restore();
+
+    ink(pass.d, pass.d);
+    paintFrameA(ctx, w, h, lw);
+
+    // --- the name, then the price line under it ---
+    const nameSize = flagship ? 0.152 : 0.132;
+    ctx.font = `${nameSize}px AtelierDisplay, Georgia, serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    let y = 0.36;
+    for (const line of wrapTo(ctx, offer.label, w - F_IN * 2 - 0.16)) {
+      ctx.fillText(line, w / 2, y);
+      y += nameSize * 1.18;
+    }
+    const subSize = flagship ? 0.058 : 0.05;
+    ctx.font = `${subSize}px AtelierBody, Helvetica, sans-serif`;
+    // drawTracked places one glyph at a time from a left edge it computes
+    // itself, so the centring must come off — with textAlign still "center"
+    // every letter would be centred on its own pen position.
+    ctx.textAlign = "left";
+    ctx.globalAlpha = pass.alpha * (pass.ink ? 1 : 0.72);
+    y += 0.09;
+    let sub = offer.sub;
+    const room = w - F_IN * 2 - 0.14;
+    const track = subSize * 0.16;
+    // wrapTo cannot see the tracking, so the price line is split by hand
+    const subLines: string[] = [];
+    while (sub) {
+      const words = sub.split(" ");
+      let cur = "";
+      while (words.length && trackedWidth(ctx, `${cur} ${words[0]}`.trim(), track) <= room) {
+        cur = `${cur} ${words.shift()}`.trim();
+      }
+      subLines.push(cur || words.shift() || "");
+      sub = words.join(" ");
+    }
+    for (const line of subLines) {
+      drawTracked(ctx, line, w / 2, y, track);
+      y += subSize * 1.5;
+    }
     ctx.restore();
   }
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  mandalaCache.set(id, tex);
+  tex.anisotropy = 4;
+  faceCache.set(offer.id, tex);
   return tex;
 }
 
-function CardMandala({ id, cardW, lit }: { id: string; cardW: number; lit: boolean }) {
-  const tex = getMandala(id);
-  const spec = MANDALAS[id];
-  if (!tex || !spec) return null;
-  const half = spec.crop !== "full";
-  const pw = half ? MANDALA_D / 2 : MANDALA_D;
-  // A half hangs its cut edge on the card's own edge, so the card is visibly
-  // what crops the disc. That is what makes it read as a fragment of something
-  // bigger rather than as a semicircle someone chose to draw.
-  const x =
-    spec.crop === "right" ? -cardW / 2 + pw / 2 : spec.crop === "left" ? cardW / 2 - pw / 2 : 0;
-  return (
-    <mesh position={[x, MANDALA_Y, 0.008]}>
-      <planeGeometry args={[pw, MANDALA_D]} />
-      <meshBasicMaterial map={tex} transparent opacity={lit ? 1 : 0.82} depthWrite={false} />
-    </mesh>
+function getCardFace(offer: Offer, w: number, h: number, flagship: boolean) {
+  const hit = faceLoads.get(offer.id);
+  if (hit) return hit;
+  const job = bakeFace(offer, w, h, flagship);
+  faceLoads.set(offer.id, job);
+  return job;
+}
+
+function useCardFace(offer: Offer, w: number, h: number, flagship: boolean) {
+  const [tex, setTex] = useState<THREE.Texture | null>(
+    () => faceCache.get(offer.id) ?? null,
   );
+  const [shown, setShown] = useState(offer.id);
+  if (shown !== offer.id) {
+    setShown(offer.id);
+    setTex(faceCache.get(offer.id) ?? null);
+  }
+  // Held back until the journey is two thirds down. These cards mount at canvas
+  // boot, and baking three of them there means three font loads, six ornament
+  // passes and about 5MB of texture upload competing with the hero for the
+  // first seconds — for a scene the visitor cannot reach yet. 0.5 leaves a
+  // quarter of the journey to bake in before the chapter opens at 0.735.
+  const warm = useExperience((s) => s.progress > 0.5);
+  useEffect(() => {
+    if (!warm || faceCache.has(offer.id)) return;
+    let live = true;
+    getCardFace(offer, w, h, flagship)
+      .then((t) => {
+        if (live) setTex(t);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [warm, offer, w, h, flagship]);
+  return tex;
+}
+
+/* ---------- the gloss that follows the cursor ---------- */
+
+// A radial highlight added over the face, positioned from the actual raycast
+// hit on the card rather than from the screen-space pointer, so it sits under
+// the cursor at any camera angle. A shader rather than a moving sprite because
+// the glow has to be clipped by the card it is on: a sprite drifting off the
+// edge would put a crescent of light on the floor behind it.
+//
+// With no cursor on it the spot damps back to the upper left and dims — which
+// is the fixed angle the design was approved at, and what a touch device gets.
+const GLOSS_IDLE = { x: 0.28, y: 0.72 };
+
+const GLOSS_VERT = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`;
+
+const GLOSS_FRAG = `
+uniform vec2 uSpot;
+uniform float uAmt;
+uniform float uAspect;
+varying vec2 vUv;
+void main() {
+  vec2 p = vec2(vUv.x * uAspect, vUv.y);
+  vec2 s = vec2(uSpot.x * uAspect, uSpot.y);
+  float g = smoothstep(0.42, 0.0, distance(p, s));
+  g *= g;
+  gl_FragColor = vec4(vec3(1.0, 0.94, 0.78) * g * uAmt, g * uAmt);
+}`;
+
+function makeGlossMaterial(aspect: number) {
+  return new THREE.ShaderMaterial({
+    vertexShader: GLOSS_VERT,
+    fragmentShader: GLOSS_FRAG,
+    uniforms: {
+      uSpot: { value: new THREE.Vector2(GLOSS_IDLE.x, GLOSS_IDLE.y) },
+      uAmt: { value: 0.16 },
+      uAspect: { value: aspect },
+    },
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
 }
 
 /**
- * One standing panel — the gateway or a programme. A flat quad rather than a
- * box: the camera never leaves the front of this room, so the sides of a box
- * were geometry nobody could see.
+ * THE GATEWAY. Still a flat quad with 3D type on it: it keeps square corners,
+ * corner brackets and a gold frame because it is a DOOR, not a card, and the
+ * two should not read as the same kind of object. It is also the only thing in
+ * this room carrying a price, and the only one whose copy has to stay crisp at
+ * the size the camera stops in front of it.
  */
-function OfferPanel({
+function GatewayPanel({
   offer,
   x,
   z,
   w,
   h,
-  featured = false,
-  prominent = false,
 }: {
   offer: Offer;
   x: number;
   z: number;
   w: number;
   h: number;
-  /** the gateway: gold frame, corner brackets, the only priced object here */
-  featured?: boolean;
-  /** the flagship programme: same treatment as its neighbours, set larger */
-  prominent?: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const alive = useChapterAlive();
@@ -1464,46 +1808,27 @@ function OfferPanel({
   useFrame((_, delta) => {
     if (alive && !alive.current) return;
     if (!group.current) return;
-    // the panel lifts a little under the pointer — 0.12, well inside the
-    // kit's "nothing moves more than 4px on hover"
     const damp = 1 - Math.exp(-7 * delta);
     const lift = described ? 0.12 : 0;
     group.current.position.y += (lift - group.current.position.y) * damp;
   });
-
-  const line = featured ? (described ? GOLD_LIGHT : GOLD) : described ? GOLD : "#4d483f";
 
   return (
     <group position={[x, 0, z]}>
       <group ref={group} {...describes(offer.id)}>
         <mesh position={[0, h / 2, 0]}>
           <planeGeometry args={[w, h]} />
-          <meshStandardMaterial
-            color={featured ? "#191305" : STONE}
-            roughness={featured ? 0.4 : 0.62}
-            metalness={featured ? 0.6 : 0.32}
-          />
+          <meshStandardMaterial color="#191305" roughness={0.4} metalness={0.6} />
         </mesh>
         <mesh
-          geometry={getOutline(w, h, featured)}
-          material={getFrameMaterial(line)}
+          geometry={getOutline(w, h, true)}
+          material={getFrameMaterial(described ? GOLD_LIGHT : GOLD)}
           position={[0, h / 2, 0.004]}
         />
-
-        {/* All three discs share a diameter and a height off the floor, so the
-            row reads as one composition and the halves read as halves of the
-            whole one between them. The gateway gets none — see MANDALAS. */}
-        {MANDALAS[offer.id] && (
-          <CardMandala id={offer.id} cardW={w} lit={described} />
-        )}
-
-        {/* Text sits in the UPPER part of every panel on purpose. The scroll
-            overlay owns the bottom third of the screen, so anything set low on
-            these panels ends up reading through its scrim.
-
-            Every maxWidth is derived from the card it is set on. It used to be
-            a pair of constants, and the gateway's 1.9 on a 1.7-wide card is
-            exactly why its own name hung over its frame instead of breaking. */}
+        {/* Text sits in the UPPER part of the panel on purpose: the scroll
+            overlay owns the bottom third of the screen. Every maxWidth is
+            derived from the panel it is on — a fixed 1.9 on a 1.7-wide gateway
+            is exactly why its own name once hung over its frame. */}
         {offer.eyebrow && (
           <Text
             font={INTER}
@@ -1520,18 +1845,14 @@ function OfferPanel({
         )}
         <Text
           font={FRAUNCES}
-          fontSize={featured ? 0.155 : prominent ? 0.15 : 0.13}
+          fontSize={0.155}
           letterSpacing={0.04}
-          color={featured ? GOLD_LIGHT : IVORY}
-          position={[0, h - (featured ? 0.48 : 0.26), 0.012]}
+          color={GOLD_LIGHT}
+          position={[0, h - 0.48, 0.012]}
           anchorX="center"
           anchorY="top"
           maxWidth={w - 0.3}
           textAlign="center"
-          // Struck into the face rather than printed on it: a dark shadow
-          // thrown down-right off the glyphs, which is the same relief the
-          // mandala under them is drawn with. Percentages are of fontSize, so
-          // this holds at every size on the row.
           outlineWidth="3%"
           outlineOffsetX="2%"
           outlineOffsetY="-2%"
@@ -1543,11 +1864,11 @@ function OfferPanel({
         </Text>
         <Text
           font={INTER}
-          fontSize={featured ? 0.072 : 0.062}
+          fontSize={0.072}
           letterSpacing={0.13}
-          color={featured ? GOLD : "#8a847a"}
-          // clears two wrapped lines of the label above it at its largest size
-          position={[0, h - (featured ? 0.95 : 0.7), 0.012]}
+          color={GOLD}
+          // clears two wrapped lines of the name above it
+          position={[0, h - 0.95, 0.012]}
           anchorX="center"
           anchorY="top"
           maxWidth={w - 0.2}
@@ -1562,7 +1883,103 @@ function OfferPanel({
           {offer.sub}
         </Text>
       </group>
-      <BlobShadow position={[0, 0.012, 0]} scale={featured ? 2.8 : 2.2} />
+      <BlobShadow position={[0, 0.012, 0]} scale={2.8} />
+    </group>
+  );
+}
+
+/**
+ * ONE PROGRAMME CARD. Three pieces of geometry, no 3D type at all:
+ *
+ *   1. the slab — extruded, sharp-cornered, chamfered all the way round. The
+ *      only lit surface here, and the reason the card has an edge for the gold
+ *      light overhead to find. A plane had none, which is why the previous
+ *      version read as a printed rectangle rather than an object in a room.
+ *   2. the face — one baked texture: frame, filigree, arabesque, name, price.
+ *   3. the gloss — an additive highlight that follows the cursor across it.
+ */
+function ProgrammeCard({
+  offer,
+  x,
+  z,
+  w,
+  h,
+  flagship,
+}: {
+  offer: Offer;
+  x: number;
+  z: number;
+  w: number;
+  h: number;
+  /** Complete Transformation: same treatment, larger type, whole disc */
+  flagship: boolean;
+}) {
+  const group = useRef<THREE.Group>(null);
+  // Reached through the mesh ref rather than closed over directly: the frame
+  // loop writes to these uniforms every frame, and mutating a value produced
+  // during render is exactly what the compiler's rule about local variables is
+  // there to stop.
+  const glossMesh = useRef<THREE.Mesh>(null);
+  const spot = useRef(new THREE.Vector2(GLOSS_IDLE.x, GLOSS_IDLE.y));
+  const alive = useChapterAlive();
+  const described = useExperience((s) => s.hover === offer.id);
+  const face = useCardFace(offer, w, h, flagship);
+  // One material per card — each carries its own spot position, and the aspect
+  // has to be baked in so the highlight stays round on a card twice as tall as
+  // it is wide.
+  const gloss = useMemo(() => makeGlossMaterial(w / h), [w, h]);
+
+  useFrame((_, delta) => {
+    if (alive && !alive.current) return;
+    const damp = 1 - Math.exp(-7 * delta);
+    if (group.current) {
+      // the card lifts a little under the pointer — 0.12, well inside the
+      // kit's "nothing moves more than 4px on hover"
+      const lift = described ? 0.12 : 0;
+      group.current.position.y += (lift - group.current.position.y) * damp;
+    }
+    const mat = glossMesh.current?.material as THREE.ShaderMaterial | undefined;
+    if (!mat) return;
+    // Reduced motion parks the highlight at the angle the design was approved
+    // at rather than letting it chase the cursor.
+    const to = useExperience.getState().calm || !described ? GLOSS_IDLE : spot.current;
+    const u = mat.uniforms.uSpot.value as THREE.Vector2;
+    const k = 1 - Math.exp(-11 * delta);
+    u.x += (to.x - u.x) * k;
+    u.y += (to.y - u.y) * k;
+    const amt = described ? 0.5 : 0.16;
+    mat.uniforms.uAmt.value += (amt - mat.uniforms.uAmt.value) * damp;
+  });
+
+  return (
+    <group position={[x, 0, z]}>
+      <group ref={group} {...describes(offer.id)}>
+        <mesh geometry={getCardGeometry(w, h)} position={[0, h / 2, 0]}>
+          {/* Less rough and more metal than the flat version was: the chamfer
+              needs something to reflect or it is just a fold. */}
+          <meshStandardMaterial color={STONE} roughness={0.48} metalness={0.45} />
+        </mesh>
+        {face && (
+          <mesh
+            position={[0, h / 2, 0.004]}
+            // The spot is taken from the raycast hit rather than from the
+            // screen-space pointer, so it lands under the cursor whatever
+            // angle the card is seen at. Touch never fires this and gets the
+            // parked highlight instead.
+            onPointerMove={(e) => {
+              if (!e.uv) return;
+              spot.current.set(e.uv.x, e.uv.y);
+            }}
+          >
+            <planeGeometry args={[w, h]} />
+            <meshBasicMaterial map={face} toneMapped={false} />
+          </mesh>
+        )}
+        <mesh ref={glossMesh} position={[0, h / 2, 0.01]} material={gloss}>
+          <planeGeometry args={[w, h]} />
+        </mesh>
+      </group>
+      <BlobShadow position={[0, 0.012, 0]} scale={2.2} />
     </group>
   );
 }
@@ -1575,14 +1992,14 @@ export function Decision() {
       <group position={[0, 0, -70]}>
         {/* LEVEL 2 — the three programmes, down the hall */}
         {OFFERS.pillars.map((offer, i) => (
-          <OfferPanel
+          <ProgrammeCard
             key={offer.id}
             offer={offer}
             x={PILLAR_X[i]}
             z={PILLAR_Z}
             w={PILLAR_W[i]}
             h={PILLAR_H[i]}
-            prominent={i === 1}
+            flagship={i === 1}
           />
         ))}
         <pointLight
@@ -1593,14 +2010,7 @@ export function Decision() {
         />
 
         {/* LEVEL 1 — the gateway, in front and lit hardest */}
-        <OfferPanel
-          offer={OFFERS.gate}
-          x={0}
-          z={GATE_Z}
-          w={GATE_W}
-          h={GATE_H}
-          featured
-        />
+        <GatewayPanel offer={OFFERS.gate} x={0} z={GATE_Z} w={GATE_W} h={GATE_H} />
         <pointLight
           position={[0, 1.9, GATE_Z + 2.4]}
           intensity={7}

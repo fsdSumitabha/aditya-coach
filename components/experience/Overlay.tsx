@@ -20,6 +20,13 @@ function activeChapter(progress: number): number {
 
 export default function Overlay() {
   const chapterIdx = useExperience((s) => activeChapter(s.progress));
+  // A boolean, not the raw progress: this component would otherwise re-render
+  // on every frame of the scroll instead of on the one frame the copy turns on.
+  const copyShown = useExperience((s) => {
+    const i = activeChapter(s.progress);
+    const from = i >= 0 ? CHAPTERS[i].copyFrom : undefined;
+    return from == null || s.progress >= from;
+  });
   const nearStart = useExperience((s) => s.progress < 0.035);
   const focus = useExperience((s) => s.focus);
   const setFocus = useExperience((s) => s.setFocus);
@@ -78,6 +85,11 @@ export default function Overlay() {
   const jump = (p: number) =>
     window.dispatchEvent(new CustomEvent("journey:jump", { detail: p }));
 
+  const copyStyle = {
+    opacity: copyShown ? 1 : 0,
+    transition: "opacity 600ms cubic-bezier(0.16,1,0.3,1)",
+  } as const;
+
   return (
     <div className="pointer-events-none absolute inset-0 z-10">
       {/* -------- chapter titles -------- */}
@@ -98,24 +110,40 @@ export default function Overlay() {
             }
           >
             {/* feathered scrim — guarantees contrast for the text block even
-                when a bright gold object drifts behind it (no hard edges) */}
+                when a bright gold object drifts behind it (no hard edges).
+                It fades with the copy: a scrim left up over held-back text is
+                just an unexplained dark patch over the scene. */}
             <div
               aria-hidden="true"
+              style={copyStyle}
               className="pointer-events-none absolute -inset-x-10 -inset-y-8 -z-10 bg-[radial-gradient(70%_90%_at_50%_55%,rgba(8,8,10,0.78),rgba(8,8,10,0.35)_60%,transparent_78%)]"
             />
-            <p className={EYEBROW}>{chapter.eyebrow}</p>
+            {/* Held-back copy keeps its layout box while it is invisible, so
+                the buttons below do not jump when it arrives. */}
+            <p className={EYEBROW} style={copyStyle}>
+              {chapter.eyebrow}
+            </p>
             {/* the page's semantic h1 lives server-side in app/page.tsx —
                 these chapter titles are visual-only */}
             {chapter.id === "arrival" ? (
-              <p className="font-display mt-3 max-w-[19ch] text-[clamp(2rem,5vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.02em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]">
+              <p
+                style={copyStyle}
+                className="font-display mt-3 max-w-[19ch] text-[clamp(2rem,5vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.02em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]"
+              >
                 {chapter.title}
               </p>
             ) : (
-              <p className="font-display mt-3 max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] font-medium leading-[1.12] tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]">
+              <p
+                style={copyStyle}
+                className="font-display mt-3 max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] font-medium leading-[1.12] tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]"
+              >
                 {chapter.title}
               </p>
             )}
-            <p className="mt-3 max-w-md text-[0.9rem] leading-relaxed text-[#a7a199] [text-shadow:0_1px_12px_rgba(8,8,10,0.9)]">
+            <p
+              style={copyStyle}
+              className="mt-3 max-w-md text-[0.9rem] leading-relaxed text-[#a7a199] [text-shadow:0_1px_12px_rgba(8,8,10,0.9)]"
+            >
               {chapter.sub}
             </p>
             {chapter.id === "arrival" && (
