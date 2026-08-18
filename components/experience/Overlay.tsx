@@ -183,13 +183,21 @@ export default function Overlay() {
                 top tenth, leaving no band inside the render where a button
                 clears both the gateway and the flagship column on a phone. */}
             {chapter.id === "decision" && (
-              <div className="pointer-events-auto mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
-                  {OVERLAY_CTAS.book.label}
-                </Link>
-                <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
-                  {OVERLAY_CTAS.programs.label}
-                </Link>
+              <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
+                    {OVERLAY_CTAS.book.label}
+                  </Link>
+                  <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
+                    {OVERLAY_CTAS.programs.label}
+                  </Link>
+                </div>
+                {/* Says what is on the other side of the second button. The
+                    label itself stays inside the CTA vocabulary in AGENTS.md
+                    rather than growing into a sentence. */}
+                <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
+                  {OVERLAY_CTAS.programs.note}
+                </p>
               </div>
             )}
           </motion.div>

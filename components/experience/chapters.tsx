@@ -1021,7 +1021,6 @@ export function Proof() {
     setPair((p) => ({ cur: (p.cur + 1) % CLIENT_SETS.length, prev: p.cur }));
   });
 
-  const set = CLIENT_SETS[pair.cur];
 
   return (
     <ChapterAlive.Provider value={alive}>
@@ -1054,7 +1053,10 @@ export function Proof() {
             style={{ opacity: shown ? 1 : 0, transition: "opacity 420ms ease" }}
           >
             <div className="flex flex-col items-center gap-2 text-center">
-              <span className={EYEBROW}>{set.eyebrow}</span>
+              {/* One fixed label, not the current set's own. These flip every
+                  second, so a per-set eyebrow was a caption changing under a
+                  reader mid-word — and "CLIENT 01" told him nothing anyway. */}
+              <span className={EYEBROW}>{SCENE.proof}</span>
               <button
                 type="button"
                 tabIndex={shown ? 0 : -1}
@@ -1088,49 +1090,32 @@ export function Proof() {
   );
 }
 
-/* ====== CHAPTER 4 — THE DECISION: the gateway, then the three ====== */
+/* ====== CHAPTER 4 — THE DECISION: the three programmes ====== */
 
-// TWO LEVELS IN DEPTH, because that is the actual shape of the offer.
+// ONE ROW, no gateway.
 //
-//   LEVEL 1 · z +1.6 — the Transformation Audit, alone at the front, lit,
-//     gold-framed, the only object here carrying a price. It is not one of
-//     four choices; it is the way in to all of them.
-//   LEVEL 2 · z -1.4 — the three programmes it routes a man into. Lifestyle
-//     Coaching and Personality & Presence flank. Complete Transformation
-//     stands between them and is the ONLY column tall enough to clear the
-//     gateway, which is how the flagship reads as the flagship — by rising
-//     over the gate rather than by wearing a badge.
+// The Transformation Audit used to stand alone in front of these as a gate,
+// which cost this scene twice over: the three had to be pushed five units down
+// a hall so the camera had somewhere to travel to, and even then only the
+// flagship's head cleared the gate on the way past. The audit is still the
+// primary action — the gold button on the overlay books it — but it is no
+// longer an object in the room. The three are what the visitor came to see, so
+// they are all that is standing here.
 //
-// The four steles this replaces stood in one scattered row at a single depth,
-// so the gateway looked like a fourth product. Each was also two boxes plus a
-// rim (24 triangles and two standard materials apiece); these are a single
-// quad plus the shared hairline outline — 10 triangles, one material each.
-//
-// Every word here comes from OFFERS in facts.ts.
+// Every word these show comes from OFFERS in facts.ts.
 
-const GATE_Z = 1.6;
-const GATE_W = 1.7;
-const GATE_H = 2.4;
-
-// The programmes stand a full FIVE units behind the gateway, not one. At the
-// old spacing the journey ended on the gateway with the three crowded right
-// up against its back, and there was no room left to travel: the camera could
-// not come forward without being on top of them. The room is now long enough
-// that the last stretch of scroll is a real move — over the gate and down the
-// hall to the three. See the last two KEYS in CameraRig.
 const PILLAR_Z = -5.0;
 /** left · centre · right, matching the order of OFFERS.pillars */
-const PILLAR_X = [-1.9, 0, 1.9];
-// The flagship went 1.7 → 2.0 so a whole disc fits inside its frame at the
-// same diameter as the two halves either side of it. The outer two are
-// untouched, so the row still ends at x ±2.65 — a phone's frustum reaches
-// ±2.80 at this depth and that margin is the tightest constraint in the scene.
-const PILLAR_W = [1.5, 2.0, 1.5];
-// Each card is now tall enough to carry its mandala UNDER its name without the
-// ornament dropping into the bottom third of the screen, which the scroll
-// overlay owns. The flagship stays the tallest of the three so its head still
-// shows over the 2.4 gateway on the first beat — that sliver is the only hint
-// the visitor gets that there is more back there.
+const PILLAR_X = [-1.95, 0, 1.95];
+// Wider than they were, which the gateway's removal paid for: the cards now
+// carry four bullet lines each and needed the measure. The row ends at x ±2.80
+// and a phone's frustum reaches ±2.98 at the final camera stop — that margin
+// is the tightest constraint in the scene, so widen these only alongside the
+// last KEYS_PORTRAIT entry in CameraRig.
+const PILLAR_W = [1.7, 2.1, 1.7];
+// The flagship stays the tallest of the three. With no gate to clear that is
+// now purely hierarchy, and it is the only signal of it the row has — there is
+// no badge, no border and no ornament any more.
 const PILLAR_H = [3.4, 4.0, 3.4];
 
 /* ---------- the programme cards: a slab, not a quad ---------- */
@@ -1196,436 +1181,6 @@ function getCardGeometry(w: number, h: number) {
   return g;
 }
 
-/* ---------- the card face: frame, filigree, arabesque and type, baked ---------- */
-
-// Approved direction, option A: the frame off the reference card — a complete
-// outer rule, an inner rule breaking short of every corner with a small square
-// terminal, heavy filigree on one diagonal and plain brackets on the other —
-// behind it an eight-fold arabesque built entirely from curves.
-//
-// The whole face is ONE canvas texture: rules, filigree, ornament and type.
-//   · Not layered geometry — every element here is a curve, and none of it is
-//     worth triangulating for a card that renders about 315 device pixels wide.
-//   · Not troika text on top — the type has to run through the same gold
-//     gradient as the linework, and troika paints in one flat colour. Canvas
-//     also brings measureText, which retires the hand-tuned advance-width
-//     constant the 3D type needed to guess its own line breaks.
-//
-// THE CROP IS THE ARGUMENT, and it survives the redesign:
-//
-//   Lifestyle Coaching     the RIGHT half of the disc, cut by its own left edge
-//   Personality & Presence the LEFT half of the same disc, cut by its right
-//   Complete Transformation the WHOLE disc
-//
-// The two flanking cards are halves of the disc standing complete between them,
-// so the flagship reads as the other two joined without a badge saying so.
-// Nothing rotates: turn a half and it spins its cut edge into view.
-
-/** which half of the disc survives the card's edge */
-type Crop = "left" | "right" | "full";
-
-const CROP: Record<string, Crop> = {
-  "offer-lifestyle": "right",
-  "offer-complete": "full",
-  "offer-presence": "left",
-};
-
-// Texture pixels per world unit. The cards land at ~315 device px wide on both
-// a phone and a desktop (different distances, different frustums, same result),
-// so 256 is a ~1.2x oversample — enough that the hairlines hold, low enough
-// that the three faces together stay under about 6MB of VRAM.
-const FACE_PPU = 256;
-
-const ARABESQUE_D = 1.84; // disc diameter
-// A FRACTION of the card's height, not an absolute — the flagship is 4.0 tall
-// and its neighbours 3.4, and a fixed height put the disc noticeably higher up
-// the short cards than the tall one. As a fraction all three sit at the same
-// point in their own card, which is what makes the row read as one row.
-// It also has to clear the type block above it in the worst case: the largest
-// viewport-scaled name over a two-line price line.
-const ARABESQUE_Y = 0.33;
-
-const GOLD_STOPS: [number, string][] = [
-  [0, "#f7e9bd"],
-  [0.34, "#c9a24b"],
-  [0.56, "#8f6f26"],
-  [0.78, "#d8b96a"],
-  [1, "#f1dfa6"],
-];
-
-/* --- primitives, all authored in world units --- */
-
-/**
- * A logarithmic spiral as a polyline. This is the backbone of every scroll on
- * the card: the reference's ornament is drawn with a pen, not constructed on a
- * grid, and a spiral that tightens as it turns is what a pen actually does.
- */
-function spiralTo(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  rStart: number,
-  rEnd: number,
-  aStart: number,
-  sweep: number,
-  steps = 44,
-) {
-  ctx.beginPath();
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const a = aStart + sweep * t;
-    const r = rStart * Math.pow(rEnd / rStart, t);
-    const x = cx + Math.cos(a) * r;
-    const y = cy + Math.sin(a) * r;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-}
-
-/** a long keeled blade pointing at 12 o'clock, radius a out to b, ±hw wide */
-function bladeTo(
-  ctx: CanvasRenderingContext2D,
-  a: number,
-  b: number,
-  hw: number,
-  bulge = 0.22,
-) {
-  const L = b - a;
-  ctx.beginPath();
-  ctx.moveTo(0, -a);
-  ctx.bezierCurveTo(hw, -(a + L * bulge), hw * 0.5, -(a + L * 0.72), 0, -b);
-  ctx.bezierCurveTo(-hw * 0.5, -(a + L * 0.72), -hw, -(a + L * bulge), 0, -a);
-  ctx.closePath();
-  ctx.stroke();
-}
-
-/* --- the arabesque --- */
-
-function paintArabesque(ctx: CanvasRenderingContext2D, R: number, lw: (n: number) => void) {
-  const ring = (count: number, fn: (i: number) => void, offset = 0) => {
-    for (let i = 0; i < count; i++) {
-      ctx.save();
-      ctx.rotate(((i + offset) / count) * Math.PI * 2);
-      fn(i);
-      ctx.restore();
-    }
-  };
-  const circle = (r: number, weight: number) => {
-    lw(weight);
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.stroke();
-  };
-  const dot = (r: number, y: number) => {
-    ctx.beginPath();
-    ctx.arc(0, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  };
-  const tick = (a: number, b: number, weight: number) => {
-    lw(weight);
-    ctx.beginPath();
-    ctx.moveTo(0, -a);
-    ctx.lineTo(0, -b);
-    ctx.stroke();
-  };
-  /** a leaf hanging off a scroll; sx flips it to the other side of the point */
-  const scrollLeaf = (sx: number, x: number, y: number, len: number, wide: number) => {
-    lw(1.1);
-    ctx.beginPath();
-    ctx.moveTo(sx * x, -y);
-    ctx.bezierCurveTo(
-      sx * (x + wide),
-      -(y + len * 0.28),
-      sx * (x + wide * 1.05),
-      -(y + len * 0.8),
-      sx * (x + wide * 0.1),
-      -(y + len),
-    );
-    ctx.bezierCurveTo(
-      sx * (x - wide * 0.15),
-      -(y + len * 0.62),
-      sx * (x - wide * 0.1),
-      -(y + len * 0.3),
-      sx * x,
-      -y,
-    );
-    ctx.closePath();
-    ctx.stroke();
-  };
-
-  // --- core ---
-  dot(R * 0.018, 0);
-  lw(1.5);
-  ring(8, () => bladeTo(ctx, R * 0.03, R * 0.098, R * 0.03, 0.4));
-  circle(R * 0.116, 1.1);
-  ring(24, () => tick(R * 0.124, R * 0.158, 0.8));
-  circle(R * 0.168, 1.0);
-  // tendrils mirrored in pairs, so the core reads woven rather than spun
-  lw(1.5);
-  ring(8, () => {
-    spiralTo(ctx, 0, -R * 0.235, R * 0.095, R * 0.008, -0.5, Math.PI * 2.2);
-    spiralTo(ctx, 0, -R * 0.235, R * 0.095, R * 0.008, Math.PI + 0.5, -Math.PI * 2.2);
-  });
-  circle(R * 0.298, 1.3);
-  circle(R * 0.316, 0.7);
-  lw(0.9);
-  ring(
-    24,
-    () => {
-      ctx.beginPath();
-      ctx.arc(0, -R * 0.326, R * 0.021, Math.PI, 0);
-      ctx.stroke();
-    },
-    0.5,
-  );
-
-  // --- the short blades in the bays between the points ---
-  ring(
-    8,
-    () => {
-      lw(1.7);
-      bladeTo(ctx, R * 0.34, R * 0.63, R * 0.09);
-      lw(1.0);
-      bladeTo(ctx, R * 0.39, R * 0.58, R * 0.034);
-      dot(R * 0.012, -R * 0.365);
-      lw(1.2);
-      spiralTo(ctx, R * 0.072, -R * 0.38, R * 0.1, R * 0.01, -1.35, Math.PI * 2.15);
-      spiralTo(ctx, -R * 0.072, -R * 0.38, R * 0.1, R * 0.01, Math.PI + 1.35, -Math.PI * 2.15);
-    },
-    0.5,
-  );
-
-  // --- the eight long points, each keeled, with scrollwork off its base ---
-  ring(8, () => {
-    lw(2.0);
-    bladeTo(ctx, R * 0.32, R * 0.985, R * 0.155, 0.26);
-    lw(1.1);
-    bladeTo(ctx, R * 0.42, R * 0.9, R * 0.062);
-    tick(R * 0.48, R * 0.86, 0.8);
-    lw(1.6);
-    spiralTo(ctx, R * 0.1, -R * 0.375, R * 0.175, R * 0.014, -1.15, Math.PI * 2.45);
-    spiralTo(ctx, -R * 0.1, -R * 0.375, R * 0.175, R * 0.014, Math.PI + 1.15, -Math.PI * 2.45);
-    scrollLeaf(1, R * 0.235, R * 0.5, R * 0.2, R * 0.085);
-    scrollLeaf(-1, R * 0.235, R * 0.5, R * 0.2, R * 0.085);
-    scrollLeaf(1, R * 0.15, R * 0.72, R * 0.13, R * 0.055);
-    scrollLeaf(-1, R * 0.15, R * 0.72, R * 0.13, R * 0.055);
-    dot(R * 0.014, -R * 0.995);
-  });
-}
-
-/* --- corner filigree, authored for a top-left corner --- */
-
-function paintFiligree(ctx: CanvasRenderingContext2D, L: number, lw: (n: number) => void) {
-  lw(1.5);
-  ctx.beginPath();
-  ctx.moveTo(L, L * 0.09);
-  ctx.bezierCurveTo(L * 0.5, L * 0.07, L * 0.07, L * 0.5, L * 0.09, L);
-  ctx.stroke();
-  lw(1.1);
-  ctx.beginPath();
-  ctx.moveTo(L * 0.86, L * 0.26);
-  ctx.bezierCurveTo(L * 0.5, L * 0.24, L * 0.24, L * 0.5, L * 0.26, L * 0.86);
-  ctx.stroke();
-  lw(1.4);
-  spiralTo(ctx, L * 0.82, L * 0.4, L * 0.16, L * 0.015, -Math.PI / 2, Math.PI * 2.3);
-  spiralTo(ctx, L * 0.4, L * 0.82, L * 0.16, L * 0.015, 0, -Math.PI * 2.3);
-  // the leaf that fills the elbow
-  lw(1.3);
-  ctx.beginPath();
-  ctx.moveTo(L * 0.3, L * 0.3);
-  ctx.bezierCurveTo(L * 0.66, L * 0.26, L * 0.74, L * 0.42, L * 0.48, L * 0.48);
-  ctx.bezierCurveTo(L * 0.42, L * 0.74, L * 0.26, L * 0.66, L * 0.3, L * 0.3);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(L * 0.55, L * 0.55, L * 0.035, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-/* --- option A's frame --- */
-
-const F_OUT = 0.055; // outer rule, inset from the card edge
-const F_IN = 0.115; // inner rule
-const F_GAP = 0.42; // how far short of each corner the inner rule stops
-const F_TERM = 0.02; // the square terminal capping every broken end
-
-function paintFrameA(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  lw: (n: number) => void,
-) {
-  lw(1.6);
-  ctx.strokeRect(F_OUT, F_OUT, w - F_OUT * 2, h - F_OUT * 2);
-
-  // the inner rule, broken short of every corner
-  lw(1.0);
-  const seg = (x1: number, y1: number, x2: number, y2: number) => {
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-  };
-  seg(F_IN + F_GAP, F_IN, w - F_IN - F_GAP, F_IN);
-  seg(F_IN + F_GAP, h - F_IN, w - F_IN - F_GAP, h - F_IN);
-  seg(F_IN, F_IN + F_GAP, F_IN, h - F_IN - F_GAP);
-  seg(w - F_IN, F_IN + F_GAP, w - F_IN, h - F_IN - F_GAP);
-  const t = F_TERM / 2;
-  for (const [x, y] of [
-    [F_IN + F_GAP, F_IN],
-    [w - F_IN - F_GAP, F_IN],
-    [F_IN + F_GAP, h - F_IN],
-    [w - F_IN - F_GAP, h - F_IN],
-    [F_IN, F_IN + F_GAP],
-    [F_IN, h - F_IN - F_GAP],
-    [w - F_IN, F_IN + F_GAP],
-    [w - F_IN, h - F_IN - F_GAP],
-  ]) {
-    ctx.fillRect(x - t, y - t, F_TERM, F_TERM);
-  }
-
-  // Heavy filigree on ONE diagonal and plain brackets on the other. The
-  // asymmetry is the reference's, and it is what stops the card reading as a
-  // certificate: four matching corners would centre it, two do not.
-  const L = Math.min(w, h) * 0.2;
-  const place = (tx: number, ty: number, sx: number, sy: number, fn: () => void) => {
-    ctx.save();
-    ctx.translate(tx, ty);
-    ctx.scale(sx, sy);
-    fn();
-    ctx.restore();
-  };
-  const filLw = (n: number) => {
-    ctx.lineWidth = (n * L) / 150;
-  };
-  place(w - F_OUT, F_OUT, -1, 1, () => paintFiligree(ctx, L, filLw));
-  place(F_OUT, h - F_OUT, 1, -1, () => paintFiligree(ctx, L, filLw));
-  const b = L * 0.42;
-  const bracket = () => {
-    lw(1.4);
-    ctx.beginPath();
-    ctx.moveTo(b, 0);
-    ctx.lineTo(0, 0);
-    ctx.lineTo(0, b);
-    ctx.stroke();
-  };
-  place(F_OUT + 0.025, F_OUT + 0.025, 1, 1, bracket);
-  place(w - F_OUT - 0.025, h - F_OUT - 0.025, -1, -1, bracket);
-}
-
-/* --- the bake --- */
-
-// NOTE WHAT IS NOT IN HERE ANY MORE: the type.
-//
-// Baking the name and the price line into this texture cost more than it paid.
-// A card renders about 235 device pixels wide on a phone against a 512-pixel
-// texture, so the face is MINIFIED roughly 2x and the GPU serves it from a
-// blurred mip — which is fatal for 8-pixel tracked capitals and merely soft for
-// scrollwork. A baked size also cannot respond to the viewport, and the type
-// needs to be larger on a phone than on a desktop.
-//
-// So the texture now carries only what tolerates being soft — the frame, the
-// filigree and the arabesque — and the type went back to signed-distance-field
-// text, which stays crisp at any size and can be sized per viewport. The trade
-// is that the type no longer runs through the gold gradient; legibility on a
-// phone is worth more than a gradient nobody can resolve at that size.
-//
-// Dropping the type also retired the FontFace loading this used to need, so the
-// bake is synchronous again.
-
-const faceCache = new Map<string, THREE.Texture>();
-
-function bakeFace(offer: Offer, w: number, h: number) {
-  const c = document.createElement("canvas");
-  c.width = Math.round(w * FACE_PPU);
-  c.height = Math.round(h * FACE_PPU);
-  const ctx = c.getContext("2d");
-  if (!ctx) return null;
-
-  // Everything below is authored in WORLD UNITS: one scale, then no conversions
-  // anywhere in the drawing code. Stroke weights are the exception — they are
-  // quoted in reference pixels, hence STROKE.
-  ctx.scale(FACE_PPU, FACE_PPU);
-  const STROKE = 1 / 240; // the weights were tuned against a 240px/unit proof
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-
-  const bg = ctx.createLinearGradient(w * 0.1, 0, w * 0.9, h);
-  bg.addColorStop(0, "#1c1913");
-  bg.addColorStop(0.5, "#12100c");
-  bg.addColorStop(1, "#0c0b08");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, w, h);
-
-  // ONE gold gradient across the whole face, shared by the ornament and the
-  // frame — so the light reads as a single source crossing the card rather
-  // than each element carrying its own private highlight.
-  //
-  // Rebuilt per use with the current translation cancelled out. A canvas
-  // gradient is resolved in user space at PAINT time, not at creation, so the
-  // one gradient drawn inside the ornament's own translate would slide with it
-  // and put the gradient's dark stop somewhere across the middle of the disc.
-  const goldFor = (ox: number, oy: number) => {
-    const g = ctx.createLinearGradient(-ox, -oy, w * 0.35 - ox, h - oy);
-    for (const [at, col] of GOLD_STOPS) g.addColorStop(at, col);
-    return g;
-  };
-
-  const R = ARABESQUE_D / 2;
-  const crop = CROP[offer.id] ?? "full";
-  const discX = crop === "right" ? 0 : crop === "left" ? w : w / 2;
-  const discY = h - h * ARABESQUE_Y;
-
-  // Two passes: a hard shadow down-right, then the metal on top. That is the
-  // relief — struck into the card rather than printed on it.
-  for (const pass of [
-    { d: 1.6 * STROKE, ink: "#000000" as string | null, alpha: 0.85 },
-    { d: 0, ink: null, alpha: 1 },
-  ]) {
-    ctx.save();
-    ctx.globalAlpha = pass.alpha;
-    ctx.translate(pass.d, pass.d);
-    const ink = (ox: number, oy: number) => {
-      const paint = pass.ink ?? goldFor(ox, oy);
-      ctx.strokeStyle = paint;
-      ctx.fillStyle = paint;
-    };
-    // Frame weights are quoted in reference pixels and stay constant. The
-    // ornament's and the filigree's are quoted relative to their OWN size,
-    // exactly as the approved proof authored them — a constant weight there
-    // would come out about twice as heavy as what was signed off.
-    const lw = (n: number) => {
-      ctx.lineWidth = n * STROKE;
-    };
-
-    ctx.save();
-    ctx.globalAlpha = pass.alpha * 0.9;
-    ctx.translate(discX, discY);
-    ink(pass.d + discX, pass.d + discY);
-    paintArabesque(ctx, R, (n) => {
-      ctx.lineWidth = (n * R) / 260;
-    });
-    ctx.restore();
-
-    ink(pass.d, pass.d);
-    paintFrameA(ctx, w, h, lw);
-    ctx.restore();
-  }
-
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  // The face is minified at every real viewport, so this is the setting that
-  // decides how the frame hairlines hold up. Drivers clamp silently.
-  tex.anisotropy = 8;
-  faceCache.set(offer.id, tex);
-  return tex;
-}
-
-function getCardFace(offer: Offer, w: number, h: number) {
-  return faceCache.get(offer.id) ?? bakeFace(offer, w, h);
-}
-
 /* ---------- the gloss that follows the cursor ---------- */
 
 // A radial highlight added over the face, positioned from the actual raycast
@@ -1674,121 +1229,19 @@ function makeGlossMaterial(aspect: number) {
 }
 
 /**
- * THE GATEWAY. Still a flat quad with 3D type on it: it keeps square corners,
- * corner brackets and a gold frame because it is a DOOR, not a card, and the
- * two should not read as the same kind of object. It is also the only thing in
- * this room carrying a price, and the only one whose copy has to stay crisp at
- * the size the camera stops in front of it.
- */
-function GatewayPanel({
-  offer,
-  x,
-  z,
-  w,
-  h,
-}: {
-  offer: Offer;
-  x: number;
-  z: number;
-  w: number;
-  h: number;
-}) {
-  const group = useRef<THREE.Group>(null);
-  const alive = useChapterAlive();
-  const described = useExperience((s) => s.hover === offer.id);
-
-  useFrame((_, delta) => {
-    if (alive && !alive.current) return;
-    if (!group.current) return;
-    const damp = 1 - Math.exp(-7 * delta);
-    const lift = described ? 0.12 : 0;
-    group.current.position.y += (lift - group.current.position.y) * damp;
-  });
-
-  return (
-    <group position={[x, 0, z]}>
-      <group ref={group} {...describes(offer.id)}>
-        <mesh position={[0, h / 2, 0]}>
-          <planeGeometry args={[w, h]} />
-          <meshStandardMaterial color="#191305" roughness={0.4} metalness={0.6} />
-        </mesh>
-        <mesh
-          geometry={getOutline(w, h, true)}
-          material={getFrameMaterial(described ? GOLD_LIGHT : GOLD)}
-          position={[0, h / 2, 0.004]}
-        />
-        {/* Text sits in the UPPER part of the panel on purpose: the scroll
-            overlay owns the bottom third of the screen. Every maxWidth is
-            derived from the panel it is on — a fixed 1.9 on a 1.7-wide gateway
-            is exactly why its own name once hung over its frame. */}
-        {offer.eyebrow && (
-          <Text
-            font={INTER}
-            fontSize={0.066}
-            letterSpacing={0.3}
-            color={GOLD}
-            position={[0, h - 0.22, 0.012]}
-            anchorX="center"
-            maxWidth={w - 0.2}
-            textAlign="center"
-          >
-            {offer.eyebrow}
-          </Text>
-        )}
-        <Text
-          font={FRAUNCES}
-          fontSize={0.155}
-          letterSpacing={0.04}
-          color={GOLD_LIGHT}
-          position={[0, h - 0.48, 0.012]}
-          anchorX="center"
-          anchorY="top"
-          maxWidth={w - 0.3}
-          textAlign="center"
-          outlineWidth="3%"
-          outlineOffsetX="2%"
-          outlineOffsetY="-2%"
-          outlineBlur="4%"
-          outlineColor="#000000"
-          outlineOpacity={0.7}
-        >
-          {offer.label}
-        </Text>
-        <Text
-          font={INTER}
-          fontSize={0.072}
-          letterSpacing={0.13}
-          color={GOLD}
-          // clears two wrapped lines of the name above it
-          position={[0, h - 0.95, 0.012]}
-          anchorX="center"
-          anchorY="top"
-          maxWidth={w - 0.2}
-          textAlign="center"
-          outlineWidth="4%"
-          outlineOffsetX="2%"
-          outlineOffsetY="-2%"
-          outlineBlur="5%"
-          outlineColor="#000000"
-          outlineOpacity={0.6}
-        >
-          {offer.sub}
-        </Text>
-      </group>
-      <BlobShadow position={[0, 0.012, 0]} scale={2.8} />
-    </group>
-  );
-}
-
-/**
  * ONE PROGRAMME CARD. Three pieces of geometry, no 3D type at all:
  *
  *   1. the slab — extruded, sharp-cornered, chamfered all the way round. The
  *      only lit surface here, and the reason the card has an edge for the gold
  *      light overhead to find. A plane had none, which is why the previous
  *      version read as a printed rectangle rather than an object in a room.
- *   2. the face — one baked texture: frame, filigree, arabesque, name, price.
- *   3. the gloss — an additive highlight that follows the cursor across it.
+ *   2. the gloss — an additive highlight that follows the cursor across it.
+ *   3. the type — name, price line and four bullets, all signed-distance-field
+ *      so they stay crisp at any size and can be sized per viewport.
+ *
+ * There is no ornament and no border any more. Everything the card says, it
+ * says in words; the only decoration left is the light on the chamfer and the
+ * highlight under the cursor.
  */
 function ProgrammeCard({
   offer,
@@ -1815,13 +1268,6 @@ function ProgrammeCard({
   const spot = useRef(new THREE.Vector2(GLOSS_IDLE.x, GLOSS_IDLE.y));
   const alive = useChapterAlive();
   const described = useExperience((s) => s.hover === offer.id);
-  // Cached after the first call, so this is a map lookup on every later render.
-  // Held back until the journey is two thirds down: these cards mount at canvas
-  // boot, and baking three ornaments plus ~5MB of texture upload there competes
-  // with the hero for a scene the visitor cannot reach yet.
-  const warm = useExperience((st) => st.progress > 0.5);
-  const face = warm ? getCardFace(offer, w, h) : null;
-
   // TYPE SIZE IS PER VIEWPORT. A phone shows this card at roughly the same
   // number of DEVICE pixels as a desktop does, but far fewer CSS pixels, and it
   // is CSS pixels that decide whether a person can read it at arm's length —
@@ -1836,6 +1282,15 @@ function ProgrammeCard({
   // the name grows with the viewport, and a constant would have the two
   // overlapping on a phone at exactly the size that made them readable.
   const subY = h - 0.24 - 2 * nameSize * 1.2 - 0.09;
+  // Bullets step up less steeply than the headings — at the full portrait ramp
+  // a forty-character line would wrap to three, and four of those runs off the
+  // bottom of the short cards.
+  const pointSize = (flagship ? 0.086 : 0.08) * (1 + 0.26 * portrait);
+  // Clears a two-line price line. Everything on this face is stacked off the
+  // one above it rather than off a constant, so the whole block breathes with
+  // the viewport instead of colliding at the size that made it readable.
+  const pointsY = subY - 2 * subSize * 1.2 - 0.12;
+  const points = offer.points.map((p) => `•  ${p}`).join("\n");
   // One material per card — each carries its own spot position, and the aspect
   // has to be baked in so the highlight stays round on a card twice as tall as
   // it is wide.
@@ -1866,40 +1321,35 @@ function ProgrammeCard({
   return (
     <group position={[x, 0, z]}>
       <group ref={group} {...describes(offer.id)}>
-        <mesh geometry={getCardGeometry(w, h)} position={[0, h / 2, 0]}>
-          {/* Less rough and more metal than the flat version was: the chamfer
-              needs something to reflect or it is just a fold. */}
+        <mesh
+          geometry={getCardGeometry(w, h)}
+          position={[0, h / 2, 0]}
+          // The spot is taken from the raycast hit rather than from the
+          // screen-space pointer, so it lands under the cursor whatever angle
+          // the card is seen at. The slab carries this now that the face plane
+          // is gone; its front is flat and its UVs run 0..1 across it, so the
+          // hit maps straight onto the gloss. Touch never fires it and gets the
+          // parked highlight instead.
+          onPointerMove={(e) => {
+            if (!e.uv) return;
+            spot.current.set(e.uv.x, e.uv.y);
+          }}
+        >
+          {/* Less rough and more metal than a plane would need: with the
+              ornament gone, the chamfer catching the light overhead is the
+              only thing giving this card a surface at all. */}
           <meshStandardMaterial color={STONE} roughness={0.48} metalness={0.45} />
         </mesh>
-        {face && (
-          <mesh
-            position={[0, h / 2, 0.004]}
-            // The spot is taken from the raycast hit rather than from the
-            // screen-space pointer, so it lands under the cursor whatever
-            // angle the card is seen at. Touch never fires this and gets the
-            // parked highlight instead.
-            onPointerMove={(e) => {
-              if (!e.uv) return;
-              spot.current.set(e.uv.x, e.uv.y);
-            }}
-          >
-            <planeGeometry args={[w, h]} />
-            <meshBasicMaterial map={face} toneMapped={false} />
-          </mesh>
-        )}
         <mesh ref={glossMesh} position={[0, h / 2, 0.01]} material={gloss}>
           <planeGeometry args={[w, h]} />
         </mesh>
 
         {/* Signed-distance-field type, sitting above the gloss so the highlight
-            passes UNDER the words rather than washing them out. Both are solid
-            colours rather than the gradient they were baked with: at this size
-            a gradient only costs contrast, and contrast is the whole reason
-            these came back out of the texture.
+            passes UNDER the words rather than washing them out.
 
-            The halo is a tight dark outline, not an offset shadow. It is there
-            to lift the words off the scrollwork behind them — an offset would
-            read as a second, blurrier copy at 8 pixels tall. */}
+            The halo is a tight dark outline, not an offset shadow: it lifts the
+            words off the card wherever the highlight happens to be, and an
+            offset would read as a second, blurrier copy at this size. */}
         <Text
           font={FRAUNCES}
           fontSize={nameSize}
@@ -1908,8 +1358,8 @@ function ProgrammeCard({
           position={[0, h - 0.24, 0.016]}
           anchorX="center"
           anchorY="top"
-          // Out to just inside the frame's inner rule. Any tighter and
-          // "Personality &" tips onto a third line at portrait sizes.
+          // Any tighter and "Personality &" tips onto a third line at portrait
+          // sizes, which would push the bullets into the card below it.
           maxWidth={w - 0.26}
           textAlign="center"
           outlineWidth="4%"
@@ -1936,6 +1386,27 @@ function ProgrammeCard({
         >
           {offer.sub}
         </Text>
+        {/* Left-aligned, because four centred bullets read as a poem. One Text
+            block rather than four: troika wraps and breaks it in one pass, so a
+            bullet that runs to two lines simply takes two, where four separate
+            blocks at fixed offsets would leave uneven gaps between them. */}
+        <Text
+          font={INTER}
+          fontSize={pointSize}
+          lineHeight={1.5}
+          color="#cbc3b4"
+          position={[-(w - 0.34) / 2, pointsY, 0.016]}
+          anchorX="left"
+          anchorY="top"
+          maxWidth={w - 0.34}
+          textAlign="left"
+          outlineWidth="5%"
+          outlineBlur="8%"
+          outlineColor="#070603"
+          outlineOpacity={0.8}
+        >
+          {points}
+        </Text>
       </group>
       <BlobShadow position={[0, 0.012, 0]} scale={2.2} />
     </group>
@@ -1948,7 +1419,7 @@ export function Decision() {
   return (
     <ChapterAlive.Provider value={alive}>
       <group position={[0, 0, -70]}>
-        {/* LEVEL 2 — the three programmes, down the hall */}
+        {/* The three programmes, side by side. */}
         {OFFERS.pillars.map((offer, i) => (
           <ProgrammeCard
             key={offer.id}
@@ -1967,14 +1438,6 @@ export function Decision() {
           distance={13}
         />
 
-        {/* LEVEL 1 — the gateway, in front and lit hardest */}
-        <GatewayPanel offer={OFFERS.gate} x={0} z={GATE_Z} w={GATE_W} h={GATE_H} />
-        <pointLight
-          position={[0, 1.9, GATE_Z + 2.4]}
-          intensity={7}
-          color={GOLD_LIGHT}
-          distance={8}
-        />
       </group>
     </ChapterAlive.Provider>
   );

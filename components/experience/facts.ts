@@ -9,7 +9,7 @@
 //   CHAPTERS      the five scroll chapters — eyebrow, title, sub, and the
 //                 progress window each one owns
 //   FACTS         the copy an object reads out when it is pointed at
-//   OFFERS        the final scene — the audit gate and the three programs
+//   OFFERS        the final scene — the three programmes and their bullets
 //   REBUILD_STEPS the five stacking slabs
 //   SCENE         one-off labels (BEFORE / AFTER / the loader / the rail)
 //   OVERLAY_CTAS  the buttons the scroll overlay puts on screen
@@ -139,7 +139,10 @@ export const FACTS: Record<string, Fact> = {
     cam: [3.2, 1.9, -49.4],
     look: [1.9, 1.8, -52],
   },
-  // ---- THE OFFERS (§4 + §9): Transformation Audit gate + three programs ----
+  // ---- THE OFFERS (§4 + §9) ----
+  // "offer-audit" no longer has an object in the scene — the gateway card was
+  // removed — but the entry stays: it is the copy the /book funnel and the
+  // server-rendered fallback read, and the audit is still the primary action.
   "offer-audit": {
     id: "offer-audit",
     eyebrow: `Transformation Audit · ${LEGAL.CONSULT_PRICE} · 45 minutes · online via WhatsApp`,
@@ -151,7 +154,7 @@ export const FACTS: Record<string, Fact> = {
   },
   "offer-lifestyle": {
     id: "offer-lifestyle",
-    eyebrow: "Lifestyle Coaching · Monthly · Price disclosed after your audit",
+    eyebrow: "Lifestyle Coaching · Your Body",
     title: "Lifestyle Coaching",
     body: "Habits, nutrition, training, sleep, stress, supplements — full health optimisation. Better energy, fat loss, muscle gain, discipline that holds." /* [review] scope per §4.1 */,
     cta: { label: "See Coaching", href: "/programs" },
@@ -188,60 +191,73 @@ export const FACTS: Record<string, Fact> = {
 };
 
 // ============================================================
-// THE FINAL SCENE — one gateway, then three programs.
+// THE FINAL SCENE — three programmes, side by side.
 //
-// The shape of the offer, in the shape of the room:
+// The Transformation Audit used to stand in front of these as a gateway card,
+// which is why the three were pushed back down a long hall and only the
+// flagship's head cleared the gate. It has been taken out of the scene: the
+// three are what the visitor came to see, and the audit is still the primary
+// action on the way out — the gold button on the overlay books it.
 //
-//   LEVEL 1 (front, lit, closest to the visitor)
-//     The Transformation Audit. Not one of four choices — the way IN to all
-//     of them. Nobody buys a program without it, so it stands alone at the
-//     front of the room and it is the only thing here carrying a price.
-//
-//   LEVEL 2 (behind it)
-//     The three programs the audit routes a man into. Lifestyle Coaching and
-//     Personality & Presence flank; Complete Transformation stands between
-//     them and towers over the gate, because it IS the two of them together.
-//     Its column is the only object tall enough to clear the gateway, which
-//     is how the flagship reads as the flagship without a badge.
-//
-// Depth, height and width are in chapters.tsx — this is the wording.
+// Depth, height and width are in chapters.tsx — THIS FILE IS THE WORDING.
+// Every line the cards show is below; change it here and nowhere else.
 // ============================================================
 
 export type Offer = {
   /** matches a FACTS key — that entry is what it says on hover */
   id: string;
-  eyebrow?: string;
   label: string;
+  /** the line under the name */
   sub: string;
+  /**
+   * What the programme actually gets him, on the face of the card. Four lines
+   * each, kept short enough to survive a phone: each one wraps to at most two
+   * lines at the largest type size, and a fifth entry would push the block off
+   * the bottom of the shorter cards. Add one and check the card at 375px.
+   */
+  points: string[];
 };
 
-export const OFFERS: { gate: Offer; pillars: Offer[] } = {
-  gate: {
-    id: "offer-audit",
-    eyebrow: "START HERE" /* CTA vocabulary */,
-    label: "Transformation Audit",
-    sub: `${LEGAL.CONSULT_PRICE} · 45 MINUTES · ONLINE`,
-  },
+export const OFFERS: { pillars: Offer[] } = {
   // Order is left → centre → right on the floor. Changing the order here
-  // changes where a program stands.
+  // changes where a programme stands.
   pillars: [
     {
       id: "offer-lifestyle",
       label: "Lifestyle Coaching",
-      sub: "MONTHLY · PRICE AFTER YOUR AUDIT",
+      sub: "YOUR BODY",
+      points: [
+        "Fat loss that actually holds",
+        "Training built around your real schedule",
+        "Energy that doesn't crash by 4pm",
+        "Sleep and recovery, fixed for good",
+      ],
     },
     {
       id: "offer-complete",
       label: "Complete Transformation",
       sub: "PREMIUM · THE FULL SYSTEM",
+      points: [
+        "Everything in Lifestyle and Presence, combined",
+        "Body, energy, and presence — rebuilt together",
+        "One coach. One system. No gaps.",
+        "The full transformation, start to finish",
+      ],
     },
     {
       id: "offer-presence",
       label: "Personality & Presence",
-      sub: "MONTHLY · PRICE AFTER YOUR AUDIT",
+      sub: "YOUR CONFIDENCE",
+      points: [
+        "Grooming and style built for your face and frame",
+        "The way you carry yourself, corrected",
+        "Wardrobe direction, sorted for good",
+        "Presence that doesn't need to perform",
+      ],
     },
   ],
 };
+
 
 // ---- THE COMPLETE REBUILD — the five slabs that stack (his framework, §6) --
 // `w` and `d` are the slab's width and depth in world units, not copy: they
@@ -267,6 +283,8 @@ export const SCENE = {
   /** plates under the two photographs in chapters 1 and 3 */
   before: "BEFORE",
   after: "AFTER",
+  /** over the flipping client gallery */
+  proof: "Client Transformations",
   /** engraved in front of the stack */
   foundation: "EVERYTHING SITS ON THIS",
   /** while the three.js chunk downloads */
@@ -282,7 +300,14 @@ export const SCENE = {
 export const OVERLAY_CTAS = {
   book: { label: "Book Your Transformation Audit", href: "/book" },
   blueprint: { label: "Get My Free Blueprint", href: "/tools#blueprint" },
-  programs: { label: "See the Programs", href: "/programs" },
+  // The label stays inside the CTA vocabulary in AGENTS.md; the note under it
+  // is what tells a visitor the page goes into detail, rather than inventing a
+  // longer button string.
+  programs: {
+    label: "See the Programs",
+    href: "/programs",
+    note: "What each programme covers, how it runs, and who it is for.",
+  },
 };
 
 // Chapter overlay copy + progress windows on the journey [0..1]
@@ -337,9 +362,12 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "decision",
-    // Opens as the gateway lands at 0.76 — see the stops in CameraRig.
-    range: [0.735, 1] as const,
-    copyFrom: 0.9,
+    // Opens just before the three arrive at 0.80 — see the stops in CameraRig.
+    range: [0.77, 1] as const,
+    // Held later than it used to be. The cards now carry four bullets each,
+    // and that is the thing worth reading in this chapter — the headline can
+    // wait until the reader has had the row to himself.
+    copyFrom: 0.93,
     eyebrow: "ONE DECISION" /* [review] */,
     title: "The man you want to become is waiting for one decision.",
     sub: "There is no point in having a six-pack if you still look at your shoes when you enter a room." /* his line, verbatim §1 */,

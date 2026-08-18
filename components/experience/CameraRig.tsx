@@ -46,18 +46,18 @@ const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // button closes by 0.672 because the dolly reaches the proof panels at
   // ≈0.694 rather than ≈0.75.
   { at: 0.712, p: v(-2.6, 2.0, -57.0), t: v(0.3, 1.4, -70) }, // approach the offers
-  // --- The final chapter is TWO beats, not one. ---
-  // BEAT ONE — the gateway, front and centre, with the three programmes
-  // standing well behind it at z -75. Only the flagship column is tall enough
-  // to show over the gate from here; that is the hint.
-  { at: 0.76, p: v(0, 1.95, -62.0), t: v(0, 1.25, -70) },
-  // BEAT TWO — keep scrolling and the camera RISES and carries on over the
-  // gateway, which drops out of the bottom of the frame, leaving the three
-  // programmes filling it. Going over rather than through is deliberate: the
-  // gate is a solid panel on the centre line, so there is no way past it at
-  // eye level, and a camera that clipped through it would swell it to fill
-  // the screen and then cull it away in one frame.
-  { at: 1, p: v(0, 4.4, -65.5), t: v(0, 1.4, -75) },
+  // --- The final chapter is one arrival and one push-in. ---
+  // It used to be TWO beats because a gateway card stood in front of the three
+  // at z -68.4: the camera had to settle on it, then RISE and carry on over it,
+  // because a solid panel on the centre line cannot be passed at eye level.
+  // With the gate gone both of those constraints go with it. The camera now
+  // arrives on the three head-on and simply comes closer, and it can stay at
+  // standing height instead of climbing to 4.4 to see over something.
+  { at: 0.8, p: v(0, 2.4, -66.0), t: v(0, 1.85, -75) }, // all three, in frame
+  // 6.5 units out: half-width 4.44 against cards reaching ±2.80, and half-height
+  // 2.50 against a flagship 4.0 tall aimed at 1.9 — the vertical is the binding
+  // one here, with 0.40 of headroom over the top of the tallest card.
+  { at: 1, p: v(0, 2.2, -68.5), t: v(0, 1.9, -75) }, // closer — the cards readable
 ];
 
 // Portrait art direction: phones lose ~60% of the horizontal frustum, so the
@@ -75,13 +75,19 @@ const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 2.9, -23.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
   { p: v(0, 1.8, -41.0), t: v(0, 1.7, -52) }, // proof gallery, both frames visible
   { p: v(0, 1.9, -55.0), t: v(0, 1.4, -70) }, // approach the offers
-  { p: v(0, 1.95, -60.0), t: v(0, 1.3, -70) }, // beat one — the gateway centred
-  // Beat two. Higher and further back than the landscape key for one reason:
-  // the three programmes span 5.3 units and a phone's frustum only reaches
-  // ±2.78 at this depth, so the camera cannot come any closer without cutting
-  // the outer two off. The extra height is what gets the gateway out of the
-  // way instead.
-  { p: v(0, 5.6, -64.0), t: v(0, 1.4, -75) },
+  // Arrival and push-in, matching the landscape keys. Pinned by arithmetic
+  // rather than taste: the cards span x ±2.80 and a phone's frustum reaches
+  // only 0.2446 of the viewing distance either side of centre, so -62.2 is the
+  // CLOSEST this can stop and still leave a third of a unit between the outer
+  // cards and the edge of the screen. That is also why the push-in here is a
+  // fraction of the one on a wide screen — there is nowhere to push to.
+  //
+  // The tall empty band above and below the row on a phone is not a framing
+  // mistake and cannot be tuned away: fitting ±2.80 across a 0.46 aspect forces
+  // a half-height of 6.09 whatever the lens does, because half-height is
+  // half-width over aspect. Only rearranging the row would change it.
+  { p: v(0, 2.6, -61.0), t: v(0, 1.9, -75) },
+  { p: v(0, 2.4, -62.2), t: v(0, 1.9, -75) },
 ];
 
 /** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */
