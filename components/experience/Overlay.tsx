@@ -133,16 +133,34 @@ export default function Overlay() {
                 {chapter.title}
               </p>
             ) : (
+              /* The closing chapter inverts the usual weighting. Everywhere
+                 else the title is the statement and the sub is a stage
+                 direction ("Touch a layer to read it"). Here the sub IS the
+                 statement — his own line, verbatim — and the title is only the
+                 setup, so the title steps down and the line under it steps up. */
               <p
                 style={copyStyle}
-                className="font-display mt-3 max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] font-medium leading-[1.12] tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)]"
+                className={`font-display mt-3 font-medium tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)] ${
+                  chapter.id === "decision"
+                    ? "max-w-[26ch] text-[clamp(1.25rem,2.6vw,1.95rem)] leading-[1.16]"
+                    : "max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] leading-[1.12]"
+                }`}
               >
                 {chapter.title}
               </p>
             )}
+            {/* Every utility the two branches disagree on — size, leading,
+                colour, measure — lives INSIDE the branches and never split
+                between base and branch: two Tailwind classes setting the same
+                property on one element resolve by stylesheet order, not by the
+                order they appear in the string. */}
             <p
               style={copyStyle}
-              className="mt-3 max-w-md text-[0.9rem] leading-relaxed text-[#a7a199] [text-shadow:0_1px_12px_rgba(8,8,10,0.9)]"
+              className={`mt-3 [text-shadow:0_1px_12px_rgba(8,8,10,0.9)] ${
+                chapter.id === "decision"
+                  ? "max-w-[38ch] text-[clamp(1.02rem,1.9vw,1.34rem)] leading-[1.5] text-[#d3ccc1]"
+                  : "max-w-md text-[0.9rem] leading-relaxed text-[#a7a199]"
+              }`}
             >
               {chapter.sub}
             </p>

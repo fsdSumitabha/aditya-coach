@@ -1237,7 +1237,13 @@ const CROP: Record<string, Crop> = {
 const FACE_PPU = 256;
 
 const ARABESQUE_D = 1.84; // disc diameter
-const ARABESQUE_Y = 1.5; // its centre, measured up from the card's bottom edge
+// A FRACTION of the card's height, not an absolute — the flagship is 4.0 tall
+// and its neighbours 3.4, and a fixed height put the disc noticeably higher up
+// the short cards than the tall one. As a fraction all three sit at the same
+// point in their own card, which is what makes the row read as one row.
+// It also has to clear the type block above it in the worst case: the largest
+// viewport-scaled name over a two-line price line.
+const ARABESQUE_Y = 0.33;
 
 const GOLD_STOPS: [number, string][] = [
   [0, "#f7e9bd"],
@@ -1508,79 +1514,34 @@ function paintFrameA(
   place(w - F_OUT - 0.025, h - F_OUT - 0.025, -1, -1, bracket);
 }
 
-/* --- type --- */
-
-// The 3D text these replace needed a hand-measured advance-width constant to
-// guess its own line breaks. Canvas measures for real, so the wrap is exact and
-// a longer programme name in facts.ts re-flows instead of running off the card.
-let faceFonts: Promise<void> | null = null;
-
-function loadFaceFonts() {
-  if (faceFonts) return faceFonts;
-  faceFonts = (async () => {
-    await Promise.all(
-      [
-        new FontFace("AtelierDisplay", `url(${FRAUNCES})`),
-        new FontFace("AtelierBody", `url(${INTER})`),
-      ].map(async (f) => {
-        await f.load();
-        document.fonts.add(f);
-      }),
-    );
-  })().catch(() => {
-    // A card set in the fallback serif beats a card with no name on it, so a
-    // failed font load must not reject the bake.
-  });
-  return faceFonts;
-}
-
-function wrapTo(ctx: CanvasRenderingContext2D, text: string, maxW: number) {
-  const lines: string[] = [];
-  let cur = "";
-  for (const word of text.split(" ")) {
-    const next = cur ? `${cur} ${word}` : word;
-    if (cur && ctx.measureText(next).width > maxW) {
-      lines.push(cur);
-      cur = word;
-    } else cur = next;
-  }
-  if (cur) lines.push(cur);
-  return lines;
-}
-
-/** Tracked-out caps, drawn a glyph at a time — ctx.letterSpacing is too new. */
-function trackedWidth(ctx: CanvasRenderingContext2D, s: string, sp: number) {
-  let w = -sp;
-  for (const ch of s) w += ctx.measureText(ch).width + sp;
-  return w;
-}
-
-function drawTracked(
-  ctx: CanvasRenderingContext2D,
-  s: string,
-  cx: number,
-  y: number,
-  sp: number,
-) {
-  let x = cx - trackedWidth(ctx, s, sp) / 2;
-  for (const ch of s) {
-    ctx.fillText(ch, x, y);
-    x += ctx.measureText(ch).width + sp;
-  }
-}
-
 /* --- the bake --- */
 
-const faceCache = new Map<string, THREE.Texture>();
-const faceLoads = new Map<string, Promise<THREE.Texture>>();
+// NOTE WHAT IS NOT IN HERE ANY MORE: the type.
+//
+// Baking the name and the price line into this texture cost more than it paid.
+// A card renders about 235 device pixels wide on a phone against a 512-pixel
+// texture, so the face is MINIFIED roughly 2x and the GPU serves it from a
+// blurred mip — which is fatal for 8-pixel tracked capitals and merely soft for
+// scrollwork. A baked size also cannot respond to the viewport, and the type
+// needs to be larger on a phone than on a desktop.
+//
+// So the texture now carries only what tolerates being soft — the frame, the
+// filigree and the arabesque — and the type went back to signed-distance-field
+// text, which stays crisp at any size and can be sized per viewport. The trade
+// is that the type no longer runs through the gold gradient; legibility on a
+// phone is worth more than a gradient nobody can resolve at that size.
+//
+// Dropping the type also retired the FontFace loading this used to need, so the
+// bake is synchronous again.
 
-async function bakeFace(offer: Offer, w: number, h: number, flagship: boolean) {
-  await loadFaceFonts();
+const faceCache = new Map<string, THREE.Texture>();
+
+function bakeFace(offer: Offer, w: number, h: number) {
   const c = document.createElement("canvas");
   c.width = Math.round(w * FACE_PPU);
   c.height = Math.round(h * FACE_PPU);
   const ctx = c.getContext("2d");
-  if (!ctx) throw new Error("no 2d context");
+  if (!ctx) return null;
 
   // Everything below is authored in WORLD UNITS: one scale, then no conversions
   // anywhere in the drawing code. Stroke weights are the exception — they are
@@ -1597,9 +1558,9 @@ async function bakeFace(offer: Offer, w: number, h: number, flagship: boolean) {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  // ONE gold gradient across the whole face, shared by the ornament, the frame
-  // and the type — so the light reads as a single source crossing the card
-  // rather than each element carrying its own private highlight.
+  // ONE gold gradient across the whole face, shared by the ornament and the
+  // frame — so the light reads as a single source crossing the card rather
+  // than each element carrying its own private highlight.
   //
   // Rebuilt per use with the current translation cancelled out. A canvas
   // gradient is resolved in user space at PAINT time, not at creation, so the
@@ -1614,7 +1575,7 @@ async function bakeFace(offer: Offer, w: number, h: number, flagship: boolean) {
   const R = ARABESQUE_D / 2;
   const crop = CROP[offer.id] ?? "full";
   const discX = crop === "right" ? 0 : crop === "left" ? w : w / 2;
-  const discY = h - ARABESQUE_Y;
+  const discY = h - h * ARABESQUE_Y;
 
   // Two passes: a hard shadow down-right, then the metal on top. That is the
   // relief — struck into the card rather than printed on it.
@@ -1649,89 +1610,20 @@ async function bakeFace(offer: Offer, w: number, h: number, flagship: boolean) {
 
     ink(pass.d, pass.d);
     paintFrameA(ctx, w, h, lw);
-
-    // --- the name, then the price line under it ---
-    const nameSize = flagship ? 0.152 : 0.132;
-    ctx.font = `${nameSize}px AtelierDisplay, Georgia, serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "alphabetic";
-    let y = 0.36;
-    for (const line of wrapTo(ctx, offer.label, w - F_IN * 2 - 0.16)) {
-      ctx.fillText(line, w / 2, y);
-      y += nameSize * 1.18;
-    }
-    const subSize = flagship ? 0.058 : 0.05;
-    ctx.font = `${subSize}px AtelierBody, Helvetica, sans-serif`;
-    // drawTracked places one glyph at a time from a left edge it computes
-    // itself, so the centring must come off — with textAlign still "center"
-    // every letter would be centred on its own pen position.
-    ctx.textAlign = "left";
-    ctx.globalAlpha = pass.alpha * (pass.ink ? 1 : 0.72);
-    y += 0.09;
-    let sub = offer.sub;
-    const room = w - F_IN * 2 - 0.14;
-    const track = subSize * 0.16;
-    // wrapTo cannot see the tracking, so the price line is split by hand
-    const subLines: string[] = [];
-    while (sub) {
-      const words = sub.split(" ");
-      let cur = "";
-      while (words.length && trackedWidth(ctx, `${cur} ${words[0]}`.trim(), track) <= room) {
-        cur = `${cur} ${words.shift()}`.trim();
-      }
-      subLines.push(cur || words.shift() || "");
-      sub = words.join(" ");
-    }
-    for (const line of subLines) {
-      drawTracked(ctx, line, w / 2, y, track);
-      y += subSize * 1.5;
-    }
     ctx.restore();
   }
 
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
+  // The face is minified at every real viewport, so this is the setting that
+  // decides how the frame hairlines hold up. Drivers clamp silently.
+  tex.anisotropy = 8;
   faceCache.set(offer.id, tex);
   return tex;
 }
 
-function getCardFace(offer: Offer, w: number, h: number, flagship: boolean) {
-  const hit = faceLoads.get(offer.id);
-  if (hit) return hit;
-  const job = bakeFace(offer, w, h, flagship);
-  faceLoads.set(offer.id, job);
-  return job;
-}
-
-function useCardFace(offer: Offer, w: number, h: number, flagship: boolean) {
-  const [tex, setTex] = useState<THREE.Texture | null>(
-    () => faceCache.get(offer.id) ?? null,
-  );
-  const [shown, setShown] = useState(offer.id);
-  if (shown !== offer.id) {
-    setShown(offer.id);
-    setTex(faceCache.get(offer.id) ?? null);
-  }
-  // Held back until the journey is two thirds down. These cards mount at canvas
-  // boot, and baking three of them there means three font loads, six ornament
-  // passes and about 5MB of texture upload competing with the hero for the
-  // first seconds — for a scene the visitor cannot reach yet. 0.5 leaves a
-  // quarter of the journey to bake in before the chapter opens at 0.735.
-  const warm = useExperience((s) => s.progress > 0.5);
-  useEffect(() => {
-    if (!warm || faceCache.has(offer.id)) return;
-    let live = true;
-    getCardFace(offer, w, h, flagship)
-      .then((t) => {
-        if (live) setTex(t);
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, [warm, offer, w, h, flagship]);
-  return tex;
+function getCardFace(offer: Offer, w: number, h: number) {
+  return faceCache.get(offer.id) ?? bakeFace(offer, w, h);
 }
 
 /* ---------- the gloss that follows the cursor ---------- */
@@ -1923,7 +1815,27 @@ function ProgrammeCard({
   const spot = useRef(new THREE.Vector2(GLOSS_IDLE.x, GLOSS_IDLE.y));
   const alive = useChapterAlive();
   const described = useExperience((s) => s.hover === offer.id);
-  const face = useCardFace(offer, w, h, flagship);
+  // Cached after the first call, so this is a map lookup on every later render.
+  // Held back until the journey is two thirds down: these cards mount at canvas
+  // boot, and baking three ornaments plus ~5MB of texture upload there competes
+  // with the hero for a scene the visitor cannot reach yet.
+  const warm = useExperience((st) => st.progress > 0.5);
+  const face = warm ? getCardFace(offer, w, h) : null;
+
+  // TYPE SIZE IS PER VIEWPORT. A phone shows this card at roughly the same
+  // number of DEVICE pixels as a desktop does, but far fewer CSS pixels, and it
+  // is CSS pixels that decide whether a person can read it at arm's length —
+  // which is why the price line was legible on a laptop and not on a phone.
+  // Same portrait ramp the camera uses, so the two stay in step.
+  const aspect = useThree((st) => st.size.width / st.size.height);
+  const portrait = THREE.MathUtils.clamp((1.05 - aspect) / 0.45, 0, 1);
+  const typeScale = 1 + 0.36 * portrait;
+  const nameSize = (flagship ? 0.152 : 0.132) * typeScale;
+  const subSize = (flagship ? 0.082 : 0.075) * typeScale;
+  // The price line sits below a two-line name rather than at a fixed height:
+  // the name grows with the viewport, and a constant would have the two
+  // overlapping on a phone at exactly the size that made them readable.
+  const subY = h - 0.24 - 2 * nameSize * 1.2 - 0.09;
   // One material per card — each carries its own spot position, and the aspect
   // has to be baked in so the highlight stays round on a card twice as tall as
   // it is wide.
@@ -1978,6 +1890,52 @@ function ProgrammeCard({
         <mesh ref={glossMesh} position={[0, h / 2, 0.01]} material={gloss}>
           <planeGeometry args={[w, h]} />
         </mesh>
+
+        {/* Signed-distance-field type, sitting above the gloss so the highlight
+            passes UNDER the words rather than washing them out. Both are solid
+            colours rather than the gradient they were baked with: at this size
+            a gradient only costs contrast, and contrast is the whole reason
+            these came back out of the texture.
+
+            The halo is a tight dark outline, not an offset shadow. It is there
+            to lift the words off the scrollwork behind them — an offset would
+            read as a second, blurrier copy at 8 pixels tall. */}
+        <Text
+          font={FRAUNCES}
+          fontSize={nameSize}
+          letterSpacing={0.02}
+          color={GOLD_LIGHT}
+          position={[0, h - 0.24, 0.016]}
+          anchorX="center"
+          anchorY="top"
+          // Out to just inside the frame's inner rule. Any tighter and
+          // "Personality &" tips onto a third line at portrait sizes.
+          maxWidth={w - 0.26}
+          textAlign="center"
+          outlineWidth="4%"
+          outlineBlur="7%"
+          outlineColor="#070603"
+          outlineOpacity={0.8}
+        >
+          {offer.label}
+        </Text>
+        <Text
+          font={INTER}
+          fontSize={subSize}
+          letterSpacing={0.16}
+          color={GOLD}
+          position={[0, subY, 0.016]}
+          anchorX="center"
+          anchorY="top"
+          maxWidth={w - 0.2}
+          textAlign="center"
+          outlineWidth="5%"
+          outlineBlur="8%"
+          outlineColor="#070603"
+          outlineOpacity={0.8}
+        >
+          {offer.sub}
+        </Text>
       </group>
       <BlobShadow position={[0, 0.012, 0]} scale={2.2} />
     </group>
