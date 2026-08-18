@@ -1134,6 +1134,14 @@ const PILLAR_H = [3.4, 4.0, 3.4];
 const CARD_R = 0.02;
 const CARD_D = 0.09; // how far the slab stands proud
 const CARD_BEVEL = 0.022; // the chamfer that catches the light
+// The border is a RAISED FRAME with the face sunk behind it, not a line drawn
+// on a flat surface. That is the whole difference between a card that looks
+// deep and one that looks printed: a drawn border has no walls, so there is
+// nothing for the gold light overhead to rake across. Here the frame's inner
+// wall is real geometry, lit on the top edge and in shadow on the bottom, and
+// everything the card says sits down inside it.
+const CARD_BORDER = 0.085; // width of the raised frame
+const CARD_RECESS = 0.055; // how far the face sits below it
 
 function roundedRect(w: number, h: number, r: number) {
   const s = new THREE.Shape();
@@ -1178,6 +1186,32 @@ function getCardGeometry(w: number, h: number) {
   g.computeBoundingBox();
   g.translate(0, 0, -(g.boundingBox?.max.z ?? CARD_D));
   cardCache.set(key, g);
+  return g;
+}
+
+const frameCache = new Map<string, THREE.ExtrudeGeometry>();
+
+/** The raised frame: the same slab with its middle cut out and extruded. */
+function getCardFrame(w: number, h: number) {
+  const key = `${w}|${h}`;
+  const hit = frameCache.get(key);
+  if (hit) return hit;
+  const outer = roundedRect(w - CARD_BEVEL * 2, h - CARD_BEVEL * 2, CARD_R);
+  const inner = roundedRect(w - CARD_BORDER * 2, h - CARD_BORDER * 2, CARD_R);
+  // Sampled to a polyline and reversed: a hole has to wind against its outline
+  // or the triangulator fills straight over it.
+  outer.holes.push(new THREE.Path(inner.getPoints(8).reverse()));
+  const g = new THREE.ExtrudeGeometry(outer, {
+    depth: CARD_RECESS,
+    bevelEnabled: true,
+    bevelThickness: CARD_BEVEL,
+    bevelSize: CARD_BEVEL,
+    bevelSegments: 2,
+    curveSegments: 6,
+  });
+  g.computeBoundingBox();
+  g.translate(0, 0, -(g.boundingBox?.max.z ?? CARD_RECESS));
+  frameCache.set(key, g);
   return g;
 }
 
@@ -1235,13 +1269,13 @@ function makeGlossMaterial(aspect: number) {
  *      only lit surface here, and the reason the card has an edge for the gold
  *      light overhead to find. A plane had none, which is why the previous
  *      version read as a printed rectangle rather than an object in a room.
- *   2. the gloss — an additive highlight that follows the cursor across it.
- *   3. the type — name, price line and four bullets, all signed-distance-field
+ *   2. the frame — a raised border with the face sunk behind it.
+ *   3. the gloss — an additive highlight that follows the cursor across it.
+ *   4. the type — name, price line and four bullets, all signed-distance-field
  *      so they stay crisp at any size and can be sized per viewport.
  *
- * There is no ornament and no border any more. Everything the card says, it
- * says in words; the only decoration left is the light on the chamfer and the
- * highlight under the cursor.
+ * There is no ornament. Everything the card says, it says in words; the
+ * decoration is depth and the light falling into it.
  */
 function ProgrammeCard({
   offer,
@@ -1286,11 +1320,19 @@ function ProgrammeCard({
   // a forty-character line would wrap to three, and four of those runs off the
   // bottom of the short cards.
   const pointSize = (flagship ? 0.086 : 0.08) * (1 + 0.26 * portrait);
-  // Clears a two-line price line. Everything on this face is stacked off the
-  // one above it rather than off a constant, so the whole block breathes with
-  // the viewport instead of colliding at the size that made it readable.
-  const pointsY = subY - 2 * subSize * 1.2 - 0.12;
-  const points = offer.points.map((p) => `•  ${p}`).join("\n");
+  // Clears a two-line price line, then a deliberate gap so the bullets read as
+  // a separate block rather than a fourth line of the caption above them.
+  //
+  // That gap rides the same portrait ramp as the bullets themselves. A fixed
+  // one would hold at 0.27 while the type around it grew by a quarter, so the
+  // separation the gap exists to create would quietly shrink on exactly the
+  // screen where it matters most.
+  //
+  // Everything on this face is stacked off the thing above it rather than off
+  // a constant, so the whole block breathes with the viewport instead of
+  // colliding at the size that made it readable.
+  const pointsY = subY - 2 * subSize * 1.2 - 0.27 * (1 + 0.26 * portrait);
+  const points = offer.points.map((p) => `  ${p}`).join("\n\n");
   // One material per card — each carries its own spot position, and the aspect
   // has to be baked in so the highlight stays round on a card twice as tall as
   // it is wide.
@@ -1321,26 +1363,31 @@ function ProgrammeCard({
   return (
     <group position={[x, 0, z]}>
       <group ref={group} {...describes(offer.id)}>
+        {/* the well floor, sunk behind the frame */}
+        <mesh geometry={getCardGeometry(w, h)} position={[0, h / 2, -CARD_RECESS]}>
+          <meshStandardMaterial color="#0e0d0a" roughness={0.62} metalness={0.28} />
+        </mesh>
+        {/* The frame. Darker than the face it surrounds and much more metallic,
+            so what reads is not a gold rectangle but a lit edge — the top of
+            the border catching the lamp overhead while the bottom stays in
+            shadow. A flat gold border here would have been the third gold
+            thing on a card that already has two. */}
+        <mesh geometry={getCardFrame(w, h)} position={[0, h / 2, 0]}>
+          <meshStandardMaterial color="#e99f21" roughness={0.32} metalness={0.75} />
+        </mesh>
+        {/* The gloss doubles as the pointer target. It is the only surface here
+            whose UVs run 0..1 — an extruded shape gets world-space UVs from
+            three's default generator, so reading the hit off the slab would
+            have handed the shader coordinates in world units. */}
         <mesh
-          geometry={getCardGeometry(w, h)}
-          position={[0, h / 2, 0]}
-          // The spot is taken from the raycast hit rather than from the
-          // screen-space pointer, so it lands under the cursor whatever angle
-          // the card is seen at. The slab carries this now that the face plane
-          // is gone; its front is flat and its UVs run 0..1 across it, so the
-          // hit maps straight onto the gloss. Touch never fires it and gets the
-          // parked highlight instead.
+          ref={glossMesh}
+          position={[0, h / 2, 0.004 - CARD_RECESS]}
+          material={gloss}
           onPointerMove={(e) => {
             if (!e.uv) return;
             spot.current.set(e.uv.x, e.uv.y);
           }}
         >
-          {/* Less rough and more metal than a plane would need: with the
-              ornament gone, the chamfer catching the light overhead is the
-              only thing giving this card a surface at all. */}
-          <meshStandardMaterial color={STONE} roughness={0.48} metalness={0.45} />
-        </mesh>
-        <mesh ref={glossMesh} position={[0, h / 2, 0.01]} material={gloss}>
           <planeGeometry args={[w, h]} />
         </mesh>
 
@@ -1350,22 +1397,33 @@ function ProgrammeCard({
             The halo is a tight dark outline, not an offset shadow: it lifts the
             words off the card wherever the highlight happens to be, and an
             offset would read as a second, blurrier copy at this size. */}
+        {/* TWO-TONE GOLD. A light gold face over a deep gold shadow thrown
+            down and slightly right — the top and bottom stops of the same
+            palette the rest of the scene's gold uses, which is what a gradient
+            on a letter this size resolves to anyway. A real per-glyph ramp
+            would need a custom shader on the text material, and it would not
+            be distinguishable at seventeen pixels tall.
+
+            The deep gold doubles as the separation from the face behind it, so
+            this one does not carry the black halo the other two do. */}
         <Text
           font={FRAUNCES}
           fontSize={nameSize}
           letterSpacing={0.02}
-          color={GOLD_LIGHT}
-          position={[0, h - 0.24, 0.016]}
+          color="#f8e8b6"
+          position={[0, h - 0.24, 0.012 - CARD_RECESS]}
           anchorX="center"
           anchorY="top"
           // Any tighter and "Personality &" tips onto a third line at portrait
           // sizes, which would push the bullets into the card below it.
-          maxWidth={w - 0.26}
+          maxWidth={w - 0.3}
           textAlign="center"
-          outlineWidth="4%"
-          outlineBlur="7%"
-          outlineColor="#070603"
-          outlineOpacity={0.8}
+          outlineWidth="3.5%"
+          outlineOffsetX="1%"
+          outlineOffsetY="-3%"
+          outlineBlur="3%"
+          outlineColor="#6e5418"
+          outlineOpacity={0.95}
         >
           {offer.label}
         </Text>
@@ -1374,10 +1432,13 @@ function ProgrammeCard({
           fontSize={subSize}
           letterSpacing={0.16}
           color={GOLD}
-          position={[0, subY, 0.016]}
+          position={[0, subY, 0.012 - CARD_RECESS]}
           anchorX="center"
           anchorY="top"
-          maxWidth={w - 0.2}
+          // Inside the well, not the card: the frame eats 0.085 a side plus its
+          // chamfer, so every measure on this face is 0.21 narrower than the
+          // card is wide before any margin of its own.
+          maxWidth={w - 0.3}
           textAlign="center"
           outlineWidth="5%"
           outlineBlur="8%"
@@ -1395,11 +1456,11 @@ function ProgrammeCard({
           fontSize={pointSize}
           lineHeight={1.5}
           color="#cbc3b4"
-          position={[-(w - 0.34) / 2, pointsY, 0.016]}
+        position={[-(w - 0.38) / 2, pointsY, 0.012 - CARD_RECESS]}
           anchorX="left"
           anchorY="top"
-          maxWidth={w - 0.34}
-          textAlign="left"
+          maxWidth={w - 0.38}
+          textAlign="center"
           outlineWidth="5%"
           outlineBlur="8%"
           outlineColor="#070603"
