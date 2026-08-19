@@ -165,12 +165,17 @@ export default function Overlay() {
               {chapter.sub}
             </p>
             {chapter.id === "arrival" && (
+              /* Booking is the gold slab and the blueprint the outline, in that
+                 order — matching the 2D hero in StaticFallback and the brief’s
+                 homepage hierarchy (paid audit primary, free resource second).
+                 This pair used to be reversed, so the same hero pushed a
+                 different action depending on whether WebGL ran. */
               <div className="pointer-events-auto mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href={OVERLAY_CTAS.blueprint.href} className={BTN_GOLD}>
-                  {OVERLAY_CTAS.blueprint.label}
-                </Link>
-                <Link href={OVERLAY_CTAS.book.href} className={BTN_OUTLINE}>
+                <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
                   {OVERLAY_CTAS.book.label}
+                </Link>
+                <Link href={OVERLAY_CTAS.blueprint.href} className={BTN_OUTLINE}>
+                  {OVERLAY_CTAS.blueprint.label}
                 </Link>
               </div>
             )}

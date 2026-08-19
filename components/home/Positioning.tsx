@@ -25,41 +25,39 @@ import VideoFrame from "@/components/home/VideoFrame";
 // ============================================================
 
 /* [review] — THE POSITIVE CORE. Every discipline he actually coaches,
-   grouped so the list reads as one system instead of a word cloud. */
+   grouped so the list reads as one system instead of a word cloud.
+
+   A tag earns its place only by naming something the card title does not
+   already say. The first pass listed four per card, but most of them were
+   the heading rephrased — "Confidence & Charisma" sat above the tags
+   "Confidence" and "Charisma" — so a reader met the same idea twice per
+   card, the second time in smaller type. Trimmed 19 Aug 2026 to the
+   distinct ones; card 04 needs none, and its pill row is dropped rather
+   than padded out. */
 const DISCIPLINES = [
   {
     num: "01",
     title: "Grooming, Style & Appearance",
     line: "How you are put together before you have said a word.",
-    tags: [
-      "Personal grooming",
-      "Style and appearance",
-      "Self-presentation",
-      "Lifestyle grooming",
-    ],
+    tags: ["Self-presentation", "Lifestyle grooming"],
   },
   {
     num: "02",
     title: "Presence & Body Language",
     line: "How you occupy a room, and whether it holds after you sit down.",
-    tags: [
-      "Body language",
-      "Personal presence",
-      "Masculine presence",
-      "Executive presence",
-    ],
+    tags: ["Masculine presence", "Executive presence"],
   },
   {
     num: "03",
     title: "Communication & Social Skill",
     line: "How you handle people — one across a table, or forty across a room.",
-    tags: ["Communication skills", "Social skills", "Etiquette"],
+    tags: ["Etiquette"],
   },
   {
     num: "04",
     title: "Confidence & Charisma",
     line: "Why people remember the conversation a week later.",
-    tags: ["Confidence", "Charisma"],
+    tags: [],
   },
 ];
 
@@ -138,16 +136,18 @@ export default function Positioning() {
                   </p>
                   <h3 className="type-h3 mt-3 text-primary">{d.title}</h3>
                   <p className="type-body mt-3 text-secondary">{d.line}</p>
-                  <ul className="mt-6 flex list-none flex-wrap gap-2">
-                    {d.tags.map((t) => (
-                      <li
-                        key={t}
-                        className="type-caption rounded-full border border-hairline-gold px-3 py-1 text-gold-300"
-                      >
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
+                  {d.tags.length > 0 && (
+                    <ul className="mt-6 flex list-none flex-wrap gap-2">
+                      {d.tags.map((t) => (
+                        <li
+                          key={t}
+                          className="type-caption rounded-full border border-hairline-gold px-3 py-1 text-gold-300"
+                        >
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </Reveal>
             ))}
