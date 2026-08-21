@@ -47,7 +47,7 @@ import {
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import PlaceholderImage from "@/components/PlaceholderImage";
-import VideoFrame from "@/components/home/VideoFrame";
+import VideoFrame from "@/components/VideoFrame";
 import { CheckIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
@@ -506,7 +506,7 @@ export default function BookingFlow() {
 
         {/* ---------- §1b THE FILM ----------
              Same asset as the home page's "In my words" band (one file, one
-             swap in components/home/VideoFrame.tsx) — presented differently
+             swap in components/VideoFrame.tsx) — presented differently
              here: home centres it as a standalone moment, /book runs it as an
              asymmetric two-column band directly under the hero so it reads as
              "know who you're paying before you pay", never as a detour.
@@ -534,17 +534,7 @@ export default function BookingFlow() {
                   </p>
                 </Reveal>
               </div>
-              <Reveal delayMs={160} className="reveal-blur">
-                <VideoFrame
-                  label="FILM — IN MY WORDS"
-                  w={1280}
-                  h={720}
-                  runtime="90 SEC"
-                  alt="Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans."
-                  caption="One take, no script — what the audit is, in his own words."
-                  /* [review] caption */
-                />
-              </Reveal>
+
             </div>
           </div>
         </section>

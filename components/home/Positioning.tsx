@@ -2,7 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import FinalCta from "@/components/FinalCta";
-import VideoFrame from "@/components/home/VideoFrame";
+import VideoFrame from "@/components/VideoFrame";
 
 // ============================================================
 // HOME — positioning block, rendered BELOW the 3D journey.
@@ -73,32 +73,7 @@ export default function Positioning() {
           NOTE: no `cv-auto` here. content-visibility would skip this section's
           layout while it is off screen, and its intersection observer needs it
           measured to fire on time. */}
-      <section className="border-t border-hairline-soft bg-alt">
-        <div className="container-site section">
-          <Reveal className="mx-auto max-w-[720px] text-center">
-            <p className="eyebrow">IN MY WORDS{/* [review] */}</p>
-            <SplitHeading
-              as="h2"
-              text="Ninety seconds. No slides."
-              className="type-h2 text-primary mt-4"
-            />
-            <p className="type-lead mt-5 text-secondary">
-              If you would rather hear this from me than read it, start here.
-            </p>{/* [review] */}
-          </Reveal>
-
-          <Reveal index={1} className="reveal-blur mx-auto mt-10 max-w-[900px] md:mt-14">
-            <VideoFrame
-              label="FILM — IN MY WORDS"
-              w={1280}
-              h={720}
-              runtime="90 SEC"
-              alt="Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans."
-              caption="Shot in one take. No script, no slides — what the work is, in his own words."
-            />
-          </Reveal>
-        </div>
-      </section>
+      
 
       {/* ============ B. THE WORK — the positive core (showpiece) ============ */}
       <section className="cv-auto relative overflow-hidden border-t border-hairline-soft bg-base">

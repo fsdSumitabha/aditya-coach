@@ -5,7 +5,15 @@ import PlaceholderImage from "@/components/PlaceholderImage";
 import { FILM } from "@/lib/config";
 
 /**
- * The "in my words" film, in the section directly below the 3D journey.
+ * THE shared "in my words" film frame. One component, one asset, used by every
+ * band that plays it: the home page centres it as a standalone moment
+ * (components/home/Positioning.tsx); /book runs it as an asymmetric two-column
+ * band under the hero (components/book/BookingFlow.tsx). The surrounding
+ * section markup stays per-page — the two presentations are deliberately
+ * different — but the player, the poster, the autoplay behaviour and the
+ * footage alt text live here only, so swapping the film is a one-file edit.
+ *
+ * On the home page it sits in the section directly below the 3D journey.
  *
  * IT STARTS ITSELF WHEN THE JOURNEY ENDS. Not by listening to the canvas —
  * the film must never be coupled to WebGL, because the 2D fallback has no
@@ -30,23 +38,34 @@ import { FILM } from "@/lib/config";
  * With no `FILM.src` yet, this renders the branded poster placeholder at the
  * same explicit resolution, so the layout is final before the footage exists.
  */
+/**
+ * The film own facts — identical everywhere it plays, so they are defaults,
+ * not props each call site repeats. Only `caption` is written per page.
+ */
+const FILM_LABEL = "FILM — IN MY WORDS";
+const FILM_W = 1280;
+const FILM_H = 720;
+const FILM_RUNTIME = "90 SEC";
+const FILM_ALT =
+  "Aditya Kumar Upadhyay speaking directly to camera in a warm, low-lit room, mid-sentence, explaining that his coaching builds grooming, presence, communication and confidence rather than gym and diet plans.";
+
 export default function VideoFrame({
-  label,
-  w,
-  h,
-  alt,
+  label = FILM_LABEL,
+  w = FILM_W,
+  h = FILM_H,
+  alt = FILM_ALT,
   caption,
-  runtime,
+  runtime = FILM_RUNTIME,
 }: {
-  /** placeholder label, e.g. "FILM — IN MY WORDS" */
-  label: string;
-  w: number;
-  h: number;
+  /** placeholder label — defaults to the film own */
+  label?: string;
+  w?: number;
+  h?: number;
   /** descriptive alt/aria-label for the footage */
-  alt: string;
-  /** visible caption under the frame */
+  alt?: string;
+  /** visible caption under the frame — the one thing each page words itself */
   caption: string;
-  /** short runtime badge, e.g. "90 SEC" */
+  /** short runtime badge; pass "" to hide it */
   runtime?: string;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);

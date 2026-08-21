@@ -9,7 +9,7 @@ import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
 
 /**
- * Sticky header (A5): wordmark · 8 nav links · pinned [Book] gold button.
+ * Sticky header (A5): wordmark · 8 nav links · pinned [Book Audit] gold button.
  * ≤900px the links collapse into a hamburger; the gold button stays visible.
  * Full-screen overlay menu with staggered reveal, scroll lock, focus trap,
  * Escape-to-close.
@@ -116,7 +116,7 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <Link href="/book" className="btn-gold btn-compact">
-              Book
+              Book Audit
             </Link>
             <button
               ref={hamburgerRef}
@@ -210,7 +210,7 @@ export default function Header() {
             } as React.CSSProperties}
           >
             <Link href="/book" className="btn-gold w-full" onClick={close}>
-              Book
+              Book Audit
             </Link>
             <a
               href={waLink()}
