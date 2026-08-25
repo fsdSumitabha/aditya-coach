@@ -4,8 +4,9 @@ import Image from "next/image";
 /**
  * /book — 3-state conversion machine (client island).
  *
- * STATE A (pre-payment):  Hero (§1) + What happens on the call (§2) +
- *                         Intake form (§3) + Payment block (§4) + FAQ (§7).
+ * STATE A (pre-payment):  Checkout (§1) + intake form + payment block,
+ *                         then the persuasion sections (§2–§8) passed in as
+ *                         children from app/book/page.tsx.
  * STATE B (post-payment): Success banner (§6) + optional intake (§5).
  * STATE C (finished):     Banner persists + compact "You're all set".
  *
@@ -46,9 +47,7 @@ import {
 } from "react";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
-import PlaceholderImage from "@/components/PlaceholderImage";
-import VideoFrame from "@/components/VideoFrame";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, WhatsAppIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
   RAZORPAY_KEY,
@@ -75,31 +74,13 @@ const BOOKING = {
 // app/book/page.tsx (Server Component) — not from this island.
 
 // ---------------------------------------------------------------------------
-// §2 copy — WHAT WE ANALYSE (audit scope) told in the Right Order voice
-// (Lifestyle → Nutrition → Supplements → Medical, always doctor-led)
-// ---------------------------------------------------------------------------
-
-const CALL_POINTS = [
-  {
-    lead: "We start with how you live." /* [review] */,
-    body: "Sleep, energy, daily habits, health — the layer everything else is built on. We map it first, always." /* [review] */,
-    Icon: SunriseGlyph,
-  },
-  {
-    lead: "Then fitness and food — in that order." /* [review] */,
-    body: "How you train and what you eat, looked at only once the lifestyle is clear. Never before." /* [review] */,
-    Icon: PlateGlyph,
-  },
-  {
-    lead: "You get the order, not a crash plan." /* [review] */,
-    body: "Exactly what to change and in what sequence — lifestyle, nutrition, then supplements and medical last, always under a doctor." /* [review] */,
-    Icon: CapsuleGlyph,
-  },
-  {
-    lead: "And how you show up." /* [review] */,
-    body: "Confidence, presence, and the goals that matter to you — so you leave knowing your starting point and your first moves." /* [review] */,
-    Icon: ShieldGlyph,
-  },
+// §1 checkout summary — five lines, verbatim per the 2026-08-25 direction.
+const CHECKOUT_POINTS = [
+  "Personal assessment with Aditya",
+  "Understand your current position and goals",
+  "Identify what needs to change",
+  "Get your recommended transformation path",
+  "Premium Blueprint included",
 ];
 
 const GOAL_OPTIONS = [
@@ -111,79 +92,6 @@ const GOAL_OPTIONS = [
 ];
 
 // ---------------------------------------------------------------------------
-// §7 FAQ — single list, rendered in /book's <details> card design.
-// First three are /book's own payment-gate questions. The rest are carried
-// over VERBATIM from /programs (same answers men ask before starting), so a
-// visitor who lands straight on /book from Instagram never has to leave to
-// get them answered.
-//
-// /programs' "What's your refund policy?" is deliberately NOT duplicated —
-// "Can I get a refund?" below is the same answer and the same /refund link.
-// ---------------------------------------------------------------------------
-
-const FAQS: { q: string; a: ReactNode }[] = [
-  {
-    q: "Is the payment safe?",
-    /* [review] */
-    a: "Yes. Payment is handled by Razorpay over an encrypted connection. Aditya never sees your card details.",
-  },
-  {
-    q: "Can I get a refund?",
-    /* [review] */
-    a: (
-      <>
-        Refunds are covered by our clear refund policy — no surprises.{" "}
-        <Link
-          href="/refund"
-          className="underline underline-offset-2 hover:text-secondary"
-        >
-          Read it here
-        </Link>
-        .
-      </>
-    ),
-  },
-  {
-    q: "What if I can't make the time?",
-    /* [review] */
-    a: (
-      <>
-        No problem.{" "}
-        <a
-          href={waLink(
-            "Hi Aditya, I booked the Transformation Audit but need help with the time slot.", /* [review] */
-            COACH_WHATSAPP,
-          )}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-secondary"
-        >
-          Message Aditya on WhatsApp
-        </a>{" "}
-        and we&apos;ll reschedule. The slot is flexible — the decision to start
-        is the part that matters.
-      </>
-    ),
-  },
-  // ---- carried over from /programs (copy verbatim) ----
-  {
-    q: "Is this online, or do I have to be in Kolkata?",
-    a: "Both work. I'm based in Kolkata and coach men in person and worldwide online. The Transformation Audit is a 45-minute call over WhatsApp, so it doesn't matter where you are.",
-  },
-  {
-    q: "Do you take international clients?",
-    a: "Yes. I coach men worldwide online. The call, the check-ins and your plan all run remotely — nothing about the process needs you in the same city.",
-  },
-  {
-    q: "What if I'm a complete beginner?",
-    a: "Good. Beginners get the cleanest results because there's nothing to un-learn. We fix your lifestyle first — how you sleep, wake, move and eat — before anything advanced. You don't need a gym background to start.",
-  },
-  {
-    q: "How soon will I see results?",
-    a: "Some things shift in the first two weeks — energy, sleep, focus. Visible body change takes longer and depends on your starting point and how consistently you execute. I don't sell overnight transformations. I build change that lasts. Individual results vary.",
-  },
-];
-
 // ---------------------------------------------------------------------------
 // §3 validation (JS owns validation — <form noValidate>)
 // ---------------------------------------------------------------------------
@@ -262,7 +170,7 @@ function prefersReducedMotion(): boolean {
 
 type MachineState = "A" | "B" | "C";
 
-export default function BookingFlow() {
+export default function BookingFlow({ children }: { children: ReactNode }) {
   const [state, setState] = useState<MachineState>("A");
 
   // §3 pre-payment intake values + errors
@@ -444,176 +352,129 @@ export default function BookingFlow() {
 
       {/* ================= STATE A — PRE-PAYMENT ================= */}
       <div hidden={!stateA} aria-hidden={!stateA}>
-        {/* The steps of the flow (hero → what happens → intake → payment) are
-            wrapped so a single gold thread can stitch them down the left gutter
-            as one continuous line to the signature. */}
+        {/* The decision band (checkout → intake → payment) is wrapped so a
+            single gold thread can stitch it down the left gutter as one
+            continuous line from the price to the pay button. */}
         <div className="relative">
-          {/* ---------- §1 HERO (tight, single-column, conversion-first) ---------- */}
-          <section className="section aurora grain relative overflow-hidden">
-          <div className="container-site">
-            <div className="mx-auto max-w-[62ch] text-center">
-              {/* IMG_BOOK_HERO intentionally omitted — hero is pure type on
-                  --bg-void (spec allows); the H1 is the LCP element. */}
-              {/* Hero H1 is NEVER animated — paints at final state frame 1 */}
-              <h1 className="type-h1 text-primary">
-                Book Your Transformation Audit.
-              </h1>
-              {/* [review] Client direction doc (2026-07-21) reframes this route as
-                  the Transformation Audit and supersedes the A6 sitemap H1
-                  ("Book Your Consultation.") — price lives in the sub +
-                  button. One H1 only. */}
-              <Reveal delayMs={0}>
-                <p className="type-lead mt-5 text-secondary">
-                  45 minutes on WhatsApp. Tell me where you&apos;re starting
-                  from.
-                </p>
-              </Reveal>
-              {/* [review] micro-trust row */}
-              <Reveal delayMs={60}>
-                <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 type-small text-muted">
-                  <li>
-                    <span aria-hidden="true">🔒</span> Secure payment
-                  </li>
-                  <li>
-                    <span aria-hidden="true">📱</span> On WhatsApp
-                  </li>
-                  <li>
-                    <span aria-hidden="true">↩︎</span>{" "}
-                    <Link
-                      href="/refund"
-                      className="underline underline-offset-2 hover:text-secondary"
-                    >
-                      Read the refund policy
-                    </Link>
-                  </li>
-                </ul>
-              </Reveal>
-              <Reveal delayMs={120}>
-                <div className="mt-8">
-                  {/* [review] hero primary action label */}
-                  <a
-                    href="#intake"
-                    onClick={scrollToIntake}
-                    className="btn-gold w-full sm:w-auto"
-                  >
-                    Start Your Transformation
-                  </a>
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- §1b THE FILM ----------
-             Same asset as the home page's "In my words" band (one file, one
-             swap in components/VideoFrame.tsx) — presented differently
-             here: home centres it as a standalone moment, /book runs it as an
-             asymmetric two-column band directly under the hero so it reads as
-             "know who you're paying before you pay", never as a detour.
-             Deliberately BELOW the hero CTA: the H1 stays the LCP and the
-             gold button stays above the fold on mobile. */}
-        <section className="cv-auto border-t border-hairline-soft bg-alt">
-          <div className="container-site section">
-            <div className="mx-auto grid max-w-[1000px] items-center gap-8 md:grid-cols-[0.85fr_1.15fr] md:gap-14">
-              <div>
-                <Reveal className="flex items-center gap-3">
-                  <span aria-hidden="true" className="thread-h sd-draw h-px w-10" />
-                  <p className="eyebrow">BEFORE YOU BOOK{/* [review] */}</p>
-                </Reveal>
-                {/* [review] */}
-                <SplitHeading
-                  as="h2"
-                  text="Ninety seconds, from me."
-                  className="type-h2 mt-4 text-primary"
-                />
-                <Reveal delayMs={80}>
+          {/* ---------- §1 CHECKOUT — THE DECISION, FIRST ----------
+               This page takes ad traffic. A man who is already convinced must
+               be able to act without scrolling, so the offer, the price, the
+               fee-credit promise and the WhatsApp button all sit above the
+               fold. Everything below §1 exists for the man who isn't. */}
+          <section
+            id="checkout"
+            className="section aurora grain relative overflow-hidden scroll-mt-24"
+          >
+            <div className="container-site">
+              <div className="mx-auto max-w-[680px]">
+                <p className="eyebrow text-center">STEP ONE{/* [review] */}</p>
+                {/* Hero H1 is NEVER animated — paints at final state frame 1.
+                    [review] Reframed from "Book Your Transformation Audit." per
+                    the 2026-08-25 direction: this is the first step of a
+                    transformation, not an appointment booking. */}
+                <h1 className="type-h1 text-primary mt-3 text-center">
+                  The Transformation Audit.
+                </h1>
+                <Reveal delayMs={70}>
                   {/* [review] */}
-                  <p className="type-lead mt-4 text-secondary">
-                    Watch it before you pay. You will know exactly what the
-                    audit is, what we go through, and how I work.
+                  <p className="type-lead text-secondary mt-5 text-center">
+                    Not an appointment. The 45 minutes where you find out what
+                    is actually holding you back — and which path is yours.
                   </p>
                 </Reveal>
-              </div>
 
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- §2 WHAT HAPPENS ON THE CALL ---------- */}
-        <section className="section cv-auto">
-          <div className="container-site">
-            <div className="mx-auto max-w-[860px]">
-              {/* [review] §2 reframed as the audit scope — what we analyse */}
-              <SplitHeading
-                as="h2"
-                text="What we analyse"
-                className="type-h2 text-primary"
-              />
-              <Reveal index={1}>
-                {/* [review] */}
-                <p className="type-lead mt-4 text-secondary">
-                  45 focused minutes. No pitch. We go through every layer — how
-                  you live, train, eat and carry yourself — and find the order
-                  things need to change in.
-                </p>
-              </Reveal>
-              {/* metallic gold gradient for the ordered step glyphs (decorative) */}
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                width="0"
-                height="0"
-                className="absolute h-0 w-0"
-              >
-                <defs>
-                  <linearGradient
-                    id="book-icon-gold"
-                    x1="0"
-                    y1="0"
-                    x2="1"
-                    y2="1"
-                  >
-                    <stop offset="0%" stopColor="#e8d9a8" />
-                    <stop offset="45%" stopColor="#c9a24b" />
-                    <stop offset="100%" stopColor="#f0e6c8" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {CALL_POINTS.map((point, i) => (
-                  <Reveal
-                    key={point.lead}
-                    index={i + 2}
-                    className="card spot h-full reveal-left"
-                  >
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-hairline-gold">
-                      <point.Icon stroke="url(#book-icon-gold)" />
-                    </span>
-                    <h3 className="type-h3 mt-4 text-primary">{point.lead}</h3>
-                    <p className="type-body mt-2 text-secondary">
-                      {point.body}
+                {/* ---- The offer card ---- */}
+                <Reveal
+                  delayMs={140}
+                  style={{ transitionTimingFunction: "var(--ease-overshoot)" }}
+                >
+                  <div className="card card-featured spot mt-9">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <h2 className="type-h3 text-primary">
+                        Transformation Audit
+                      </h2>
+                      <p className="font-display text-gold-grad text-[clamp(2rem,3.4vw,2.5rem)] leading-none">
+                        {LEGAL.CONSULT_PRICE}
+                      </p>
+                    </div>
+                    <p className="type-small text-muted mt-1">
+                      45 minutes · one to one on WhatsApp
                     </p>
-                  </Reveal>
-                ))}
+
+                    <div className="gold-line my-6" aria-hidden="true" />
+
+                    <ul className="grid gap-3">
+                      {CHECKOUT_POINTS.map((point) => (
+                        <li
+                          key={point}
+                          className="type-small text-secondary flex gap-3"
+                        >
+                          <CheckIcon
+                            aria-hidden="true"
+                            className="text-gold-500 mt-1 h-4 w-4 shrink-0"
+                          />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* The convinced man's exit. WhatsApp first, payment below
+                        — men who want to talk to a person before paying are
+                        the majority of this page's traffic. */}
+                    <a
+                      href={waLink(
+                        `Hi Aditya, I want to book the ${LEGAL.CONSULT_PRICE} Transformation Audit.` /* [review] */,
+                        BOOKING.COACH_WHATSAPP,
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-wa mt-7 w-full"
+                    >
+                      <WhatsAppIcon className="h-5 w-5" />
+                      Continue on WhatsApp
+                    </a>
+
+                    {/* The most important line on the page. Confirmed copy —
+                        lives in lib/legal.ts (CONSULT_INCLUDES), never here. */}
+                    <p className="type-small text-gold-300 border-hairline-gold mt-6 border-l pl-4">
+                      {CONSULT_INCLUDES.CREDIT}
+                    </p>
+
+                    <p className="mt-6 text-center">
+                      <a
+                        href="#intake"
+                        onClick={scrollToIntake}
+                        className="link-draw type-small text-secondary hover:text-primary inline-flex min-h-[48px] items-center transition-colors"
+                      >
+                        Or pay online and book your slot ↓
+                      </a>
+                    </p>
+                  </div>
+                </Reveal>
+
+                {/* [review] micro-trust row */}
+                <Reveal delayMs={220}>
+                  <ul className="type-small text-muted mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                    <li>
+                      <span aria-hidden="true">🔒</span> Secure payment
+                    </li>
+                    <li>
+                      <span aria-hidden="true">📱</span> On WhatsApp
+                    </li>
+                    <li>
+                      <span aria-hidden="true">↩︎</span>{" "}
+                      <Link
+                        href="/refund"
+                        className="underline underline-offset-2 hover:text-secondary"
+                      >
+                        Read the refund policy
+                      </Link>
+                    </li>
+                  </ul>
+                </Reveal>
               </div>
-              <Reveal index={6}>
-                {/* [review] goal line — the payoff of the audit */}
-                <p className="type-lead mt-8 text-primary">
-                  We identify what is actually holding you back — and what needs
-                  to be fixed first.
-                </p>
-              </Reveal>
-              <Reveal index={7}>
-                {/* contextual echo of the global medical disclaimer */}
-                <p className="type-caption mt-6 text-muted">
-                  Aditya is a lifestyle coach, not a doctor or dietitian.
-                  Medical steps are always referred to a qualified physician.
-                  General guidance only; individual results vary.
-                </p>
-              </Reveal>
             </div>
-          </div>
-        </section>
+          </section>
 
         {/* ---------- §3 INTAKE FORM + §4 PAYMENT (one continuous form —
              the Pay button runs §3 validation first) ---------- */}
@@ -850,7 +711,7 @@ export default function BookingFlow() {
                       disabled={paying}
                       aria-busy={paying || undefined}
                     >
-                      {paying ? "Processing…" : `Pay ${LEGAL.CONSULT_PRICE} & Book`}
+                      {paying ? "Processing…" : `Pay ${LEGAL.CONSULT_PRICE} & Book Audit`}
                     </button>
                     <div aria-live="polite">
                       {payError && (
@@ -917,7 +778,7 @@ export default function BookingFlow() {
           </section>
 
           {/* The gold thread: one continuous 1px line drawing itself down the
-              left gutter as you scroll, stitching hero → payment. Decorative,
+              left gutter as you scroll, stitching checkout → payment. Decorative,
               desktop only, reduced-motion → static (kit classes handle both). */}
           <div
             aria-hidden="true"
@@ -929,51 +790,12 @@ export default function BookingFlow() {
           </div>
         </div>
 
-        {/* ---------- §7 FAQ (STATE A only) ---------- */}
-        <section className="section cv-auto">
-          <div className="container-site">
-            <div className="mx-auto max-w-[720px]">
-              <Reveal index={0}>
-                <h2 className="type-h2 text-primary">Quick questions.</h2>
-              </Reveal>
-              <div className="mt-8 grid gap-4">
-                {FAQS.map((faq, i) => (
-                  <Reveal key={faq.q} delayMs={(i + 1) * 60}>
-                    <details className="card group spot">
-                      <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                        <span className="type-h3 text-primary">{faq.q}</span>
-                        <span
-                          aria-hidden="true"
-                          className="text-xl leading-none text-gold-300 transition-transform duration-200 group-open:rotate-45"
-                        >
-                          +
-                        </span>
-                      </summary>
-                      <p className="type-body mt-3 max-w-[64ch] text-secondary">
-                        {faq.a}
-                      </p>
-                    </details>
-                  </Reveal>
-                ))}
-              </div>
-
-              {/* [review] ONE lateral context link (funnel discipline: /programs only) */}
-              <Reveal delayMs={480}>
-                <p className="mt-10 text-center type-small text-muted">
-                  Wondering what comes after the call?{" "}
-                  <Link
-                    href="/programs"
-                    className="underline underline-offset-2 hover:text-secondary"
-                  >
-                    See the full coaching programs
-                  </Link>
-                </p>
-              </Reveal>
-              {/* clearance so the WhatsApp FAB never covers the last link */}
-              <div aria-hidden="true" className="h-10" />
-            </div>
-          </div>
-        </section>
+        {/* ---------- §2–§8 PERSUASION CONTENT ----------
+             Passed in as children from app/book/page.tsx so they stay Server
+             Components (zero JS) while still living inside STATE A — once
+             payment succeeds the whole band hides with the rest of STATE A,
+             because a paid visitor should not be re-sold the audit. */}
+        {children}
       </div>
 
       {/* ============ STATE B + C (the §6 banner persists into C) ============ */}
@@ -1194,102 +1016,6 @@ export default function BookingFlow() {
 }
 
 // ---------------------------------------------------------------------------
-// §2 glyphs — sunrise / plate / capsule / shield (Method-step motif rebuilt
-// locally; the shared icon set has no equivalents and other routes' files are
-// off-limits). Stroke-only, currentColor, decorative (aria-hidden).
-// ---------------------------------------------------------------------------
-
-function SunriseGlyph(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={22}
-      height={22}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M12 3v3" />
-      <path d="M5.6 8.6 7 10" />
-      <path d="M18.4 8.6 17 10" />
-      <path d="M7 17a5 5 0 0 1 10 0" />
-      <path d="M3 17h18" />
-      <path d="M8 21h8" />
-    </svg>
-  );
-}
-
-function PlateGlyph(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={22}
-      height={22}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4.5" />
-      <path d="M3.5 4v5" />
-      <path d="M20.5 4v5" />
-    </svg>
-  );
-}
-
-function CapsuleGlyph(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={22}
-      height={22}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <rect
-        x="3.2"
-        y="8.8"
-        width="17.6"
-        height="6.4"
-        rx="3.2"
-        transform="rotate(-35 12 12)"
-      />
-      <path d="M9.4 8.4l5.2 7.2" />
-    </svg>
-  );
-}
-
-function ShieldGlyph(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={22}
-      height={22}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-
 // Success-banner check that draws itself in on STATE B entry. pathLength=60
 // matches the kit's .stroke-draw dasharray (60), so the tick strokes on
 // regardless of its geometric length; reduced motion → static (kit-handled).

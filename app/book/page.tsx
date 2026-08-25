@@ -1,26 +1,46 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import BookingFlow from "@/components/book/BookingFlow";
+import AuditExplainer from "@/components/book/AuditExplainer";
+import WhatYouGet from "@/components/book/WhatYouGet";
+import AfterTheAudit from "@/components/book/AfterTheAudit";
+import WhyStartWithAudit from "@/components/book/WhyStartWithAudit";
+import WhoIsThisFor from "@/components/book/WhoIsThisFor";
+import BookFaq from "@/components/book/BookFaq";
+import BookFinalCta from "@/components/book/BookFinalCta";
+import { BOOK_FAQS } from "@/components/book/book-data";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
 
-// /book — the single terminal conversion node. The entire body between header
-// and footer is the 3-state booking machine (client island). This page links
-// only laterally (/programs, /refund, /privacy) — never back up the funnel.
+// ============================================================
+// /book — the single terminal conversion node, and the page ads point at.
+//
+// Built in three bands, top to bottom:
+//   TOP     §1  the decision — price, what it is, WhatsApp, pay. Above the fold.
+//   MIDDLE  §2–§6  the case, for the man who arrived unconvinced.
+//   BOTTOM  §7–§8  objections answered, then back up to the decision.
+//
+// §1 and the post-payment states are the client island (BookingFlow); §2–§8
+// are Server Components passed to it as children, so they carry zero JS and
+// still hide with STATE A once payment succeeds.
+//
+// This page links only laterally (/programs, /refund, /privacy) — never back
+// up the funnel.
 //
 // Indexable + follow (primary conversion landing page despite nav:false) —
 // pageMetadata defaults to index/follow; do NOT set noindex here.
+// ============================================================
 
 export const metadata: Metadata = pageMetadata({
-  // [review] reframed to the Transformation Audit; supersedes the A6 sitemap title (≤60 chars)
+  // [review] reframed to the Transformation Audit (≤60 chars)
   title: `Book Your ${LEGAL.CONSULT_PRICE} Transformation Audit | Aditya`,
-  // [review] description reframed to the audit scope (what we analyse → what to fix first)
-  description: `45 minutes, online via WhatsApp. We audit your lifestyle, health, fitness and habits — then pinpoint what to fix first. Book your ${LEGAL.CONSULT_PRICE} Transformation Audit.`,
+  // [review] description carries the assessment framing + the fee credit
+  description: `45 minutes, one to one on WhatsApp. Aditya assesses where you stand, names the gaps and recommends your path. ${LEGAL.CONSULT_PRICE}, adjusted against your program price if you continue with coaching.`,
   path: "/book",
   ogType: "website",
 });
 
-// ---- Page-level structured data (Service + BreadcrumbList) ----
+// ---- Page-level structured data (Service + FAQPage + BreadcrumbList) ----
 // Provider references the global LocalBusiness/Person nodes emitted in the
 // root layout by @id (geo Kolkata, serviceArea worldwide) — never duplicated.
 
@@ -31,7 +51,7 @@ const serviceSchema = {
   name: "Transformation Audit",
   serviceType: "Men's lifestyle transformation audit",
   description:
-    "A 45-minute one-to-one Transformation Audit on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay.",
+    "A 45-minute one-to-one Transformation Audit on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay — a personal assessment of where you stand, the gaps holding you back, and the coaching path he recommends.",
   url: `${SITE_ORIGIN}/book`,
   provider: { "@id": `${SITE_ORIGIN}/#business` },
   areaServed: "Worldwide",
@@ -45,16 +65,22 @@ const serviceSchema = {
   },
 };
 
+// Mirrors the visible §7 accordion exactly — both read BOOK_FAQS.
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: BOOK_FAQS.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    {
-      "@type": "ListItem",
-      position: 1,
-      name: "Home",
-      item: SITE_ORIGIN,
-    },
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE_ORIGIN },
     {
       "@type": "ListItem",
       position: 2,
@@ -67,8 +93,30 @@ const breadcrumbSchema = {
 export default function BookPage() {
   return (
     <>
-      <JsonLd data={[serviceSchema, breadcrumbSchema]} />
-      <BookingFlow />
+      <JsonLd data={[serviceSchema, faqSchema, breadcrumbSchema]} />
+
+      <BookingFlow>
+        {/* 2 — what the audit actually is */}
+        <AuditExplainer />
+
+        {/* 3 — the deliverables, so the price reads as concrete */}
+        <WhatYouGet />
+
+        {/* 4 — audit → assessment → recommendation → one of three paths */}
+        <AfterTheAudit />
+
+        {/* 5 — the argument for being assessed before buying */}
+        <WhyStartWithAudit />
+
+        {/* 6 — qualification, and the disqualifier */}
+        <WhoIsThisFor />
+
+        {/* 7 — objections */}
+        <BookFaq />
+
+        {/* 8 — back up to the decision */}
+        <BookFinalCta />
+      </BookingFlow>
     </>
   );
 }
