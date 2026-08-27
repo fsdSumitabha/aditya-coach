@@ -87,16 +87,8 @@ export default function ToolsPage() {
           </Reveal>
           <Reveal delayMs={200} className="mt-6">
             {/* [review] micro-nav anchor chips */}
-            <nav
-              aria-label="Free tools on this page"
-              className="flex flex-wrap justify-center gap-2.5"
-            >
-              <a href="#blueprint" className={chipClass}>
-                Lifestyle Blueprint
-              </a>
-              <a href="#training-split" className={chipClass}>
-                Training Split
-              </a>
+            <nav aria-label="Free tools on this page" className="flex flex-wrap justify-center gap-2.5" >
+              <a href="#blueprint" className={chipClass}> Lifestyle Blueprint </a>
             </nav>
           </Reveal>
 

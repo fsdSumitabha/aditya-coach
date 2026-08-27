@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 
 /**
  * /book — 3-state conversion machine (client island).
@@ -20,14 +19,20 @@ import Image from "next/image";
    PHASE-2 STUB CHECKLIST — every seam below is a Phase-2 no-op stub that
    lives in @/lib/config (imported, never redefined). Phase 1 ships fully
    working UI on these stubs:
-   [ ] startPayment        → real Razorpay checkout (BOOKING.RAZORPAY_KEY,
-                             amount PRICE_INR × 100, prefill name/email/contact,
-                             verify signature server-side).
-   [ ] sendToEmailProvider → Brevo/Mailchimp (booking + intake payload,
-                             welcome/confirmation email).
-   [ ] notifyCoach         → coach WhatsApp/email notification of new booking.
+   [ ] REAL GATEWAY        → payment is currently a manual UPI hand-off
+                             (components/book/UpiPayPanel + UPI in lib/legal).
+                             Nothing is verified: the visitor asserts he paid
+                             and hands back a UTR. When Razorpay is live, call
+                             startPayment() from lib/config here instead and
+                             verify the signature server-side.
+   [x] BOOKING DELIVERY    → LIVE. sendBooking() (lib/config) POSTs to
+                             app/api/booking, which emails Aditya over SMTP
+                             with the UTR in the subject line. This mail is
+                             the ONLY record a booking leaves — there is no
+                             CRM. The "paid" stage BLOCKS the success screen
+                             on delivery; the "intake" stage does not.
    [ ] track('Purchase',…) → real analytics ID + Purchase conversion event
-                             (value 2000, currency INR).
+                             (value 999, currency INR).
    [ ] /thank-you?type=booking redirect — wired via BOOKING.THANKYOU_URL but
        intentionally left as a COMMENT in finishIntake() below; keep the
        ?type=booking param so /thank-you can branch booking vs lead-magnet.
@@ -50,14 +55,12 @@ import SplitHeading from "@/components/SplitHeading";
 import { CheckIcon, WhatsAppIcon } from "@/components/icons";
 import {
   COACH_WHATSAPP,
-  RAZORPAY_KEY,
-  notifyCoach,
-  sendToEmailProvider,
-  startPayment,
+  sendBooking,
   track,
   waLink,
 } from "@/lib/config";
 import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
+import UpiPayPanel from "@/components/book/UpiPayPanel";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
 const BOOKING = {
@@ -65,7 +68,6 @@ const BOOKING = {
   CURRENCY: "INR",
   DURATION_MIN: 45,
   COACH_WHATSAPP, // [review] Aditya's WhatsApp (same number as global FAB — set once in lib/config)
-  RAZORPAY_KEY: RAZORPAY_KEY || "rzp_test_PLACEHOLDER", // Phase 2
   REDIRECT_ON_FINISH: false, // Phase-1 toggle for the /thank-you redirect (wired in finishIntake) — false ⇒ STATE C stands alone
   THANKYOU_URL: "/thank-you?type=booking",
 };
@@ -134,6 +136,20 @@ function validateField(field: FieldName, raw: string): string | null {
   }
 }
 
+/**
+ * UPI reference (UTR) check. Deliberately loose: the canonical UTR is 12
+ * digits, but banks and PSPs hand back their own reference formats and a
+ * strict rule would block real payers. This only has to stop empty and
+ * obviously-junk submissions — Aditya verifies the payment for real.
+ */
+function validateReference(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return "Enter the UPI reference from your payment app.";
+  if (!/^[A-Za-z0-9]{6,25}$/.test(v))
+    return "That doesn't look like a UPI reference — 6–25 letters or numbers.";
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Enter animation helper — reuses the global .reveal / .is-in classes so state
 // entrances are opacity/translateY only and degrade under reduced motion
@@ -187,9 +203,16 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     Record<FieldName, HTMLInputElement | HTMLSelectElement | null>
   >({ name: null, phone: null, email: null, age: null, goal: null });
 
-  // §4 payment state
-  const [paying, setPaying] = useState(false);
-  const [payError, setPayError] = useState(false);
+  // §4 payment state. payStep is the gateway hand-off: "details" shows the
+  // form's Continue button, "pay" swaps in the UPI panel. Nothing verifies the
+  // payment, so "confirming" is only the button's busy state.
+  const [payStep, setPayStep] = useState<"details" | "pay">("details");
+  const [reference, setReference] = useState("");
+  const [refError, setRefError] = useState<string | undefined>();
+  const [confirming, setConfirming] = useState(false);
+  // The booking mail failed. Money has already moved, so this is not a
+  // validation error — it is a recovery path (see UpiPayPanel).
+  const [confirmFailed, setConfirmFailed] = useState(false);
 
   // §5 post-payment intake (all optional)
   const [intake, setIntake] = useState({
@@ -224,6 +247,17 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     }
   }, [state]);
 
+  // Hand-off to payment: bring the panel into view once it has rendered.
+  // Runs on the step change, not inside the submit handler, because the panel
+  // does not exist in the DOM until React has committed the new step.
+  useEffect(() => {
+    if (payStep !== "pay") return;
+    document.getElementById("pay")?.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "start",
+    });
+  }, [payStep]);
+
   function setValue(field: FieldName) {
     return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const next = e.target.value;
@@ -248,10 +282,18 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     });
   }
 
-  // §4 — the intake form's submit button IS the payment gate (single-step UX)
-  async function handlePaySubmit(e: FormEvent<HTMLFormElement>) {
+  // §4 step 1 — the form's submit button is the hand-off TO payment, not the
+  // payment itself. Validate, then swap the button for the UPI panel.
+  //
+  // Enter inside the reference field also fires this, so once we are already
+  // on the pay step it forwards to confirmPaid() rather than re-validating
+  // details the visitor has moved past.
+  function handlePaySubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (paying) return; // prevent double-submit
+    if (payStep === "pay") {
+      confirmPaid();
+      return;
+    }
 
     const nextErrors: Partial<Record<FieldName, string>> = {};
     for (const f of FIELD_ORDER) {
@@ -265,63 +307,88 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
       return;
     }
 
-    setPayError(false);
-    setPaying(true);
+    // PHASE 2 STUB — track() is a no-op until analytics IDs exist.
     track("InitiateCheckout", {
       value: BOOKING.PRICE_INR,
       currency: BOOKING.CURRENCY,
     });
-    try {
-      // PHASE 2 STUB — startPayment (lib/config) opens the real Razorpay
-      // checkout in Phase 2 (key BOOKING.RAZORPAY_KEY, amount PRICE_INR × 100,
-      // prefill {name,email,contact}, signature verified server-side).
-      // Phase 1: resolves { ok: true } immediately — happy path.
-      const res = await startPayment({
-        amount: BOOKING.PRICE_INR * 100,
-        currency: BOOKING.CURRENCY,
-        name: values.name.trim(),
-        email: values.email.trim(),
-        contact: values.phone.trim(),
-        goal: values.goal,
-        age: values.age,
-      });
-      if (res.ok) {
-        // Fired ONCE here on payment success (not again in the §6 banner).
-        // PHASE 2 STUB — track() is a no-op until analytics IDs exist.
-        track("Purchase", {
-          value: BOOKING.PRICE_INR,
-          currency: BOOKING.CURRENCY,
-        });
-        // PHASE 2 STUB — notifyCoach() is a no-op; later: WhatsApp/email ping.
-        notifyCoach({ type: "booking_paid", ...values });
-        setState("B");
-        setLiveMsg(
-          "Payment received. Your audit is booked — Aditya will contact you on WhatsApp within 24 hours.",
-        );
-      } else {
-        setPayError(true); // Phase-2 real path: declined / closed checkout
-      }
-    } catch {
-      setPayError(true);
-    } finally {
-      setPaying(false);
+    setPayStep("pay"); // the effect below scrolls the panel into view
+  }
+
+  // §4 step 2 — the visitor asserts he paid and hands back a UTR.
+  //
+  // NOTHING HERE VERIFIES THE PAYMENT. There is no gateway, no webhook and no
+  // signature: this only records what he says and routes it to Aditya, who
+  // checks it against the PhonePe account by hand. Every user-facing string
+  // downstream is written to be true under that constraint — see the STATE B
+  // banner. Do not upgrade this into a claim that money arrived.
+  async function confirmPaid() {
+    if (confirming) return; // prevent double-submit
+    const err = validateReference(reference);
+    setRefError(err ?? undefined);
+    if (err) {
+      document.getElementById("bk-upiref")?.focus();
+      return;
     }
+
+    setConfirming(true);
+    setConfirmFailed(false);
+
+    // BLOCKING ON PURPOSE. This mail is the only record the booking leaves —
+    // no CRM, no gateway webhook. Money has already moved by the time we get
+    // here, so showing the success screen before we know Aditya was told
+    // would strand a paid customer as an unattributable ₹999 in PhonePe.
+    const res = await sendBooking({
+      stage: "paid",
+      name: values.name.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      age: values.age,
+      goal: values.goal,
+      upiReference: reference.trim(),
+      submittedAt: new Date().toISOString(),
+    });
+
+    if (!res.ok) {
+      // His money is gone whatever happens next, so the recovery path has to
+      // be real: the WhatsApp fallback below carries his UTR.
+      setConfirmFailed(true);
+      setConfirming(false);
+      setLiveMsg(
+        "We couldn't record your booking. Your payment is safe — send Aditya the reference on WhatsApp.",
+      );
+      return;
+    }
+
+    // PHASE 2 STUB — track() is a no-op until analytics IDs exist. This fires
+    // on the CLAIM of payment, so treat the number as unverified in analytics.
+    track("Purchase", {
+      value: BOOKING.PRICE_INR,
+      currency: BOOKING.CURRENCY,
+    });
+    setState("B");
+    setLiveMsg(
+      "Payment details received. Aditya will verify your payment and confirm your slot on WhatsApp within 24 hours.",
+    );
+    setConfirming(false);
   }
 
   // §5 — both buttons proceed to STATE C
   function finishIntake() {
-    // PHASE 2 STUB — sendToEmailProvider() + notifyCoach() are no-ops in
-    // Phase 1; later they deliver the booking + intake payload to the coach.
-    void sendToEmailProvider({
-      email: values.email.trim(),
-      source: "booking",
+    // NOT blocking, unlike confirmPaid(): the booking itself is already
+    // recorded by this point, so losing these optional answers costs a few
+    // questions on the call, not a booking. Never make the man wait for it.
+    void sendBooking({
+      stage: "intake",
       name: values.name.trim(),
+      email: values.email.trim(),
       phone: values.phone.trim(),
       age: values.age,
       goal: values.goal,
+      upiReference: reference.trim(),
+      submittedAt: new Date().toISOString(),
       ...intake,
     });
-    notifyCoach({ type: "booking_intake", ...intake });
     setState("C");
     setLiveMsg("You're all set. See you on WhatsApp."); /* [review] */
     // OPTIONAL REDIRECT — functional toggle per spec STATE C. Disabled in
@@ -683,96 +750,82 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                   </div>
                 </Reveal>
 
-                {/* ---------- §4 PAYMENT BLOCK ---------- */}
-                <Reveal index={3}>
-                  <div id="pay" className="card card-featured spot mt-8">
-                    <p className="type-price text-gold-grad">{LEGAL.CONSULT_PRICE}</p>
-                    {/* [review] */}
-                    <p className="type-small mt-1 text-secondary">
-                      · 45-minute Transformation Audit on WhatsApp
-                    </p>
-                    {/* Confirmed inclusions 6 Aug 2026 — copy lives in
-                        lib/legal.ts (CONSULT_INCLUDES), not here. */}
-                    <ul className="mt-4 grid gap-2">
-                      <li className="type-small flex gap-2.5 text-secondary">
-                        <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
-                        <span>{CONSULT_INCLUDES.GIFT_CARD}</span>
-                      </li>
-                      <li className="type-small flex gap-2.5 text-secondary">
-                        <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
-                        <span>{CONSULT_INCLUDES.BLUEPRINT}</span>
-                      </li>
-                    </ul>
-                    <p className="type-small text-gold-300 border-l border-hairline-gold mt-4 pl-4">
-                      {CONSULT_INCLUDES.CREDIT}
-                    </p>
-                    <button
-                      type="submit"
-                      className="btn-gold mt-6 w-full min-h-[52px]"
-                      disabled={paying}
-                      aria-busy={paying || undefined}
-                    >
-                      {paying ? "Processing…" : `Pay ${LEGAL.CONSULT_PRICE} & Book Audit`}
-                    </button>
-                    <div aria-live="polite">
-                      {payError && (
-                        /* [review] Phase-2 real-path failure copy */
-                        <p className="field-error mt-3" role="alert">
-                          Payment didn&apos;t go through. Try again or{" "}
-                          <a
-                            href={waLink(
-                              "Hi Aditya, my payment for the Transformation Audit didn't go through.", /* [review] */
-                              BOOKING.COACH_WHATSAPP,
-                            )}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline underline-offset-2"
-                          >
-                            message Aditya on WhatsApp
-                          </a>
-                          .
+                {/* ---------- §4 PAYMENT ----------
+                     Two steps, like a gateway: the button hands off, the panel
+                     takes the money. The panel is mounted only on the pay step
+                     so the QR and the reference field can't be tabbed into
+                     before the visitor's details are valid. */}
+                {payStep === "details" ? (
+                  <Reveal index={3}>
+                    <div className="card card-featured spot mt-8">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <p className="type-price text-gold-grad">
+                          {LEGAL.CONSULT_PRICE}
                         </p>
+                        <p className="type-small text-secondary">
+                          45-minute Transformation Audit
+                        </p>
+                      </div>
+                      {/* Confirmed inclusions 6 Aug 2026 — copy lives in
+                          lib/legal.ts (CONSULT_INCLUDES), not here. */}
+                      <ul className="mt-4 grid gap-2">
+                        <li className="type-small flex gap-2.5 text-secondary">
+                          <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
+                          <span>{CONSULT_INCLUDES.GIFT_CARD}</span>
+                        </li>
+                        <li className="type-small flex gap-2.5 text-secondary">
+                          <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
+                          <span>{CONSULT_INCLUDES.BLUEPRINT}</span>
+                        </li>
+                      </ul>
+                      <p className="type-small text-gold-300 border-hairline-gold mt-4 border-l pl-4">
+                        {CONSULT_INCLUDES.CREDIT}
+                      </p>
+                      <button
+                        type="submit"
+                        className="btn-gold mt-6 min-h-[52px] w-full"
+                      >
+                        Continue to Payment
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <p className="type-caption text-muted mt-3 text-center">
+                        {/* [review] — says what the next screen is, so the
+                            hand-off isn't a surprise */}
+                        Pay by UPI — PhonePe, Google Pay or Paytm.
+                      </p>
+                    </div>
+                  </Reveal>
+                ) : (
+                  <div className="mt-8">
+                    <UpiPayPanel
+                      payerName={values.name.trim()}
+                      reference={reference}
+                      referenceError={refError}
+                      onReferenceChange={(e) => {
+                        setReference(e.target.value);
+                        setRefError(undefined);
+                      }}
+                      onConfirm={confirmPaid}
+                      confirming={confirming}
+                      confirmFailed={confirmFailed}
+                      whatsAppFallbackHref={waLink(
+                        /* Carries the UTR — the recovery path has to be usable
+                           by a man who has already parted with his money. */
+                        `Hi Aditya, I've paid ${LEGAL.CONSULT_PRICE} for the Transformation Audit but the website couldn't record my booking. UPI reference: ${reference.trim()}`,
+                        BOOKING.COACH_WHATSAPP,
                       )}
-                    </div>
-
-                    {/* trust cues */}
-                    <ul className="mt-5 grid gap-2 type-small text-muted">
-                      <li>
-                        <span aria-hidden="true">🔒</span> Secure payment via
-                        Razorpay
-                      </li>
-                      <li>
-                        <span aria-hidden="true">📱</span> WhatsApp confirmation
-                        within 24h
-                      </li>
-                      <li>
-                        {/* [review] refund risk-reducer */}
-                        If it&apos;s not the right fit, our refund policy has
-                        you covered —{" "}
-                        <Link
-                          href="/refund"
-                          className="underline underline-offset-2 hover:text-secondary"
-                        >
-                          read it
-                        </Link>
-                        .
-                      </li>
-                    </ul>
-
-                    {/* IMG_RAZORPAY_BADGE — swappable placeholder; replace with
-                        the real Razorpay / secure-payments lockup (180×40) in
-                        Phase 2. Purely reassurance; safe to omit. */}
-                    <div className="mt-5 max-w-[180px] opacity-80">
-                      <Image
-                       src="/razorpay.webp"
-                        width={180}
-                        height={40}
-                        alt="Secured by Razorpay"
-                        style={{ borderRadius: 8 }}
-                      />
-                    </div>
+                    />
+                    <p className="type-caption text-muted mt-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setPayStep("details")}
+                        className="link-draw hover:text-primary inline-flex min-h-[44px] items-center transition-colors"
+                      >
+                        ← Edit my details
+                      </button>
+                    </p>
                   </div>
-                </Reveal>
+                )}
               </form>
             </div>
           </div>
@@ -811,24 +864,30 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                     <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline-gold text-gold-300">
                       <DrawCheckIcon width={20} height={20} />
                     </span>
-                    {/* [review] confirmation copy — audit framing */}
+                    {/* [review] — UPI is unverified at this point, so this
+                        says "details received", never "payment received".
+                        Aditya reconciles the UTR by hand before the slot is
+                        real. Do not upgrade this into a guarantee. */}
                     <BannerHeading
                       ref={bannerHeadingRef}
                       tabIndex={-1}
                       className="type-h3 scroll-mt-24 text-primary outline-none"
                     >
-                      Payment received. Your audit is booked — Aditya will
-                      contact you on WhatsApp within 24 hours.
+                      Got it. Aditya will verify your payment and confirm your
+                      slot on WhatsApp within 24 hours.
                     </BannerHeading>
                   </div>
                   {/* [review] */}
                   <p className="type-body mt-4 text-secondary">
-                    Save the WhatsApp thread — that&apos;s where we&apos;ll
-                    confirm your time slot.
+                    Message him now to speed it up — the reference is already in
+                    the message. Save the thread; that&apos;s where we confirm
+                    your time slot.
                   </p>
                   <a
                     href={waLink(
-                      "Hi Aditya, I just booked my Transformation Audit.",
+                      /* Carries the UTR so Aditya can match the payment in one
+                         glance — the whole point of collecting it. [review] */
+                      `Hi Aditya, I've paid ${LEGAL.CONSULT_PRICE} for the Transformation Audit. UPI reference: ${reference.trim()}`,
                       BOOKING.COACH_WHATSAPP,
                     )}
                     target="_blank"
