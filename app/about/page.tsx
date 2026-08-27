@@ -45,20 +45,27 @@ const WHATSAPP_URL = waLink(
 // client-supplied 100kg. Restrained trust rows, shown before /results link-out.
 const TRUST_POINTS = [
   {
-    title: "He lived it first.",
-    body: "100kg to coach. Every method was tested on his own body before it reached yours.",
+    title: "Eight years in the work.",
+    // [review] Matches the timeline copy on this page: two years coaching men,
+    // eight years testing every method on himself. No invented figure.
+    body: "Two years coaching men. Eight years testing every method on his own body first.",
+    href: "/programs",
+    linkLabel: "See the programs",
+    external: false,
   },
   {
-    title: "Real men, real results.",
+    title: "Real results, real photos.",
     body: "Client transformations shared with permission — no stock photos, no borrowed proof.",
+    href: "/results",
+    linkLabel: "See the transformations",
+    external: false,
   },
   {
-    title: "One system, not recycled plans.",
-    body: "Every man is audited first. Your plan is built for your life, never copied from someone else's.",
-  },
-  {
-    title: "Direct access.",
-    body: "Coaching happens with Aditya on WhatsApp — never handed off to an assistant.",
+    title: "Direct WhatsApp access.",
+    body: "Coaching happens with Aditya himself — never handed off to an assistant.",
+    href: WHATSAPP_URL,
+    linkLabel: "Chat with Aditya",
+    external: true,
   },
 ] as const; // [review]
 
@@ -168,10 +175,10 @@ export default function AboutPage() {
             {/* [review] */}
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2">
-            {TRUST_POINTS.map((pt, i) => (
-              <Reveal key={pt.title} index={i}>
-                <div className="card spot h-full">
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-3">
+            {TRUST_POINTS.map((pt, i) => {
+              const inner = (
+                <div className="card spot flex h-full flex-col">
                   <div className="flex items-start gap-3">
                     {/* [review] */}
                     <CheckIcon
@@ -185,17 +192,38 @@ export default function AboutPage() {
                       <p className="type-small text-secondary mt-2">{pt.body}</p>
                     </div>
                   </div>
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-4 pl-8 font-medium text-gold-300">
+                    {pt.linkLabel}
+                    <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+                  </span>
                 </div>
-              </Reveal>
-            ))}
-          </div>
+              );
 
-          <Reveal delayMs={200} className="mt-10 text-center">
-            <Link href="/results" className="link-draw inline-flex items-center gap-1.5 font-medium text-gold-300" >
-              See the transformations
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-          </Reveal>
+              return (
+                <Reveal key={pt.title} index={i}>
+                  <TiltCard className="h-full">
+                    {pt.external ? (
+                      <a
+                        href={pt.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block h-full rounded-[14px] transition-transform duration-200 hover:-translate-y-0.5"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link
+                        href={pt.href}
+                        className="block h-full rounded-[14px] transition-transform duration-200 hover:-translate-y-0.5"
+                      >
+                        {inner}
+                      </Link>
+                    )}
+                  </TiltCard>
+                </Reveal>
+              );
+            })}
+          </div>
 
           <div className="mx-auto mt-8 flex max-w-md flex-col items-stretch justify-center gap-4 sm:max-w-none sm:flex-row sm:items-center">
             <Reveal index={1} className="sm:w-auto">

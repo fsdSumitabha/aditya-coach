@@ -97,9 +97,6 @@ export default function ProgramsPage() {
       {/* 3 — three destinations, one starting point */}
       <JourneySteps />
 
-      {/* 4 — the only price on the page */}
-      <WhyAuditFirst />
-
       {/* 6 — outcomes, not features */}
       <ExpectedTransformation />
 

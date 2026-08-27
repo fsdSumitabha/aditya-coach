@@ -82,7 +82,7 @@ export default function ToolsPage() {
             delayMs={100}
             className="type-body text-secondary mt-3 max-w-[54ch] mx-auto"
           >
-            Two free tools to start rebuilding your body, your presence and
+            Free tool to start rebuilding your body, your presence and
             your discipline today — no payment, no catch.{/* [review] */}
           </Reveal>
           <Reveal delayMs={200} className="mt-6">
@@ -144,31 +144,6 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* ---- 3. LEAD MAGNET 2 — The Fat Loss Training Split ---- */}
-      <section
-        id="training-split"
-        className="bg-base cv-auto border-t border-hairline-soft"
-      >
-        <div className="container-site section">
-          <Reveal className="max-w-[720px] mx-auto">
-            <LeadMagnetCard
-              title="The Fat Loss Training Split"
-              description="The exact 3 day training plan I use with every client for fat loss and muscle building together."
-              imageLabel="IMG-SPLIT"
-              imageAlt="Cover of the free 3-day Fat Loss Training Split PDF"
-              source="tools-training-split"
-              resource="fat-loss-training-split"
-              imageSrc="/aditya/aditya_02.jpg"
-              pdfHref={SPLIT_PDF}
-              pdfLabel={"Open the Training Split now" /* [review] */}
-              buttonLabel={"Send Me the Split" /* [review] */}
-              successBody={
-                "Your Fat Loss Training Split has been emailed to you." /* [review] */
-              }
-            />
-          </Reveal>
-        </div>
-      </section>
 
       {/* gold-thread stitch: the give-first magnets draw down into the payoff.
           Static (full) on non-supporting browsers; scale-draws on scroll. */}
