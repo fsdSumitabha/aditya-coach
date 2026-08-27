@@ -9,14 +9,14 @@ export const BRAND_LINE =
   "Aditya Kumar Upadhyay — Complete Transformation Coach for Men. Become harder to ignore."; /* [review] */
 
 // Header nav — exact order per A5. The [Book <price>] gold button is pinned, NOT a nav item.
-// Simplified per direction doc §10 (Blog lives under Tools + footer)
+// Simplified per direction doc §10 (Blog lives under Tools + footer).
+// Tools is footer-only — removed from header/mobile nav.
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "The Method", href: "/method" },
   { label: "Results", href: "/results" },
   { label: "Programs", href: "/programs" },
-  { label: "Tools", href: "/tools" },
   { label: "Contact", href: "/contact" },
 ] as const;
 

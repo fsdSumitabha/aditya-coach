@@ -15,8 +15,7 @@ const COLUMNS: {
       { label: "Home", href: "/" },
       { label: "About", href: "/about" },
       { label: "The Method", href: "/method" },
-      { label: "Transformations", href: "/results" },
-      { label: "Blog", href: "/blog" },
+      { label: "Results", href: "/results" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -24,20 +23,16 @@ const COLUMNS: {
     heading: "Coaching",
     links: [
       /* [review] lineup per direction doc 2026-07-21 */
-      { label: `Transformation Audit`, href: "/book" },
       { label: "Lifestyle Coaching", href: "/programs" },
       { label: "Personality & Presence Coaching", href: "/programs" },
       { label: "Complete Transformation", href: "/programs" },
-      { label: "Book Your Transformation Audit", href: "/book" },
     ],
   },
   { 
     heading: "Resources",
     links: [
       { label: "Free Lifestyle Blueprint", href: "/tools" },
-      { label: "Fat Loss Training Split", href: "/tools" },
-      { label: "Personality Audit Blueprint", href: "/tools" } /* [review] third free blueprint per Aditya's brief */,
-      { label: "Articles", href: "/blog" },
+      { label: "Blogs", href: "/blog" },
     ],
   },
   {
@@ -49,7 +44,6 @@ const COLUMNS: {
       { label: "Cancellation & Refund Policy", href: "/refund" },
       { label: "Shipping & Delivery Policy", href: "/shipping" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Contact", href: "/contact" },
     ],
   },
 ];

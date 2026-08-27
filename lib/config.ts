@@ -179,6 +179,57 @@ export async function sendEnquiry(payload: EnquiryPayload): Promise<EnquiryResul
   }
 }
 
+// ===== LIVE: /book submission (audit booking + UPI payment claim) =====
+
+export type BookingPayload = {
+  /** "paid" = the booking itself, sent the moment he claims payment (critical).
+      "intake" = his optional pre-call answers, sent afterwards. */
+  stage: "paid" | "intake";
+  name: string;
+  email: string;
+  phone: string;
+  age: string;
+  goal: string;
+  /** UPI reference (UTR) he copied from his app. Unverified by anything. */
+  upiReference: string;
+  submittedAt: string;
+  // --- stage "intake" only ---
+  occupation?: string;
+  lifestyle?: string;
+  training?: string;
+  blocker?: string;
+  success?: string;
+};
+
+/**
+ * POST a /book submission to app/api/booking, which emails Aditya over SMTP.
+ *
+ * This is the ONLY record a booking leaves — there is no CRM and no gateway
+ * webhook, so a failure here means a man has paid ₹999 that can never be
+ * matched to him. Callers MUST await this and surface a failure to the user
+ * (with the UTR and a WhatsApp fallback) rather than showing a success screen.
+ *
+ * Note: the amount and payee are NOT sent — the server reads them from
+ * lib/legal so a tampered client can't misrepresent what was paid.
+ * `basePath` is not applied to fetch() by Next, so prefix it manually.
+ */
+export async function sendBooking(
+  payload: BookingPayload,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${BASE_PATH}/api/booking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+    return { ok: res.ok && data.ok !== false, error: data.error };
+  } catch {
+    // Network/offline — never report a fake success on a paid booking.
+    return { ok: false, error: "network" };
+  }
+}
+
 export function track(event: string, data?: Record<string, unknown>): void {
   /* PHASE 2: fire GA4 + Meta Pixel when IDs present. */
   if (!GA_MEASUREMENT_ID && !META_PIXEL_ID) return;
