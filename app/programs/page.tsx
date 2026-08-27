@@ -90,13 +90,6 @@ export default function ProgramsPage() {
       {/* 1 — three paths, one door */}
       <ProgramsHero />
 
-      {/* Decorative ticker — the three path names, verbatim */}
-      <div className="bg-void border-hairline-soft border-y py-5 md:py-7">
-        <Marquee
-          items={PATHS.map((p) => p.name)}
-          speedS={38}
-        />
-      </div>
 
       {/* 2 — the showpiece: two paths + the flagship band */}
       <PathGrid />
@@ -106,9 +99,6 @@ export default function ProgramsPage() {
 
       {/* 4 — the only price on the page */}
       <WhyAuditFirst />
-
-      {/* 5 — what each path covers, side by side */}
-      <CoachingCompare />
 
       {/* 6 — outcomes, not features */}
       <ExpectedTransformation />

@@ -82,7 +82,7 @@ export default function ToolsPage() {
             delayMs={100}
             className="type-body text-secondary mt-3 max-w-[54ch] mx-auto"
           >
-            Four free tools to start rebuilding your body, your presence and
+            Two free tools to start rebuilding your body, your presence and
             your discipline today — no payment, no catch.{/* [review] */}
           </Reveal>
           <Reveal delayMs={200} className="mt-6">

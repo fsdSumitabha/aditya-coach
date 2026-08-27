@@ -37,7 +37,11 @@ export type CoachingPath = {
   outcome: string;
   /** Pricing indication. Only the audit fee is ever public. */
   pricing: string;
-  /** "What's included" — 3–5 points, no more. */
+  /**
+   * "What's included" — FOUR points, hard cap. At five the path cards ran
+   * taller than a phone screen and the CTA fell below the fold. A fifth point
+   * gets merged into an existing line, never appended.
+   */
   includes: string[];
   /** Service JSON-LD description for this path. */
   schemaDescription: string;
@@ -56,9 +60,9 @@ export const PATHS: CoachingPath[] = [
       "Habit building and daily structure that holds",
       "Nutrition guidance built around how you actually eat",
       "Fat loss, muscle gain and the training to get there",
-      "Better energy, sleep, recovery and stress control",
-      "Weekly check-ins and full accountability",
-    ] /* [review] — condensed from the lifestyle brief */,
+      "Energy, sleep and stress under control — checked every week",
+    ] /* [review] — condensed from the lifestyle brief; recovery + weekly
+         accountability merged into the fourth line to hold the four-point cap */,
     schemaDescription:
       "Monthly one-to-one lifestyle coaching for men — habit building, nutrition guidance, fat loss and muscle gain, workout and fitness protocols, better energy, sleep and recovery, stress management and overall health optimisation. Pricing disclosed after a Transformation Audit.",
   },
@@ -73,10 +77,10 @@ export const PATHS: CoachingPath[] = [
     includes: [
       "Body language and presence — how you carry yourself",
       "Social confidence, communication and networking",
-      "Style, grooming and dressing for your body type",
-      "Colours that work with Indian skin tones",
+      "Style, grooming and dressing for your body type — in colours that work with Indian skin tones",
       "Mindset and emotional intelligence underneath it all",
-    ] /* [review] — condensed from the personality & presence brief */,
+    ] /* [review] — condensed from the personality & presence brief; the skin-tone
+         line folded into the style point to hold the four-point cap */,
     schemaDescription:
       "Monthly one-to-one coaching in personality and presence for men — body language, social confidence, communication and networking, style, grooming, dressing for your body type and colours for Indian skin tones, plus the mindset and emotional intelligence underneath it. Pricing disclosed after a Transformation Audit.",
   },
@@ -94,9 +98,9 @@ export const PATHS: CoachingPath[] = [
       "Everything in Lifestyle Coaching — body, health, training, nutrition",
       "Everything in Personality & Presence — style, grooming, communication",
       "Mindset and confidence built alongside a stronger body",
-      "Weekly check-ins and accountability across both pillars",
-      "One coach, one plan, both halves of the man together",
-    ] /* [review] — both pillars, in one list */,
+      "One coach, one plan, weekly check-ins across both pillars",
+    ] /* [review] — both pillars, in one list; accountability and the
+         one-coach line merged to hold the four-point cap */,
     schemaDescription:
       "The flagship program for men who want a complete transformation — not just a better body or a better wardrobe. It combines both pillars: body, lifestyle, mindset, confidence, personality, presence, style and grooming. Pricing disclosed after a Transformation Audit.",
   },

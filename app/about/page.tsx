@@ -144,22 +144,7 @@ export default function AboutPage() {
       <StoryHero />
 
       {/* ============ Section 2 — THE FOUNDER STORY ("The Centerpiece") ============ */}
-      {/* id="story" moved to <StoryHero /> above, which now tells this story in
-          full — an id can only exist once per document. */}
-      
-
-      {/* Decorative reprise of the four-noun line — the chant between chapters */}
-      <div className="border-b border-hairline-soft bg-void py-5 md:py-7">
-        <Marquee
-          items={[
-            "Their health.",
-            "Their drive.",
-            "Their confidence.",
-            "Their discipline.",
-          ]}
-          speedS={40}
-        />
-      </div>
+      {/* id="story" moved to <StoryHero /> above, which now tells this story in full — an id can only exist once per document. */}
 
       {/* ============ Section 3 — MY JOURNEY ("Earned, not learned") ============ */}
       {/* Was a four-node biographical timeline with the 100kg photo; now pure
@@ -206,28 +191,10 @@ export default function AboutPage() {
           </div>
 
           <Reveal delayMs={200} className="mt-10 text-center">
-            <Link
-              href="/results"
-              className="link-draw inline-flex items-center gap-1.5 font-medium text-gold-300"
-            >
+            <Link href="/results" className="link-draw inline-flex items-center gap-1.5 font-medium text-gold-300" >
               See the transformations
               <ArrowRightIcon className="h-4 w-4" />
             </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============ Section 6 — FOLLOW THE WORK ("Social Proof, Live") ============ */}
-      <section className="bg-void cv-auto">
-        <div className="container-site section text-center">
-          <Reveal>
-            <h2 className="type-h3 text-primary">
-              See The Work In Real Time.{/* [review] */}
-            </h2>
-            <p className="type-small mt-2 text-muted">
-              {/* [review] */}
-              The training. The clients. The daily standard.
-            </p>
           </Reveal>
 
           <div className="mx-auto mt-8 flex max-w-md flex-col items-stretch justify-center gap-4 sm:max-w-none sm:flex-row sm:items-center">

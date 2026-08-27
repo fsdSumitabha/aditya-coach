@@ -74,13 +74,14 @@ const BOOKING = {
 // app/book/page.tsx (Server Component) — not from this island.
 
 // ---------------------------------------------------------------------------
-// §1 checkout summary — five lines, verbatim per the 2026-08-25 direction.
+// §1 checkout summary — two lines. The earlier five restated what /programs
+// and §3 "What You Get" already say, so the summary now carries only the
+// promise a man needs at the point of payment. The Blueprint and the gift
+// card are not dropped from the page: the §4 payment block below states both
+// from CONSULT_INCLUDES.
 const CHECKOUT_POINTS = [
-  "Personal assessment with Aditya",
-  "Understand your current position and goals",
-  "Identify what needs to change",
-  "Get your recommended transformation path",
-  "Premium Blueprint included",
+  "We audit your lifestyle, health, and presence",
+  "You leave with exactly what to fix first",
 ];
 
 const GOAL_OPTIONS = [

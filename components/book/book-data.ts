@@ -45,17 +45,20 @@ export const AUDIT_STAGES: {
 
 /**
  * §3 — the tangible deliverables, so ₹999 reads as a thing you receive
- * rather than a fee you pay. The gift card is a CONFIRMED inclusion
- * (6 Aug 2026) and must appear wherever the audit is sold, so it joins the
- * list from lib/legal.ts rather than being written out here.
+ * rather than a fee you pay.
+ *
+ * FOUR lines, hard cap. The card had eight stacked items and ran taller than
+ * a phone screen, which pushed the total below the fold. The fee-credit
+ * promise is now the fourth line rather than a separate rule under the total
+ * — same copy, still from lib/legal.ts. The gift card and the Blueprint are
+ * CONFIRMED inclusions (6 Aug 2026) and still appear on this page: the §4
+ * payment block in BookingFlow states both, next to the credit.
  */
 export const WHAT_YOU_GET = [
-  "Transformation Audit session — 45 minutes, one to one",
-  "Personal evaluation of where you actually stand",
-  "A direction: the path Aditya recommends for you",
-  "The Premium Transformation Blueprint",
-  "Clear next steps you can start on immediately",
-  CONSULT_INCLUDES.GIFT_CARD,
+  "Full analysis of your lifestyle, health and fitness" /* [review] */,
+  "What is actually holding you back — named, not guessed at" /* [review] */,
+  "The exact order to fix it in" /* [review] */,
+  CONSULT_INCLUDES.CREDIT,
 ] as const;
 
 /** §4 — the audit leads somewhere, and the fork is the visitor's to take. */

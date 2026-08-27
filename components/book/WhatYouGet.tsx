@@ -2,16 +2,16 @@ import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import { CheckIcon } from "@/components/icons";
 import { PRICE, WHAT_YOU_GET } from "@/components/book/book-data";
-import { CONSULT_INCLUDES } from "@/lib/legal";
 
 /**
  * §3 — "What You Get."
  *
  * The job here is to make ₹999 concrete, so it is set as a manifest: the
  * deliverables listed like line items, ruled off, and the total stated at the
- * bottom — the tailor's invoice, not a features grid. The fee-credit promise
- * sits directly under the total, because that is where a man reading a total
- * is looking.
+ * bottom — the tailor's invoice, not a features grid. Four line items, hard
+ * cap (see WHAT_YOU_GET): the whole card has to clear a phone screen with the
+ * total still visible. The fee-credit promise is the last line item rather
+ * than a separate block under the total.
  */
 export default function WhatYouGet() {
   return (
@@ -55,9 +55,6 @@ export default function WhatYouGet() {
                   {PRICE}
                 </span>
               </div>
-              <p className="type-small text-gold-300 border-hairline-gold mt-5 border-l pl-4">
-                {CONSULT_INCLUDES.CREDIT}
-              </p>
             </div>
           </Reveal>
         </div>
