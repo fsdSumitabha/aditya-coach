@@ -59,7 +59,7 @@ import {
   track,
   waLink,
 } from "@/lib/config";
-import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
+import { CONSULT_INCLUDES, LEGAL, UPI } from "@/lib/legal";
 import UpiPayPanel from "@/components/book/UpiPayPanel";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
@@ -403,6 +403,17 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     finishIntake();
   }
 
+ function upiLink(amount: number) {
+  const params = new URLSearchParams({
+    pa: UPI.ID,
+    pn: UPI.PAYEE_NAME,
+    am: amount.toFixed(2),
+    cu: "INR",
+  });
+
+  return `upi://pay?${params.toString()}`;
+}
+
   const stateA = state === "A";
   // Heading-tree integrity: STATE A's hero owns the page h1; once the B/C
   // wrapper becomes the visible content its banner heading must take over as
@@ -490,16 +501,10 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                         — men who want to talk to a person before paying are
                         the majority of this page's traffic. */}
                     <a
-                      href={waLink(
-                        `Hi Aditya, I want to book the ${LEGAL.CONSULT_PRICE} Transformation Audit.` /* [review] */,
-                        BOOKING.COACH_WHATSAPP,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-wa mt-7 w-full"
+                        href={upiLink(LEGAL.CONSULT_PRICE_INR)}
+                        className="btn-gold mt-4 w-full"
                     >
-                      <WhatsAppIcon className="h-5 w-5" />
-                      Continue on WhatsApp
+                        Pay ₹999 via UPI
                     </a>
 
                     {/* The most important line on the page. Confirmed copy —
