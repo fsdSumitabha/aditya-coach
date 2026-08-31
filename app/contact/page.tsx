@@ -23,9 +23,7 @@ import {
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 import {
   ADDRESS,
-  ADDRESS_FULL,
-  LEGAL,
-  MAP_DIRECTIONS_LINK,
+  ADDRESS_FULL,  MAP_DIRECTIONS_LINK,
   MAP_EMBED_SRC,
 } from "@/lib/legal";
 
@@ -475,7 +473,8 @@ export default function ContactPage() {
           />
           <Reveal index={1}>
             <p className="type-lead text-secondary mx-auto mt-4 max-w-xl">
-              {`Book the ${LEGAL.CONSULT_PRICE} consultation. 45 minutes, and you'll leave knowing exactly what to change and in what order.`}
+              A clear diagnosis of what is holding you back &mdash; and the order
+              to fix it in.
               {/* [review] — echoes /book copy */}
             </p>
           </Reveal>
