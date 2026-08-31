@@ -5,7 +5,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import JourneySection from "@/components/about/JourneySection";
 import StoryHero from "@/components/about/StoryHero";
 import TransformationSplit from "@/components/about/TransformationSplit";
 import FinalCta from "@/components/FinalCta";
@@ -69,21 +68,10 @@ const TRUST_POINTS = [
   },
 ] as const; // [review]
 
-// ---- Page-local scroll-FX styles (scoped to /about via static export) ----
-// One thing the shipped kit classes can't express on their own:
-// the timeline node dots ignite (scale + opacity) the moment their entry
-//     reveals. Base state stays fully lit for no-JS / reduced-motion — the
-//     dimmed state only applies while the entry carries the JS-added .reveal.
-const ABOUT_FX_CSS = `
-.reveal .tl-dot { transform: scale(0.2); opacity: 0; }
-.reveal.is-in .tl-dot {
-  transform: none;
-  opacity: 1;
-  transition:
-    transform 0.6s var(--ease-out-expo) 0.15s,
-    opacity 0.5s var(--ease-standard) 0.15s;
-}
-`;
+// Page-local scroll-FX styles used to live here (the .tl-dot timeline-node
+// ignite). They came out with §02 MY JOURNEY on 2026-08-31 — the only element
+// carrying .tl-dot was that section's refinement loop. Everything this page
+// animates now is covered by the shipped kit classes.
 
 // ---- Page-level structured data: this page owns the rich Person entity + nested Service ----
 // Geo stays Kolkata; serviceArea worldwide — consistent with the site schema strategy.
@@ -133,8 +121,6 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={[aboutPersonJsonLd, coachingServiceJsonLd]} />
-      {/* Page-authored FX CSS — see ABOUT_FX_CSS note above */}
-      <style>{ABOUT_FX_CSS}</style>
 
       {/* ============ Section 0 — THE SPLIT (before | after opener) ============ */}
       {/* Sits above the hero: the proof lands before the claim. Carries no
@@ -144,26 +130,28 @@ export default function AboutPage() {
           /public/aditya — see the ASSETS note in the component. */}
       <TransformationSplit />
 
-      {/* ============ Section 1 — MY STORY (hero + the full founder story) ============ */}
+      {/* ============ Section 1 — MY STORY (hero + the short founder story) ============ */}
       {/* Owns the page's single <h1> and carries id="story", the landing point
-          for the opener's bridge control. Copy is verbatim from
+          for the opener's bridge control. Shortened 2026-08-31 to one spread
+          and three paragraphs — /about has to build trust in 60 seconds, not
+          five minutes of reading. Copy is still verbatim from
           docs/aditya_personal_story.md — see the component header. */}
       <StoryHero />
 
-      {/* ============ Section 2 — THE FOUNDER STORY ("The Centerpiece") ============ */}
-      {/* id="story" moved to <StoryHero /> above, which now tells this story in full — an id can only exist once per document. */}
+      {/* ============ Section 2 — MY JOURNEY — REMOVED 2026-08-31 ============ */}
+      {/* <JourneySection /> retold the same narrative as StoryHero above — the
+          100kg story, the years of self-testing, becoming a coach — so the page
+          told one story twice. Its one unique point, "Every single thing I
+          teach has been earned — not learned.", now closes <StoryHero />.
+          components/about/JourneySection.tsx is left on disk unreferenced: it
+          holds docs/aditya_journey.md verbatim and is the starting point for
+          the long-form blog post. Do not re-mount it here. */}
 
-      {/* ============ Section 3 — MY JOURNEY ("Earned, not learned") ============ */}
-      {/* Was a four-node biographical timeline with the 100kg photo; now pure
-          argument, no imagery. Copy is verbatim from docs/aditya_journey.md —
-          see the component header. */}
-      <JourneySection />
-
-      {/* ============ Section 4 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
+      {/* ============ Section 3 — WHY MEN TRUST THE WORK (credibility strip) ============ */}
       {/* Restrained trust rows — no invented stats/credentials. Carries the proof
           job now that the before/after section is gone; links out to /results
           where the client transformations live. [review] framing throughout. */}
-      {/* bg-alt: §3 above is bg-base, so this keeps the alternation. */}
+      {/* bg-alt: StoryHero above is bg-void, so this keeps the alternation. */}
       <section className="bg-alt cv-auto border-y border-hairline-soft">
         <div className="container-site section">
           <div className="text-center">
@@ -263,7 +251,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ============ Section 7 — FINAL CTA BAND ("One Decision") ============ */}
+      {/* ============ Section 4 — FINAL CTA BAND ("One Decision") ============ */}
       {/* Shared closer — copy verbatim from bank; routes only (no email field → no consent line needed).
           FinalCta already carries the aurora + grain atmosphere for this band. */}
       <FinalCta
