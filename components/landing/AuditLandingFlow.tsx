@@ -24,13 +24,15 @@
  * WHAT IS NOT REAL YET (same seams as /book — see lib/config.ts):
  *   [ ] REAL GATEWAY  → payment is a manual UPI hand-off. NOTHING here
  *                       verifies that money moved: the visitor asserts he paid
- *                       and hands back a UTR, and Aditya matches it against
- *                       PhonePe by hand. Every downstream string is written to
- *                       be true under that constraint. Do not upgrade any of
- *                       them into "payment received".
+ *                       and hands back a UTR IF HE HAS ONE (it is optional
+ *                       here), and Aditya matches it against PhonePe by hand.
+ *                       Every downstream string is written to be true under
+ *                       that constraint. Do not upgrade any of them into
+ *                       "payment received".
  *   [x] BOOKING MAIL  → LIVE. sendBooking() → app/api/booking → SMTP. The only
  *                       record a booking leaves. Blocking, and a failure hands
- *                       the payer a WhatsApp fallback carrying his UTR.
+ *                       the payer a WhatsApp fallback carrying his UTR, or
+ *                       asking for a screenshot when he gave none.
  *   [ ] TRACKING      → track() is a no-op until GA/Meta Pixel IDs exist in
  *                       lib/config. The three events the brief requires are
  *                       already fired below: ViewContent (landing-page view),
@@ -99,14 +101,24 @@ function validateField(field: FieldName, raw: string): string | null {
 }
 
 /**
- * UPI reference (UTR) check. Deliberately loose: the canonical UTR is 12
- * digits, but banks and PSPs hand back their own formats and a strict rule
- * would block real payers. This only stops empty and obviously-junk input —
- * Aditya verifies the payment for real.
+ * UPI reference (UTR) check — OPTIONAL on this page (31 Aug 2026).
+ *
+ * On /book the reference is required. Here it is not: this page takes cold ad
+ * traffic, and a man who has already sent the money but cannot find the UTR in
+ * his banking app will abandon at the last step rather than go hunting for it.
+ * Losing that booking costs more than the reconciliation it saves.
+ *
+ * The trade-off is real and is handled downstream, not hidden: without a UTR
+ * the payment reaches PhonePe with nothing tying it to a name, so the success
+ * screen leads with WhatsApp — that thread becomes how Aditya matches him.
+ *
+ * When a reference IS given the format check stays deliberately loose: the
+ * canonical UTR is 12 digits, but banks and PSPs hand back their own formats
+ * and a strict rule would reject real payers. It only stops obvious junk.
  */
 function validateReference(raw: string): string | null {
   const v = raw.trim();
-  if (!v) return "Enter the UPI reference from your payment app.";
+  if (!v) return null; // optional — an empty reference is a valid submission
   if (!/^[A-Za-z0-9]{6,25}$/.test(v))
     return "That doesn't look like a UPI reference — 6–25 letters or numbers.";
   return null;
@@ -153,13 +165,11 @@ export default function AuditLandingFlow({
   const [liveMsg, setLiveMsg] = useState("");
   const doneHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  // Sticky mobile CTA visibility — on once the hero has scrolled away, off
-  // again while the booking section is on screen (nothing should sit over the
-  // button it points at).
-  const heroSentinelRef = useRef<HTMLDivElement>(null);
-  const bookSectionRef = useRef<HTMLElement>(null);
-  const [pastHero, setPastHero] = useState(false);
-  const [bookInView, setBookInView] = useState(false);
+  // NOTE: there is no sticky booking bar on this page. The WhatsApp FAB (in
+  // app/landing-page/layout.tsx) owns the bottom-right corner at z-index 120,
+  // and a full-width bar underneath it would have the FAB sitting on top of
+  // its own button. Three booking CTAs carry the page instead: the hero, the
+  // booking section itself, and the closing band.
 
   // Landing-page view — the first of the three events the brief requires.
   useEffect(() => {
@@ -169,31 +179,6 @@ export default function AuditLandingFlow({
       currency: "INR",
       source: LANDING_SOURCE,
     });
-  }, []);
-
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const hero = heroSentinelRef.current;
-    const book = bookSectionRef.current;
-    if (!hero || !book) return;
-
-    const heroIo = new IntersectionObserver(
-      ([entry]) => setPastHero(!entry.isIntersecting),
-      { threshold: 0 },
-    );
-    // The WHOLE booking section, not a sentinel at its top: the bar must stay
-    // down for the entire scroll through the form and the payment panel, not
-    // reappear over the button it points at as soon as the top edge leaves.
-    const bookIo = new IntersectionObserver(
-      ([entry]) => setBookInView(entry.isIntersecting),
-      { threshold: 0 },
-    );
-    heroIo.observe(hero);
-    bookIo.observe(book);
-    return () => {
-      heroIo.disconnect();
-      bookIo.disconnect();
-    };
   }, []);
 
   // Focus the confirmation on the state change (DOM only — the announcement
@@ -267,11 +252,12 @@ export default function AuditLandingFlow({
     setPayStep("pay");
   }
 
-  // Step 2 — he asserts he paid and hands back a UTR.
+  // Step 2 — he asserts he paid, and hands back a UTR if he has one.
   //
   // NOTHING HERE VERIFIES THE PAYMENT. No gateway, no webhook, no signature.
   // This records what he says and routes it to Aditya, who checks it against
-  // PhonePe by hand.
+  // PhonePe by hand. The reference is optional (see validateReference), so
+  // "what he says" may be no more than a name and a WhatsApp number.
   async function confirmPaid() {
     if (confirming) return;
     const err = validateReference(reference);
@@ -308,7 +294,7 @@ export default function AuditLandingFlow({
       setConfirmFailed(true);
       setConfirming(false);
       setLiveMsg(
-        "We couldn't record your booking. Your payment is safe — send Aditya the reference on WhatsApp.",
+        "We couldn't record your booking. Your payment is safe — message Aditya on WhatsApp.",
       );
       return;
     }
@@ -332,8 +318,16 @@ export default function AuditLandingFlow({
   // takes over. Prerendered HTML therefore contains exactly one h1.
   const DoneHeading = paid ? "h1" : ("h2" as const);
 
+  // The reference is optional, so the prefilled message has two forms. With a
+  // UTR it hands Aditya everything he needs to match the payment in one
+  // glance. Without one it must NOT say "UPI reference:" followed by nothing —
+  // it asks him to send the screenshot instead, which is the only other thing
+  // that can tie the money to a name.
+  const utr = reference.trim();
   const whatsAppAfterPay = waLink(
-    `Hi Aditya, I've paid ${PRICE} for the Transformation Audit. UPI reference: ${reference.trim()}`,
+    utr
+      ? `Hi Aditya, I've paid ${PRICE} for the Transformation Audit. UPI reference: ${utr}`
+      : `Hi Aditya, I've paid ${PRICE} for the Transformation Audit. Sending my payment screenshot here.`,
     COACH_WHATSAPP,
   );
 
@@ -404,9 +398,6 @@ export default function AuditLandingFlow({
           </div>
         </section>
 
-        {/* sticky-CTA trigger: once this leaves the viewport, the bar arrives */}
-        <div ref={heroSentinelRef} aria-hidden="true" className="h-px" />
-
         {/* §3–§7 — server-rendered, zero JS */}
         {middle}
 
@@ -416,7 +407,6 @@ export default function AuditLandingFlow({
              after the Audit is booked (brief §7). */}
         <section
           id="book"
-          ref={bookSectionRef}
           className="bg-surface-warm grain relative overflow-hidden scroll-mt-6"
         >
           <div className={`container-site relative z-10 ${LP_SECTION}`}>
@@ -583,8 +573,11 @@ export default function AuditLandingFlow({
                       onConfirm={confirmPaid}
                       confirming={confirming}
                       confirmFailed={confirmFailed}
+                      referenceRequired={false}
                       whatsAppFallbackHref={waLink(
-                        `Hi Aditya, I've paid ${PRICE} for the Transformation Audit but the website couldn't record my booking. UPI reference: ${reference.trim()}`,
+                        utr
+                          ? `Hi Aditya, I've paid ${PRICE} for the Transformation Audit but the website couldn't record my booking. UPI reference: ${utr}`
+                          : `Hi Aditya, I've paid ${PRICE} for the Transformation Audit but the website couldn't record my booking. Sending my payment screenshot here.`,
                         COACH_WHATSAPP,
                       )}
                     />
@@ -607,28 +600,6 @@ export default function AuditLandingFlow({
         {/* §9–§10 — server-rendered, zero JS */}
         {tail}
 
-        {/* ---------------- STICKY MOBILE CTA ----------------
-             Mobile only, and only between the hero and the booking section.
-             The global WhatsApp FAB is switched off on this route, so nothing
-             else occupies this corner; iOS safe-area inset keeps it clear of
-             the home indicator (brief §11 P2). */}
-        <div
-          className={`fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 sm:hidden ${
-            pastHero && !bookInView ? "translate-y-0" : "translate-y-full"
-          }`}
-          style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 0px))" }}
-          aria-hidden={!pastHero || bookInView}
-        >
-          <div className="border-hairline-soft bg-void/95 border-t px-4 pt-3 backdrop-blur">
-            <a
-              href={BOOKING_ANCHOR}
-              className="btn-gold w-full leading-snug"
-              tabIndex={pastHero && !bookInView ? undefined : -1}
-            >
-              {HERO.cta} — {PRICE}
-            </a>
-          </div>
-        </div>
       </div>
 
       {/* ==================== STATE B — BOOKED ==================== */}
@@ -672,10 +643,13 @@ export default function AuditLandingFlow({
                   Message Aditya now
                 </a>
 
+                {/* [review] — with no reference on file, WhatsApp is the only
+                    thing that ties his payment to his name, so the ask is
+                    firmer than a nicety. */}
                 <p className="type-caption text-muted mt-4">
-                  Your UPI reference is already in the message. Save the thread
-                  — that is where everything happens next.
-                  {/* [review] */}
+                  {utr
+                    ? "Your UPI reference is already in the message. Save the thread — that is where everything happens next."
+                    : "Send the payment screenshot in that thread so Aditya can match your payment. That thread is where everything happens next."}
                 </p>
               </div>
             </div>

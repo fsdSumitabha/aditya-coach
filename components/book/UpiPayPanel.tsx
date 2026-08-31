@@ -72,6 +72,7 @@ export default function UpiPayPanel({
   confirmFailed,
   whatsAppFallbackHref,
   productLabel = `Transformation Audit · 45 minutes with Aditya`,
+  referenceRequired = true,
 }: {
   payerName: string;
   reference: string;
@@ -86,6 +87,16 @@ export default function UpiPayPanel({
   /** What the money buys, shown under the amount. Overridable because the ads
       landing page must not name a duration (Transformation Audit brief §1). */
   productLabel?: string;
+  /**
+   * Whether the UTR must be supplied to confirm. True on /book. False on the
+   * ads landing page, where a cold visitor who cannot find the reference in
+   * his banking app would otherwise abandon at the very last step.
+   *
+   * This only changes the LABELLING here — the caller owns validation. Set it
+   * to match the caller's rule, or the field will say "required" while the
+   * form lets an empty value through (or the reverse, which is worse).
+   */
+  referenceRequired?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -197,11 +208,15 @@ export default function UpiPayPanel({
       <div className="border-hairline-soft mt-8 border-t pt-7">
         <label htmlFor="bk-upiref" className="field-label">
           UPI reference number
+          {!referenceRequired && (
+            <span className="text-muted font-normal"> (optional)</span>
+          )}
         </label>
         <p id="bk-upiref-hint" className="type-caption text-muted mt-1 mb-2.5">
           {/* [review] */}
-          After paying, copy the reference (UTR) from your UPI app so Aditya can
-          match your payment.
+          {referenceRequired
+            ? "After paying, copy the reference (UTR) from your UPI app so Aditya can match your payment."
+            : "If you have it, paste the reference (UTR) from your UPI app — it lets Aditya match your payment straight away. If you can't find it, skip it and send him the screenshot on WhatsApp."}
         </p>
         <input
           id="bk-upiref"
@@ -242,9 +257,12 @@ export default function UpiPayPanel({
             style={{ background: "rgba(201,162,75,0.06)" }}
           >
             <p className="type-small text-primary">
-              {/* [review] */}
+              {/* [review] — no reference to send when the field was left
+                  blank, so the ask becomes the screenshot instead */}
               We couldn&apos;t record your booking — but your payment is safe.
-              Send Aditya the reference and he&apos;ll confirm your slot.
+              {reference.trim()
+                ? " Send Aditya the reference and he'll confirm your slot."
+                : " Message Aditya with your payment screenshot and he'll confirm your slot."}
             </p>
             <a
               href={whatsAppFallbackHref}
@@ -253,7 +271,7 @@ export default function UpiPayPanel({
               className="btn-wa mt-4 w-full"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Send Aditya My Reference
+              {reference.trim() ? "Send Aditya My Reference" : "Message Aditya Now"}
             </a>
             <p className="type-caption text-muted mt-3">
               Or try Confirm again — nothing is charged twice.

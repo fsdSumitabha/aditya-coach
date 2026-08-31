@@ -125,8 +125,15 @@ export async function POST(request: NextRequest) {
       422,
     );
   }
-  if (!UTR_RE.test(upiReference)) {
-    return json({ ok: false, error: "A valid UPI reference is required." }, 422);
+  // The UPI reference is OPTIONAL. /book still asks for it and enforces it on
+  // the client, but the ads landing page does not: a cold visitor who has
+  // already sent the money and cannot find the UTR in his banking app would
+  // otherwise abandon at the last step, and a lost booking costs more than the
+  // reconciliation the reference saves. A reference that IS given still has to
+  // look like one — junk in the subject line is worse than an empty field,
+  // because that subject is what Aditya searches his inbox for.
+  if (upiReference && !UTR_RE.test(upiReference)) {
+    return json({ ok: false, error: "That UPI reference doesn't look valid." }, 422);
   }
 
   if (rateLimited(clientIp(request))) {

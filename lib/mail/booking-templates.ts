@@ -96,34 +96,60 @@ export function bookingNotification(s: BookingSubmission): {
   const name = sanitizeHeader(s.name);
   const utr = sanitizeHeader(s.upiReference);
 
-  // UTR first in the subject: this is what Aditya searches his inbox for after
-  // spotting the credit in PhonePe.
-  const subject = `UTR ${utr} · ${s.amountLabel} audit booking · ${name}`;
+  // The reference is optional on the ads landing page, so both mails have to
+  // read correctly. With a UTR, it leads the subject — that is the string
+  // Aditya searches his inbox for after spotting the credit in PhonePe.
+  // Without one, the subject must SAY so rather than print "UTR ·": a booking
+  // with no reference needs different handling, and he has to see that in the
+  // inbox list, before he opens anything.
+  const subject = utr
+    ? `UTR ${utr} · ${s.amountLabel} audit booking · ${name}`
+    : `NO UTR · ${s.amountLabel} audit booking · ${name}`;
+
+  const callout = utr
+    ? calloutBox(
+        eyebrow("Check this against PhonePe first") +
+          `<p style="margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:.02em">${escapeHtml(utr)}</p>` +
+          `<p style="margin:0;font-size:14px;color:#6c6c76">${escapeHtml(s.amountLabel)} to ${escapeHtml(s.upiId)} · ` +
+          `${escapeHtml(istTimestamp(s.submittedAt))} IST</p>`,
+      ) +
+      `<p style="margin:0 0 18px;font-size:14px;color:#6c6c76">` +
+      `He entered this reference himself — nothing on the site verified it. Match it ` +
+      `in PhonePe before you confirm his slot.</p>`
+    : calloutBox(
+        eyebrow("No UPI reference given") +
+          `<p style="margin:0 0 6px;font-size:17px;font-weight:600">Match this one by hand</p>` +
+          `<p style="margin:0;font-size:14px;color:#6c6c76">${escapeHtml(s.amountLabel)} to ${escapeHtml(s.upiId)} · ` +
+          `${escapeHtml(istTimestamp(s.submittedAt))} IST</p>`,
+      ) +
+      `<p style="margin:0 0 18px;font-size:14px;color:#6c6c76">` +
+      `He was not required to give a reference. Look for a ${escapeHtml(s.amountLabel)} credit ` +
+      `around the time above, or ask him for the screenshot on WhatsApp.</p>`;
 
   const bodyHtml =
     eyebrow("Transformation Audit · payment claimed") +
     `<h1 style="margin:0 0 20px;font-size:21px;font-weight:600">${escapeHtml(name)} booked an audit</h1>` +
-    calloutBox(
-      eyebrow("Check this against PhonePe first") +
-        `<p style="margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:.02em">${escapeHtml(utr)}</p>` +
-        `<p style="margin:0;font-size:14px;color:#6c6c76">${escapeHtml(s.amountLabel)} to ${escapeHtml(s.upiId)} · ` +
-        `${escapeHtml(istTimestamp(s.submittedAt))} IST</p>`,
-    ) +
-    `<p style="margin:0 0 18px;font-size:14px;color:#6c6c76">` +
-    `He entered this reference himself — nothing on the site verified it. Match it ` +
-    `in PhonePe before you confirm his slot.</p>` +
+    callout +
     infoTable(contactRows(s)) +
     `<p style="margin:0;font-size:14px;color:#6c6c76">Reply to this email to reach him, or message him on WhatsApp above.</p>`;
 
   const text = [
     `${name} booked a Transformation Audit.`,
     ``,
-    `UPI REFERENCE (UTR): ${utr}`,
+    utr ? `UPI REFERENCE (UTR): ${utr}` : `UPI REFERENCE (UTR): not given`,
     `Amount claimed: ${s.amountLabel} to ${s.upiId}`,
     `Submitted: ${istTimestamp(s.submittedAt)} IST`,
     ``,
-    `He entered this reference himself — nothing verified it.`,
-    `Match it in PhonePe before confirming his slot.`,
+    ...(utr
+      ? [
+          `He entered this reference himself — nothing verified it.`,
+          `Match it in PhonePe before confirming his slot.`,
+        ]
+      : [
+          `He was not required to give a reference.`,
+          `Look for a ${s.amountLabel} credit around the time above, or ask`,
+          `him for the screenshot on WhatsApp, before confirming his slot.`,
+        ]),
     ``,
     `Name:      ${name}`,
     `WhatsApp:  ${s.phone}`,
@@ -133,7 +159,14 @@ export function bookingNotification(s: BookingSubmission): {
     ...(s.source ? [`Came from: ${sanitizeHeader(s.source)}`] : []),
   ].join("\n");
 
-  return { subject, html: renderEmail({ preheader: `${s.amountLabel} · UTR ${utr}`, bodyHtml }), text };
+  return {
+    subject,
+    html: renderEmail({
+      preheader: utr ? `${s.amountLabel} · UTR ${utr}` : `${s.amountLabel} · no UTR given`,
+      bodyHtml,
+    }),
+    text,
+  };
 }
 
 /** Stage 2 — the optional answers he gave after paying. */
@@ -143,7 +176,14 @@ export function bookingIntakeNotification(
 ): { subject: string; html: string; text: string } {
   const name = sanitizeHeader(s.name);
   const utr = sanitizeHeader(s.upiReference);
-  const subject = `Pre-call notes · ${name} · UTR ${utr}`;
+  // Only /book reaches this stage today, and it always has a UTR and an email.
+  // Both are optional on the type, so neither is assumed here.
+  const subject = utr
+    ? `Pre-call notes · ${name} · UTR ${utr}`
+    : `Pre-call notes · ${name}`;
+  const idLine = [utr ? `Booking UTR ${utr}` : `No booking UTR`, s.email]
+    .filter(Boolean)
+    .join(" · ");
 
   const fields: [string, string][] = [
     ["What he does", intake.occupation],
@@ -157,7 +197,7 @@ export function bookingIntakeNotification(
   const bodyHtml =
     eyebrow("Transformation Audit · before the call") +
     `<h1 style="margin:0 0 8px;font-size:21px;font-weight:600">${escapeHtml(name)} filled in his pre-call notes</h1>` +
-    `<p style="margin:0 0 20px;font-size:14px;color:#6c6c76">Booking UTR ${escapeHtml(utr)} · ${escapeHtml(s.email)}</p>` +
+    `<p style="margin:0 0 20px;font-size:14px;color:#6c6c76">${escapeHtml(idLine)}</p>` +
     (answered.length > 0
       ? answered
           .map(
@@ -168,7 +208,7 @@ export function bookingIntakeNotification(
       : `<p style="margin:0 0 18px">He skipped every question.</p>`);
 
   const text = [
-    `${name} — pre-call notes (booking UTR ${utr})`,
+    `${name} — pre-call notes (${idLine})`,
     ``,
     ...(answered.length > 0
       ? answered.flatMap(([label, value]) => [`${label}:`, value, ``])
