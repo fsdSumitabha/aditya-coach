@@ -10,10 +10,9 @@ import TransformationSplit from "@/components/about/TransformationSplit";
 import FinalCta from "@/components/FinalCta";
 import JsonLd from "@/components/JsonLd";
 import Reveal from "@/components/Reveal";
-import Marquee from "@/components/Marquee";
 import SplitHeading from "@/components/SplitHeading";
 import TiltCard from "@/components/TiltCard";
-import { ArrowRightIcon, CheckIcon, InstagramIcon, WhatsAppIcon, YouTubeIcon } from "@/components/icons";
+import { ArrowRightIcon, CheckIcon } from "@/components/icons";
 import { IG_URL, YOUTUBE_URL, waLink } from "@/lib/config";
 import { SITE_ORIGIN, pageMetadata } from "@/lib/site";
 

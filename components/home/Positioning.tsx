@@ -32,14 +32,6 @@ export default function Positioning() {
     <>
       {/* ============ THE WORK — the positive core (showpiece) ============ */}
       <section className="cv-auto relative overflow-hidden border-t border-hairline-soft bg-base">
-        {/* ONE ghost watermark for the block */}
-        <span
-          aria-hidden="true"
-          className="ghost-word sd-ghost-drift right-[-4%] top-[8%] md:right-[1%]"
-        >
-          PRESENCE
-        </span>
-
         <div className="container-site section relative z-10">
           <Reveal className="max-w-[760px]">
             <div className="flex items-center gap-4">

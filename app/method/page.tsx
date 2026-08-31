@@ -25,45 +25,6 @@ export const metadata: Metadata = pageMetadata({
   ogImage: OG_METHOD_IMG,
 });
 
-// ---- Myth vs Truth (all invented in his voice) ----
-const MYTH_TRUTH: { myth: string; truth: ReactNode }[] = [
-  {
-    myth: "The right diet is what changes your body." /* [review] */,
-    truth: (
-      <>
-        The right <em>lifestyle</em> changes your body. The diet only holds once
-        the life around it is stable.
-      </>
-    ) /* [review] */,
-  },
-  {
-    myth: "Supplements are what serious guys take first." /* [review] */,
-    truth: (
-      <>
-        Supplements are the last 5%. Serious guys fix sleep, movement and food
-        before they buy a single tub.
-      </>
-    ) /* [review] */,
-  },
-  {
-    myth: "If I'm not seeing results, I need something stronger." /* [review] */,
-    truth: (
-      <>
-        If you&apos;re not seeing results, you skipped a layer. You don&apos;t
-        need stronger — you need <em>in order.</em>
-      </>
-    ) /* [review] */,
-  },
-  {
-    myth: "I've tried everything and nothing works for me." /* [review] */,
-    truth: (
-      <>
-        You&apos;ve tried everything in the wrong order. Nothing was built to
-        last, so nothing lasted.
-      </>
-    ) /* [review] */,
-  },
-];
 
 // ---- Page-level JSON-LD ----
 const howToSchema = {
