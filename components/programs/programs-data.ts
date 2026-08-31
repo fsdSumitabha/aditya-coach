@@ -148,10 +148,10 @@ export const COMPARE_ROWS: CompareRow[] = [
     label: "Complete transformation",
     cells: { lifestyle: false, presence: false, complete: true },
   },
-  {
-    label: `Starts with the ${PRICE_CONSULT} Transformation Audit`,
-    cells: { lifestyle: true, presence: true, complete: true },
-  },
+  // NOTE: there is deliberately no "starts with the Audit" row. Every path
+  // starts with the Audit, so the row was true in all three columns — it
+  // differentiated nothing and read as a feature one path might lack. The
+  // shared entry point is stated in JourneySteps and on /book instead.
 ];
 
 /** §6 — outcomes, not features. Copy per the 2026-08-25 direction. */
