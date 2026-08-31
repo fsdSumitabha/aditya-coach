@@ -140,8 +140,8 @@ export default function AboutPage() {
       {/* Sits above the hero: the proof lands before the claim. Carries no
           heading — the page's single <h1> is the hero below, and a heading
           here would put an <h2> ahead of it. Its bridge control scrolls to
-          #story (Section 1). ⚠️ still wired to /public/demo stock frames —
-          see the DEMO ASSETS note in the component. */}
+          #story (Section 1). Wired to Aditya's own before/after frames under
+          /public/aditya — see the ASSETS note in the component. */}
       <TransformationSplit />
 
       {/* ============ Section 1 — MY STORY (hero + the full founder story) ============ */}

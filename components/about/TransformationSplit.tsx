@@ -7,7 +7,7 @@
 // museum plate reading BEFORE / AFTER. Left frame fades through the BEFORE
 // photographs, right frame through the AFTER photographs, both driven by the
 // SAME index so the pair always reads as one man at two points in time. The
-// "swiper fade effect" is a 3-frame opacity crossfade — no carousel library
+// "swiper fade effect" is a plain opacity crossfade — no carousel library
 // needed (the project contract forbids new npm packages, and a synchronised
 // crossfade is ~40 lines of state).
 //
@@ -23,12 +23,10 @@
 // only thing that stops it (WCAG 2.2.2), alongside the automatic pauses on
 // hover, on keyboard focus, and when the section scrolls out of view.
 //
-// ⚠️  DEMO ASSETS — NOT FOR LAUNCH  ⚠️
-// The six files under /public/demo are unrelated stock photographs. They are
-// placeholders for layout only. Site rule: no client photo ships without
-// written consent, and /about itself promises "no stock photos, no borrowed
-// proof". Swap DEMO_PAIRS for consented client frames (or Aditya's own)
-// before this section is published.
+// ASSETS — real frames. The pairs below are Aditya's own before/after
+// photographs under /public/aditya. The site rule still governs anything
+// ADDED here: no client photo ships without written consent, and /about
+// itself promises "no stock photos, no borrowed proof".
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, } from "react";
@@ -44,8 +42,8 @@ const STORY_ID = "story";
  */
 const SLIDE_MS = 1000;
 
-/** ⚠️ placeholders — see the DEMO ASSETS note above. All frames are 2:3. */
-const DEMO_PAIRS = [
+/** Aditya's own before/after frames — see the ASSETS note above. All 2:3. */
+const PAIRS = [
   {
     before: "/aditya/before/before_transformation.png",
     after: "/aditya/after/after_transformation.jpg",
@@ -170,8 +168,8 @@ function PauseGlyph({ playing }: { playing: boolean }) {
 }
 
 /**
- * One hung frame: gold hairline surround, warm mat, a photo well holding all
- * three photographs stacked (one visible), and a plate underneath.
+ * One hung frame: gold hairline surround, warm mat, a photo well holding every
+ * photograph for that side stacked (one visible), and a plate underneath.
  */
 function Half({
   side,
@@ -186,7 +184,7 @@ function Half({
   return (
     <figure className="tsplit-frame m-0 rounded-[8px] p-2 nav:p-3">
       <div className="tsplit-well relative h-[clamp(280px,50vh,410px)] overflow-hidden rounded-[4px] nav:h-[min(66vh,580px)]">
-        {DEMO_PAIRS.map((pair, i) => (
+        {PAIRS.map((pair, i) => (
           <div
             key={pair[side]}
             data-active={i === index}
@@ -197,8 +195,8 @@ function Half({
               src={pair[side]}
               alt={
                 isBefore
-                  ? `Transformation ${i + 1} of ${DEMO_PAIRS.length} — before`
-                  : `Transformation ${i + 1} of ${DEMO_PAIRS.length} — after`
+                  ? `Transformation ${i + 1} of ${PAIRS.length} — before`
+                  : `Transformation ${i + 1} of ${PAIRS.length} — after`
               }
               fill
               sizes={HALF_SIZES}
@@ -280,7 +278,7 @@ export default function TransformationSplit({
     if (reducedMotion || paused) return;
     startedAtRef.current = Date.now();
     const t = window.setTimeout(
-      () => setIndex((i) => (i + 1) % DEMO_PAIRS.length),
+      () => setIndex((i) => (i + 1) % PAIRS.length),
       remainingRef.current,
     );
     return () => {
@@ -294,7 +292,7 @@ export default function TransformationSplit({
   }, [index, paused, reducedMotion, intervalMs]);
 
   const next = useCallback(
-    () => setIndex((i) => (i + 1) % DEMO_PAIRS.length),
+    () => setIndex((i) => (i + 1) % PAIRS.length),
     [],
   );
 
@@ -436,13 +434,13 @@ export default function TransformationSplit({
         {/* Hover-pause region #2 — so the pair cannot turn under a cursor
             that is on its way to a tick. */}
         <div className="mt-5 flex items-center justify-center gap-1" {...hoverPause}>
-          {DEMO_PAIRS.map((pair, i) => (
+          {PAIRS.map((pair, i) => (
             <button
               key={pair.before}
               type="button"
               onClick={() => setIndex(i)}
               aria-current={i === index}
-              aria-label={`Show transformation ${i + 1} of ${DEMO_PAIRS.length}`}
+              aria-label={`Show transformation ${i + 1} of ${PAIRS.length}`}
               className="tsplit-tick grid h-12 w-8 place-items-center"
             >
               <span
