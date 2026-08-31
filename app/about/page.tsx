@@ -219,7 +219,7 @@ export default function AboutPage() {
       {/* Shared closer — copy verbatim from bank; routes only (no email field → no consent line needed).
           FinalCta already carries the aurora + grain atmosphere for this band. */}
       <FinalCta
-        heading="The man you want to become is waiting for one decision."
+        heading="Your story changes the day you decide it does." /* [review] unique /about closer 2026-08-31 — was the shared FinalCta default */
         sub="Start with a free blueprint. Or book your Transformation Audit today. Either way — start now."
         primaryLabel="Book Your Transformation Audit" /* [review] repositioned CTA 2026-07-21 */
         primaryHref="/book"
