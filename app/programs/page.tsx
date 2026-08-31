@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
-import Marquee from "@/components/Marquee";
 import ProgramsHero from "@/components/programs/ProgramsHero";
 import PathGrid from "@/components/programs/PathGrid";
 import JourneySteps from "@/components/programs/JourneySteps";
-import WhyAuditFirst from "@/components/programs/WhyAuditFirst";
-import CoachingCompare from "@/components/programs/CoachingCompare";
 import ExpectedTransformation from "@/components/programs/ExpectedTransformation";
 import FreeStartingPoint from "@/components/programs/FreeStartingPoint";
 import ProgramsFinalCta from "@/components/programs/ProgramsFinalCta";

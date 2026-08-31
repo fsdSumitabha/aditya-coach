@@ -55,16 +55,9 @@ function Cta({ path }: { path: CoachingPath }) {
   );
 }
 
-export default function PathCard({
-  path,
-  glyphDelayS = 0,
-}: {
-  path: CoachingPath;
-  /** Staggers the idle float so the three glyphs never bob in lockstep. */
-  glyphDelayS?: number;
-}) {
+export default function PathCard({ path }: { path: CoachingPath }) {
   const glyph = (
-    <div className="float-idle self-start" style={{ animationDelay: `${glyphDelayS}s` }}>
+    <div className="self-start">
       <OfferGlyph kind={path.glyph} />
     </div>
   );
@@ -72,9 +65,12 @@ export default function PathCard({
   // ---- Flagship: full-width, two inner columns, featured gold frame ----
   if (path.flagship) {
     return (
-      <article id={path.id} className="card card-featured relative scroll-mt-28">
+      <article id={path.id} className="card card-featured group relative scroll-mt-28">
+        {/* Shine is hover-only: the badge keeps .shine-loop's frame + sweep
+            gradient, but the idle loop is switched off and the sweep fires
+            once when the card is hovered. */}
         <span
-          className="shine-loop text-on-gold absolute -top-3.5 right-6 z-10 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em]"
+          className="shine-loop text-on-gold absolute -top-3.5 right-6 z-10 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] [&::before]:animate-none motion-safe:group-hover:[&::before]:animate-[shine-sweep_0.8s_var(--ease-standard)]"
           style={{ background: "var(--grad-gold)", boxShadow: "var(--glow-gold)" }}
         >
           Flagship

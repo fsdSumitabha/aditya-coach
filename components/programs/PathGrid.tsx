@@ -54,7 +54,7 @@ export default function PathGrid() {
         <div className="mt-12 grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 md:gap-7">
           {standard.map((p, i) => (
             <Reveal key={p.id} delayMs={i * 90} className="h-full">
-              <PathCard path={p} glyphDelayS={0.6 + i * 0.3} />
+              <PathCard path={p} />
             </Reveal>
           ))}
         </div>
@@ -66,7 +66,7 @@ export default function PathGrid() {
             className="mt-6 md:mt-7"
             style={{ transitionTimingFunction: "var(--ease-overshoot)" }}
           >
-            <PathCard path={p} glyphDelayS={1.2} />
+            <PathCard path={p} />
           </Reveal>
         ))}
       </div>
