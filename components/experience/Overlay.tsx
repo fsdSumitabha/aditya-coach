@@ -179,29 +179,43 @@ export default function Overlay() {
                 </Link>
               </div>
             )}
-            {/* The final scene is two levels — the gateway in front, the three
-                programmes behind — so this chapter's two buttons are one per
-                level: book the audit, or go read the coaching page. The free
-                blueprint keeps its slot on the arrival chapter above.
+            {/* THE METHOD chapter carries the programmes link (31 Aug 2026).
+                It used to sit on the closing chapter; the closing chapter now
+                offers the free blueprint instead, and this is the better place
+                for it anyway — a visitor who has just watched the rebuild
+                assemble is being shown what delivers it. */}
+            {chapter.id === "order" && (
+              <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
+                <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
+                  {OVERLAY_CTAS.programs.label}
+                </Link>
+                {/* Says what is on the other side of the button. The label
+                    itself stays inside the CTA vocabulary in AGENTS.md rather
+                    than growing into a sentence. */}
+                <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
+                  {OVERLAY_CTAS.programs.note}
+                </p>
+              </div>
+            )}
+            {/* The closing chapter's two buttons are the two ways to start:
+                book the audit, or take the free blueprint. The programmes link
+                moved up to the method chapter — see above.
                 These live here rather than anchored in the scene because the
                 overlay owns the bottom third of the screen and the header the
                 top tenth, leaving no band inside the render where a button
-                clears both the gateway and the flagship column on a phone. */}
+                clears the flagship column on a phone. */}
             {chapter.id === "decision" && (
               <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
                     {OVERLAY_CTAS.book.label}
                   </Link>
-                  <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
-                    {OVERLAY_CTAS.programs.label}
+                  <Link href={OVERLAY_CTAS.blueprint.href} className={BTN_OUTLINE}>
+                    {OVERLAY_CTAS.blueprint.label}
                   </Link>
                 </div>
-                {/* Says what is on the other side of the second button. The
-                    label itself stays inside the CTA vocabulary in AGENTS.md
-                    rather than growing into a sentence. */}
                 <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
-                  {OVERLAY_CTAS.programs.note}
+                  {OVERLAY_CTAS.blueprint.note}
                 </p>
               </div>
             )}

@@ -13,7 +13,7 @@ import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { useExperience } from "./store";
 import CameraRig from "./CameraRig";
 import GoldenThread from "./GoldenThread";
-import { Arrival, Decision, Proof, TheMan, TheOrder } from "./chapters";
+import { Arrival, Decision, Proof, TheOrder } from "./chapters";
 
 /** Damps the raw scroll target into the shared journey progress each frame. */
 function ProgressDamper() {
@@ -28,12 +28,14 @@ function ProgressDamper() {
 
 function Floor({ reflective }: { reflective: boolean }) {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -33]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -24]}>
       {/* Width was 60. The widest the camera can see at the fog wall (30
           units, 42° fov, 16:10) is about ±21 — the rest was fill rate spent
           on floor that is off-screen at every point of the journey. Length
-          must stay: the camera travels the full 70 units. */}
-      <planeGeometry args={[48, 110]} />
+          follows the dolly: it used to run 70 units to z -70, and now runs 52
+          to z -52, so 110 centred on -33 became 90 centred on -24 (+21 behind
+          the seal, -69 past the last card — both well outside the fog). */}
+      <planeGeometry args={[48, 90]} />
       {reflective ? (
         <MeshReflectorMaterial
           // The reflection is a full extra render of the scene every frame,
@@ -140,14 +142,16 @@ export default function Scene() {
         speed={calm ? 0 : 0.24}
         opacity={0.5}
         color="#e8d9a8"
-        scale={[16, 7, 84]}
-        position={[0, 3, -32]}
+        scale={[16, 7, 66]}
+        position={[0, 3, -24]}
       />
 
+      {/* Listed in journey order — z 0, -16, -34, -52. Order in JSX means
+          nothing to a 3D scene; it is the group positions inside each of these
+          that put them in sequence. */}
       <Arrival />
-      <TheMan />
-      <TheOrder />
       <Proof />
+      <TheOrder />
       <Decision />
 
       {high && (

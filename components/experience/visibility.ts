@@ -12,15 +12,15 @@ import { useFrame } from "@react-three/fiber";
 /**
  * Per-chapter animation gate.
  *
- * The journey is 70 units deep, but the scene's fog closes at 30 units
+ * The journey is 52 units deep, but the scene's fog closes at 30 units
  * (Scene.tsx) and the camera only ever looks down -z — every CameraRig lookAt
  * key sits further back than its position key, so nothing is ever framed
  * behind the camera. A chapter that is behind the visitor, or past the fog,
  * therefore cannot be seen, so animating it is pure waste.
  *
- * Before this gate all five chapters ran their useFrame work every frame
- * regardless of position — standing at the arrival seal, the decision stelae
- * 70 units away were still damping their hover lift and their hotspots were
+ * Before this gate every chapter ran its useFrame work every frame
+ * regardless of position — standing at the arrival seal, the decision cards
+ * 52 units away were still damping their hover lift and their hotspots were
  * still pulsing.
  *
  * This gates ANIMATION ONLY, never rendering. Setting a chapter group's

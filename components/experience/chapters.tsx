@@ -162,7 +162,6 @@ function SceneButton({
 
 /** Labels and destinations come from FACTS so the 3D scene, the fact cards and
  *  the server-rendered fallback can never drift apart. */
-const ABOUT_CTA = FACTS["man-after"].cta ?? { label: "My story →", href: "/about" };
 const METHOD_CTA =
   FACTS["order-1"].cta ?? { label: "See the full method →", href: "/method" };
 // The proof gallery's button is deliberately NOT per-client. It used to carry
@@ -210,124 +209,9 @@ function describes(id: string) {
 // It also fixes a dead reference: the old BEFORE path ended in .jpg, but the
 // file in public/ is .png — the request 404'd and the gallery silently showed
 // the silhouette placeholder instead of the real photo.
-const PORTRAIT_SRC = {
-  before: `${BASE}/aditya/before/before_transformation_gl.jpg`,
-  after: `${BASE}/aditya/after/after_transformation_gl.jpg`,
-};
-
 /** The baked crop is 768×1001 — every panel that shows a portrait must use
  *  this aspect or the photo letterboxes inside its frame. */
 const PORTRAIT_ASPECT = 1.32 / 1.72;
-
-/**
- * ONE decode, ONE cover-crop bake and ONE upload per photograph, shared by
- * both panels of chapter 1. (The proof gallery has its own eight files and
- * goes through loadTexture below, which needs no canvas step because those
- * bakes already come out at the panel aspect.)
- *
- * Never disposed: two textures live exactly as long as the canvas does, and
- * surviving a Fast Refresh remount saves re-baking them.
- */
-const portraitCache = new Map<string, THREE.Texture>();
-const silhouetteCache = new Map<string, THREE.Texture>();
-
-/** Shown until the photo decodes, and kept as the floor if it never does. */
-function getSilhouette(after: boolean) {
-  const key = after ? "after" : "before";
-  const hit = silhouetteCache.get(key);
-  if (hit) return hit;
-  const c = document.createElement("canvas");
-  c.width = 256;
-  c.height = 320;
-  const ctx = c.getContext("2d")!;
-  const g = ctx.createLinearGradient(0, 0, 256, 320);
-  g.addColorStop(0, "#1a1712");
-  g.addColorStop(1, "#0e0d0b");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 256, 320);
-  ctx.fillStyle = after ? "rgba(201,162,75,0.34)" : "rgba(201,162,75,0.14)";
-  // head
-  ctx.beginPath();
-  ctx.arc(128, 118, after ? 40 : 46, 0, Math.PI * 2);
-  ctx.fill();
-  // shoulders
-  ctx.beginPath();
-  ctx.moveTo(30, 320);
-  ctx.quadraticCurveTo(128, after ? 168 : 186, 226, 320);
-  ctx.fill();
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  silhouetteCache.set(key, tex);
-  return tex;
-}
-
-/**
- * Real transformation portrait, baked to a cover-cropped, downscaled
- * CanvasTexture. The source files are up to 2887×3608 — uploaded raw that is
- * ~40MB of VRAM per frame, which is exactly what tips a mid-range phone into
- * the perf watchdog. Decode failure leaves the silhouette in place rather
- * than a black panel.
- *
- * The bake width is read once, from whatever tier is active when the first
- * panel asks for the photo; Home3D pins phones to the low tier before the
- * canvas mounts, so that decision is already made by then.
- */
-function usePortraitTexture(after: boolean) {
-  const gl = useThree((s) => s.gl);
-  const key = after ? "after" : "before";
-  const [tex, setTex] = useState<THREE.Texture>(
-    () => portraitCache.get(key) ?? getSilhouette(after),
-  );
-
-  // Render-phase adjustment, not an effect: should a panel ever be pointed at
-  // the other photograph, swap to whatever that key already has instead of
-  // holding the wrong face until the effect runs.
-  const [shown, setShown] = useState(key);
-  if (shown !== key) {
-    setShown(key);
-    setTex(portraitCache.get(key) ?? getSilhouette(after));
-  }
-
-  useEffect(() => {
-    if (portraitCache.has(key)) return; // already baked — nothing to fetch
-    let cancelled = false;
-    const img = new window.Image();
-    img.decoding = "async";
-    img.onload = () => {
-      if (cancelled) return;
-      // the other panel showing this photo may have won the race
-      const won = portraitCache.get(key);
-      if (won) {
-        setTex(won);
-        return;
-      }
-      const w = useExperience.getState().quality === "low" ? 512 : 768;
-      const h = Math.round(w / PORTRAIT_ASPECT);
-      const c = document.createElement("canvas");
-      c.width = w;
-      c.height = h;
-      const ctx = c.getContext("2d")!;
-      // cover fit — crop the long axis, never letterbox inside the frame
-      const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-      const dw = img.naturalWidth * s;
-      const dh = img.naturalHeight * s;
-      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
-      const next = new THREE.CanvasTexture(c);
-      next.colorSpace = THREE.SRGBColorSpace;
-      // panels sit at up to ±0.32rad — without this the grazing angle smears
-      next.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-      portraitCache.set(key, next);
-      setTex(next);
-    };
-    img.src = PORTRAIT_SRC[key];
-    return () => {
-      cancelled = true;
-      img.onload = null;
-    };
-  }, [key, after, gl]);
-
-  return tex;
-}
 
 /* ---------- shared: file → texture ---------- */
 
@@ -522,26 +406,21 @@ export function Arrival() {
   );
 }
 
-/* ========== CHAPTER 1 — THE MAN: his own before / after, framed ========== */
+/* ============ shared: the framed photograph ============ */
 
-// This chapter used to be an abstract stand-in: a rough boulder on a pedestal
-// facing a carved gold column. It read as a black gem next to a trophy, which
-// is not what the fact cards say — "man-before" and "man-after" are Aditya's
-// own words about his own transformation. So it now shows the photographs.
-//
-// The abstraction also cost ~2,000 triangles (two 40-segment pedestals, a
-// 24×24 sphere) plus two per-frame rotations. What replaces it is two quads
-// and one frame geometry.
+// "The Man" — Aditya's own before/after diptych — used to stand here at
+// z -16 and was removed on 31 Aug 2026 (his call): the homepage opens on
+// client proof, and his own story is told in full on /about. What survives is
+// the panel geometry it introduced, which the proof gallery and the three
+// programme columns all still draw with.
 
-/** Panel size and spread are set by the PORTRAIT frustum, the tight case: the
- *  portrait camera key sits 9.5 units back at 56° fov, so on the narrowest
- *  common phone (aspect ~0.45) nothing may pass x ≈ ±2.27. Centre 1.50 plus
- *  0.74 of half-panel-and-frame lands at 2.24 — inside it, brackets included.
- *  The old boulder-and-pedestal pair reached 2.55 and clipped there. */
+/** Panel size is set by the PORTRAIT frustum, the tight case: the portrait
+ *  camera key sits 11 units back at 56° fov, so on the narrowest common phone
+ *  (aspect ~0.45) nothing may pass x ≈ ±2.63. The gallery centres its pair at
+ *  PROOF_X 1.78, and 1.78 plus 0.74 of half-panel-and-frame lands at 2.52 —
+ *  inside it, brackets included. */
 const PANEL_W = 1.24;
 const PANEL_H = PANEL_W / PORTRAIT_ASPECT; // 1.616 — matches the baked crop
-const PANEL_X = 1.5;
-const PANEL_Y = 1.62;
 const MAT = 0.05; // breathing room between the photo edge and the hairline
 const LINE = 0.014; // hairline thickness — ~2px at the chapter's camera distance
 const TICK = 0.22; // corner bracket arm
@@ -551,8 +430,8 @@ const TICK_OUT = 0.06; // how far the brackets sit outside the hairline
  * A hairline rectangle — optionally with four corner brackets — merged into
  * ONE ShapeGeometry, so a whole frame is a single draw call of 8 or 24
  * triangles rather than four or twelve meshes. Cached by size, and used by
- * every framed object in the journey: both photo diptychs, the audit gateway
- * and the three programme columns.
+ * every framed object in the journey: the proof gallery and the three
+ * programme columns.
  */
 function rect(cx: number, cy: number, w: number, h: number) {
   const s = new THREE.Shape();
@@ -609,56 +488,103 @@ function getFrameMaterial(color: string) {
   return m;
 }
 
-function ManPortrait({
-  after,
-  caption,
-  factId,
+/* ========= CHAPTER 1 — THE PROOF: the client gallery ========= */
+
+// Two hung frames that step through the FOUR client transformations, the same
+// four /results shows — the sets come from lib/transformations.ts so the two
+// surfaces can never disagree about who is in a frame or where his story is.
+//
+// A SET IS ATOMIC. Both frames always carry the same man: they take one index
+// between them and there is deliberately no way to give the panels separate
+// ones, because pairing client A's before with client B's after would be a
+// fabricated result.
+//
+// ⚠️  CONSENT  ⚠️  client-01 / client-02 are cleared (29 Jul 2026).
+// client-03 / client-04 photographs came from the owner 12 Aug 2026 and their
+// WRITTEN consent is [review] not yet recorded — the same status they already
+// carry on /results. Confirm before launch.
+//
+// The museum box frame that used to stand here (a 1.5×1.9×0.07 slab behind
+// every photo plus a solid gold lip) is gone; these use the same single-draw
+// hairline frame as chapter 1.
+
+const PROOF_X = 1.78; // outer edge lands at 2.52 vs the 2.63 a phone can see
+const PROOF_Y = 1.8;
+const PROOF_TOE = 0.28; // the gallery opens a little wider than the diptych
+
+/** How long each man holds the frames. */
+const FLIP_MS = 1000;
+/** Crossfade between sets — long enough not to blink, short at this cadence. */
+const FADE_MS = 260;
+
+const proofSrc = (setIndex: number, side: "before" | "after") =>
+  `${BASE}${glTexture(CLIENT_SETS[setIndex][side]) ?? ""}`;
+
+/**
+ * One frame. Two stacked quads: the outgoing man at full opacity underneath,
+ * the incoming one fading in over him, so the pair never blinks to black
+ * between sets. Opacity is written straight to the material each frame from
+ * the shared fade ref — a React state write at 60fps for a crossfade would
+ * re-render the chapter on every frame.
+ */
+function ProofPanel({
+  side,
+  cur,
+  prev,
+  fade,
   floating,
 }: {
-  after: boolean;
-  caption: string;
-  /** the fact this panel reads out while it is pointed at */
-  factId: string;
+  side: "before" | "after";
+  cur: number;
+  prev: number;
+  fade: MutableRefObject<number>;
   floating: boolean;
 }) {
-  const tex = usePortraitTexture(after);
+  const after = side === "after";
+  const front = useImageTexture(proofSrc(cur, side), 8);
+  const back = useImageTexture(proofSrc(prev, side), 8);
+  const frontMat = useRef<THREE.MeshBasicMaterial>(null);
   const calm = useExperience((s) => s.calm);
-  const described = useExperience((s) => s.hover === factId);
-  // Gold is spent on the rebuild; the starting point gets a dim hairline.
-  // The photographs themselves are never tinted or graded — "no filters".
-  // Pointing at a panel lifts its frame rather than its photograph.
-  const line = after ? GOLD : "#4d483f";
-  const frameColor = described ? (after ? GOLD_LIGHT : "#8a847a") : line;
-  const side = after ? 1 : -1;
+  const sign = after ? 1 : -1;
+
+  useFrame(() => {
+    if (frontMat.current) frontMat.current.opacity = fade.current;
+  });
 
   return (
-    <group position={[side * PANEL_X, 0, 0]}>
+    <group position={[sign * PROOF_X, 0, 0]}>
       <Float
-        speed={1.05}
-        rotationIntensity={0.05}
-        floatIntensity={0.3}
+        speed={1.1}
+        rotationIntensity={0.06}
+        floatIntensity={0.35}
         enabled={floating && !calm}
       >
-        {/* the diptych opens toward the camera path; the whole panel is the
-            hit target now, so there is nothing small to find */}
-        <group
-          position={[0, PANEL_Y, 0]}
-          rotation={[0, -side * 0.22, 0]}
-          {...describes(factId)}
-        >
-          {/* mount board — one quad, so the hairline reads as a frame around
-              a print rather than a rectangle drawn on the void */}
+        <group position={[0, PROOF_Y, 0]} rotation={[0, -sign * PROOF_TOE, 0]}>
+          {/* mount board — also what shows while a photograph is still decoding */}
           <mesh position={[0, 0, -0.006]}>
             <planeGeometry args={[PANEL_W + MAT * 2 + LINE, PANEL_H + MAT * 2 + LINE]} />
             <meshBasicMaterial color="#12100d" />
           </mesh>
-          <mesh>
-            <planeGeometry args={[PANEL_W, PANEL_H]} />
-            <meshBasicMaterial map={tex} />
-          </mesh>
+          {back && (
+            <mesh>
+              <planeGeometry args={[PANEL_W, PANEL_H]} />
+              <meshBasicMaterial map={back} />
+            </mesh>
+          )}
+          {front && (
+            <mesh position={[0, 0, 0.001]}>
+              <planeGeometry args={[PANEL_W, PANEL_H]} />
+              <meshBasicMaterial
+                ref={frontMat}
+                map={front}
+                transparent
+                depthWrite={false}
+              />
+            </mesh>
+          )}
           <mesh
             geometry={getFrameGeometry()}
-            material={getFrameMaterial(frameColor)}
+            material={getFrameMaterial(after ? GOLD : "#4d483f")}
             position={[0, 0, 0.004]}
           />
           <Text
@@ -669,34 +595,150 @@ function ManPortrait({
             position={[0, -(PANEL_H / 2 + MAT + 0.19), 0.01]}
             anchorX="center"
           >
-            {caption}
+            {after ? SCENE.after : SCENE.before}
           </Text>
         </group>
       </Float>
-      <BlobShadow position={[0, 0.011, 0]} scale={2.4} />
-      {after && (
-        <pointLight position={[0, 2.4, 1.4]} intensity={4} color={GOLD_LIGHT} distance={6} />
-      )}
+      <BlobShadow position={[0, 0.012, 0]} scale={2.6} />
     </group>
   );
 }
 
-export function TheMan() {
+export function Proof() {
+  // MOVED from z -52 to z -16 on 31 Aug 2026: the gallery is now the first
+  // thing past the seal, in the slot "The Man" used to hold.
   const { alive, visible } = useChapterVisibility(-16);
+  const gl = useThree((s) => s.gl);
+  const [pair, setPair] = useState({ cur: 0, prev: 0 });
+  const fade = useRef(1);
+  const clock = useRef(0);
+  // Hovering or focusing the button stops the cycle. At a one-second cadence
+  // the destination would otherwise change under a reader's cursor between the
+  // moment he decides to click and the moment he does.
+  const held = useRef(false);
+
+  // Closes before the dolly reaches z -16 and flies through these frames. With
+  // the gallery in the first slot that crossing is at ≈0.256 (camera key 1 sits
+  // at z -8.5 on progress 1/6, key 2 at z -22 on 2/6), so the button goes out
+  // at 0.234 — the same 0.022 of lead it had in the old slot. CHAPTERS[1] is
+  // this chapter now; it used to be CHAPTERS[3].
+  const shown = useExperience(
+    (s) => s.progress > CHAPTERS[1].range[0] && s.progress < 0.234,
+  );
+  const mounted = useExperience(
+    (s) => s.progress > CHAPTERS[1].range[0] - 0.05 && s.progress < 0.27,
+  );
+
+  // Eight photographs, warmed as soon as the gallery is within range. In its
+  // old fourth slot that bought a deliberate delay — it sat two thirds of the
+  // way down the journey, so ~350KB stayed off the homepage's first seconds.
+  // From the first slot the fetch starts at canvas boot instead, and it has to:
+  // the frames are on screen by progress 0.15, roughly three quarters of a
+  // screen of scrolling in. The cost lands after the canvas has already
+  // mounted, so it competes with the scene warming up, not with first paint.
+  useEffect(() => {
+    if (!visible) return;
+    for (let i = 0; i < CLIENT_SETS.length; i++) {
+      loadTexture(proofSrc(i, "before"), gl, 8).catch(() => {});
+      loadTexture(proofSrc(i, "after"), gl, 8).catch(() => {});
+    }
+  }, [visible, gl]);
+
+  // The crossfade is armed HERE, after the commit that actually puts the new
+  // man in the frame — not inside the useFrame that schedules him. React does
+  // not commit synchronously from a rAF callback, so zeroing the fade at
+  // schedule time can catch a frame that is still holding the previous pair
+  // and flash the man from two sets ago.
+  useLayoutEffect(() => {
+    fade.current = 0;
+  }, [pair]);
+
+  useFrame((_, delta) => {
+    if (!alive.current) return;
+    if (fade.current < 1) {
+      fade.current = Math.min(1, fade.current + (delta * 1000) / FADE_MS);
+    }
+    // Reduced motion holds the first man on the wall; the gallery is proof,
+    // not a slideshow, and every set is reachable in full on /results.
+    if (useExperience.getState().calm || held.current) return;
+    // DO NOT START CYCLING BEFORE THE VISITOR IS NEAR. The chapter gate is a
+    // distance test against the 34-unit fog, and from the first slot at z -16
+    // that is already true while the camera is still parked on the seal at
+    // z +9 — so the cycle would run, and re-render this subtree once a second,
+    // through the whole arrival scene, and the visitor would arrive at the
+    // gallery mid-rotation on an arbitrary set rather than on set 01. Same
+    // threshold the Html gate mounts on.
+    if (useExperience.getState().progress < CHAPTERS[1].range[0] - 0.05) return;
+    clock.current += delta;
+    if (clock.current * 1000 < FLIP_MS) return;
+    clock.current = 0;
+    setPair((p) => ({ cur: (p.cur + 1) % CLIENT_SETS.length, prev: p.cur }));
+  });
+
 
   return (
     <ChapterAlive.Provider value={alive}>
       <group position={[0, 0, -16]}>
-        <ManPortrait after={false} caption={SCENE.before} factId="man-before" floating={visible} />
-        <ManPortrait after caption={SCENE.after} factId="man-after" floating={visible} />
-        {/* Dead centre of the diptych, in the gap between the two frames.
-            Out by 0.225: the dolly crosses this z at progress ≈ 0.25. */}
-        <SceneButton
-          position={[0, PANEL_Y, 0.3]}
-          label={ABOUT_CTA.label}
-          href={ABOUT_CTA.href}
-          range={[CHAPTERS[1].range[0], 0.225]}
+        <ProofPanel
+          side="before"
+          cur={pair.cur}
+          prev={pair.prev}
+          fade={fade}
+          floating={visible}
         />
+        <ProofPanel
+          side="after"
+          cur={pair.cur}
+          prev={pair.prev}
+          fade={fade}
+          floating={visible}
+        />
+        <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
+
+        {/* In the gap between the frames: who this is, and the one fixed way
+            through to the stories. Out by 0.234 — the dolly crosses this z at
+            progress ≈ 0.256. */}
+        {mounted && (
+          <Html
+            position={[0, PROOF_Y, 0.3]}
+            center
+            pointerEvents="none"
+            zIndexRange={[8, 0]}
+            style={{ opacity: shown ? 1 : 0, transition: "opacity 420ms ease" }}
+          >
+            <div className="flex flex-col items-center gap-2 text-center">
+              {/* One fixed label, not the current set's own. These flip every
+                  second, so a per-set eyebrow was a caption changing under a
+                  reader mid-word — and "CLIENT 01" told him nothing anyway. */}
+              <span className={EYEBROW}>{SCENE.proof}</span>
+              <button
+                type="button"
+                tabIndex={shown ? 0 : -1}
+                aria-hidden={!shown}
+                onClick={() => requestNavigate(PROOF_CTA.href)}
+                // The hold lives on the button itself, not on the wrapper: the
+                // wrapper inherits pointer-events:none from <Html> so the gap
+                // between the frames stays click-through to the canvas.
+                onPointerEnter={() => {
+                  held.current = true;
+                }}
+                onPointerLeave={() => {
+                  held.current = false;
+                }}
+                onFocus={() => {
+                  held.current = true;
+                }}
+                onBlur={() => {
+                  held.current = false;
+                }}
+                className={BTN_SCENE}
+                style={{ pointerEvents: shown ? "auto" : "none" }}
+              >
+                {PROOF_CTA.label}
+              </button>
+            </div>
+          </Html>
+        )}
       </group>
     </ChapterAlive.Provider>
   );
@@ -837,7 +879,7 @@ export function TheOrder() {
       {/* Above the apex — the only clear space in this shot. Below the stack
           the anchor projects past the bottom of a phone screen, and beside it
           the portrait frustum clips at x ±2.7. Out by 0.50: the dolly crosses
-          this z at progress ≈ 0.56 on its way to the gallery. */}
+          this z at progress ≈ 0.62 on its way to the programmes. */}
       <SceneButton
         position={[0, 3.05, 1.2]}
         label={METHOD_CTA.label}
@@ -849,248 +891,7 @@ export function TheOrder() {
   );
 }
 
-/* ========= CHAPTER 3 — THE PROOF: the client gallery ========= */
-
-// Two hung frames that step through the FOUR client transformations, the same
-// four /results shows — the sets come from lib/transformations.ts so the two
-// surfaces can never disagree about who is in a frame or where his story is.
-//
-// A SET IS ATOMIC. Both frames always carry the same man: they take one index
-// between them and there is deliberately no way to give the panels separate
-// ones, because pairing client A's before with client B's after would be a
-// fabricated result.
-//
-// ⚠️  CONSENT  ⚠️  client-01 / client-02 are cleared (29 Jul 2026).
-// client-03 / client-04 photographs came from the owner 12 Aug 2026 and their
-// WRITTEN consent is [review] not yet recorded — the same status they already
-// carry on /results. Confirm before launch.
-//
-// The museum box frame that used to stand here (a 1.5×1.9×0.07 slab behind
-// every photo plus a solid gold lip) is gone; these use the same single-draw
-// hairline frame as chapter 1.
-
-const PROOF_X = 1.78; // outer edge lands at 2.52 vs the 2.63 a phone can see
-const PROOF_Y = 1.8;
-const PROOF_TOE = 0.28; // the gallery opens a little wider than the diptych
-
-/** How long each man holds the frames. */
-const FLIP_MS = 1000;
-/** Crossfade between sets — long enough not to blink, short at this cadence. */
-const FADE_MS = 260;
-
-const proofSrc = (setIndex: number, side: "before" | "after") =>
-  `${BASE}${glTexture(CLIENT_SETS[setIndex][side]) ?? ""}`;
-
-/**
- * One frame. Two stacked quads: the outgoing man at full opacity underneath,
- * the incoming one fading in over him, so the pair never blinks to black
- * between sets. Opacity is written straight to the material each frame from
- * the shared fade ref — a React state write at 60fps for a crossfade would
- * re-render the chapter on every frame.
- */
-function ProofPanel({
-  side,
-  cur,
-  prev,
-  fade,
-  floating,
-}: {
-  side: "before" | "after";
-  cur: number;
-  prev: number;
-  fade: MutableRefObject<number>;
-  floating: boolean;
-}) {
-  const after = side === "after";
-  const front = useImageTexture(proofSrc(cur, side), 8);
-  const back = useImageTexture(proofSrc(prev, side), 8);
-  const frontMat = useRef<THREE.MeshBasicMaterial>(null);
-  const calm = useExperience((s) => s.calm);
-  const sign = after ? 1 : -1;
-
-  useFrame(() => {
-    if (frontMat.current) frontMat.current.opacity = fade.current;
-  });
-
-  return (
-    <group position={[sign * PROOF_X, 0, 0]}>
-      <Float
-        speed={1.1}
-        rotationIntensity={0.06}
-        floatIntensity={0.35}
-        enabled={floating && !calm}
-      >
-        <group position={[0, PROOF_Y, 0]} rotation={[0, -sign * PROOF_TOE, 0]}>
-          {/* mount board — also what shows while a photograph is still decoding */}
-          <mesh position={[0, 0, -0.006]}>
-            <planeGeometry args={[PANEL_W + MAT * 2 + LINE, PANEL_H + MAT * 2 + LINE]} />
-            <meshBasicMaterial color="#12100d" />
-          </mesh>
-          {back && (
-            <mesh>
-              <planeGeometry args={[PANEL_W, PANEL_H]} />
-              <meshBasicMaterial map={back} />
-            </mesh>
-          )}
-          {front && (
-            <mesh position={[0, 0, 0.001]}>
-              <planeGeometry args={[PANEL_W, PANEL_H]} />
-              <meshBasicMaterial
-                ref={frontMat}
-                map={front}
-                transparent
-                depthWrite={false}
-              />
-            </mesh>
-          )}
-          <mesh
-            geometry={getFrameGeometry()}
-            material={getFrameMaterial(after ? GOLD : "#4d483f")}
-            position={[0, 0, 0.004]}
-          />
-          <Text
-            font={INTER}
-            fontSize={0.095}
-            letterSpacing={0.26}
-            color={after ? GOLD : "#8a847a"}
-            position={[0, -(PANEL_H / 2 + MAT + 0.19), 0.01]}
-            anchorX="center"
-          >
-            {after ? SCENE.after : SCENE.before}
-          </Text>
-        </group>
-      </Float>
-      <BlobShadow position={[0, 0.012, 0]} scale={2.6} />
-    </group>
-  );
-}
-
-export function Proof() {
-  const { alive, visible } = useChapterVisibility(-52);
-  const gl = useThree((s) => s.gl);
-  const [pair, setPair] = useState({ cur: 0, prev: 0 });
-  const fade = useRef(1);
-  const clock = useRef(0);
-  // Hovering or focusing the button stops the cycle. At a one-second cadence
-  // the destination would otherwise change under a reader's cursor between the
-  // moment he decides to click and the moment he does.
-  const held = useRef(false);
-
-  // Closes before the dolly reaches z -52 and flies through these frames. That
-  // crossing moved to ≈0.694 when the run to the gateway was shortened, so both
-  // ends came back with it.
-  const shown = useExperience(
-    (s) => s.progress > CHAPTERS[3].range[0] && s.progress < 0.672,
-  );
-  const mounted = useExperience(
-    (s) => s.progress > CHAPTERS[3].range[0] - 0.05 && s.progress < 0.7,
-  );
-
-  // Eight photographs, warmed once the gallery is within range rather than at
-  // canvas boot — it sits two thirds of the way down the journey, so this
-  // keeps ~350KB off the homepage's first seconds while still leaving about
-  // twenty units of scroll to decode in.
-  useEffect(() => {
-    if (!visible) return;
-    for (let i = 0; i < CLIENT_SETS.length; i++) {
-      loadTexture(proofSrc(i, "before"), gl, 8).catch(() => {});
-      loadTexture(proofSrc(i, "after"), gl, 8).catch(() => {});
-    }
-  }, [visible, gl]);
-
-  // The crossfade is armed HERE, after the commit that actually puts the new
-  // man in the frame — not inside the useFrame that schedules him. React does
-  // not commit synchronously from a rAF callback, so zeroing the fade at
-  // schedule time can catch a frame that is still holding the previous pair
-  // and flash the man from two sets ago.
-  useLayoutEffect(() => {
-    fade.current = 0;
-  }, [pair]);
-
-  useFrame((_, delta) => {
-    if (!alive.current) return;
-    if (fade.current < 1) {
-      fade.current = Math.min(1, fade.current + (delta * 1000) / FADE_MS);
-    }
-    // Reduced motion holds the first man on the wall; the gallery is proof,
-    // not a slideshow, and every set is reachable in full on /results.
-    if (useExperience.getState().calm || held.current) return;
-    clock.current += delta;
-    if (clock.current * 1000 < FLIP_MS) return;
-    clock.current = 0;
-    setPair((p) => ({ cur: (p.cur + 1) % CLIENT_SETS.length, prev: p.cur }));
-  });
-
-
-  return (
-    <ChapterAlive.Provider value={alive}>
-      <group position={[0, 0, -52]}>
-        <ProofPanel
-          side="before"
-          cur={pair.cur}
-          prev={pair.prev}
-          fade={fade}
-          floating={visible}
-        />
-        <ProofPanel
-          side="after"
-          cur={pair.cur}
-          prev={pair.prev}
-          fade={fade}
-          floating={visible}
-        />
-        <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
-
-        {/* In the gap between the frames: who this is, and the one fixed way
-            through to the stories. Out by 0.70 — the dolly crosses this z at
-            progress ≈ 0.75. */}
-        {mounted && (
-          <Html
-            position={[0, PROOF_Y, 0.3]}
-            center
-            pointerEvents="none"
-            zIndexRange={[8, 0]}
-            style={{ opacity: shown ? 1 : 0, transition: "opacity 420ms ease" }}
-          >
-            <div className="flex flex-col items-center gap-2 text-center">
-              {/* One fixed label, not the current set's own. These flip every
-                  second, so a per-set eyebrow was a caption changing under a
-                  reader mid-word — and "CLIENT 01" told him nothing anyway. */}
-              <span className={EYEBROW}>{SCENE.proof}</span>
-              <button
-                type="button"
-                tabIndex={shown ? 0 : -1}
-                aria-hidden={!shown}
-                onClick={() => requestNavigate(PROOF_CTA.href)}
-                // The hold lives on the button itself, not on the wrapper: the
-                // wrapper inherits pointer-events:none from <Html> so the gap
-                // between the frames stays click-through to the canvas.
-                onPointerEnter={() => {
-                  held.current = true;
-                }}
-                onPointerLeave={() => {
-                  held.current = false;
-                }}
-                onFocus={() => {
-                  held.current = true;
-                }}
-                onBlur={() => {
-                  held.current = false;
-                }}
-                className={BTN_SCENE}
-                style={{ pointerEvents: shown ? "auto" : "none" }}
-              >
-                {PROOF_CTA.label}
-              </button>
-            </div>
-          </Html>
-        )}
-      </group>
-    </ChapterAlive.Provider>
-  );
-}
-
-/* ====== CHAPTER 4 — THE DECISION: the three programmes ====== */
+/* ====== CHAPTER 3 — THE DECISION: the three programmes ====== */
 
 // ONE ROW, no gateway.
 //
@@ -1475,11 +1276,16 @@ function ProgrammeCard({
 }
 
 export function Decision() {
-  const { alive } = useChapterVisibility(-70);
+  // PULLED FORWARD from z -70 to z -52 on 31 Aug 2026. Removing "The Man" and
+  // promoting the gallery to z -16 emptied the whole stretch behind the stack;
+  // left where it was, the visitor scrolled thirty-six units of dark corridor
+  // to reach it. Every camera key for this chapter moved by the same +18, so
+  // the framing arithmetic in CameraRig is unchanged.
+  const { alive } = useChapterVisibility(-52);
 
   return (
     <ChapterAlive.Provider value={alive}>
-      <group position={[0, 0, -70]}>
+      <group position={[0, 0, -52]}>
         {/* The three programmes, side by side. */}
         {OFFERS.pillars.map((offer, i) => (
           <ProgrammeCard

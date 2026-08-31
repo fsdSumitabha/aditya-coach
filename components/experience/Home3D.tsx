@@ -65,11 +65,13 @@ function supportsWebGL(): boolean {
   }
 }
 
-// Journey length in viewport heights. Raised from 6.2 when the final chapter
-// gained its second beat — the last 11.5% of progress is now a real camera
-// move over the gateway and down to the three programmes, and it needs about
-// three quarters of a screen of scrolling to read as a move rather than a cut.
-const TRACK_VH = 7.2;
+// Journey length in viewport heights. It was 7.2 for five chapters. "The Man"
+// was removed on 31 Aug 2026 and the decision came forward to z -52, so the
+// dolly now runs 52 units instead of 70 over four chapters — at 7.2 the same
+// scrolling bought a fifth less scene. 6.0 keeps the per-chapter pace of the
+// old journey, and the closing beat (0.8 → 1) still gets a full screen of
+// scrolling to read as a move rather than a cut.
+const TRACK_VH = 6.0;
 
 /** Strict Mode double-mounts and Fast Refresh remounts churn WebGL contexts in
  *  dev, producing failures no visitor will ever see. Never auto-demote there. */

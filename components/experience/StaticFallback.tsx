@@ -95,7 +95,7 @@ export default function StaticFallback() {
     FACTS["offer-presence"],
     FACTS["offer-complete"],
   ];
-  const decision = CHAPTERS[4];
+  const decision = CHAPTERS[3];
 
   return (
     <div className="bg-void grain overflow-hidden">
@@ -124,9 +124,10 @@ export default function StaticFallback() {
           in the right order, so the change actually lasts.
         </p>
         {/* [review] — credibility marker. Figures are the ones the repo can
-            source (facts.ts "man-after", about/JourneySection): eight years of
-            self-testing, two years coaching. No client count is claimed
-            because none is confirmed anywhere. */}
+            source (facts.ts "man-after", which the journey no longer renders,
+            and about/JourneySection): eight years of self-testing, two years
+            coaching. No client count is claimed because none is confirmed
+            anywhere. */}
         <p
           className="type-small text-muted fb-enter mx-auto mt-4"
           style={{ "--fb-delay": "430ms" } as CSSProperties}
@@ -153,18 +154,23 @@ export default function StaticFallback() {
         className="border-y border-[rgba(201,162,75,0.14)] py-4"
       />
 
-      {/* ---- The man ---- */}
-      {/* Mobile shortens the flat journey to Hero → proof → CTA (rec #3), so
-          this chapter is desktop-only. Hidden, not deleted: the desktop flat
-          page still mirrors all five 3D chapters. */}
-      <section className="container-site section hidden md:block">
+      {/* ---- The proof ---- */}
+      <section className="container-site section">
         <Reveal className="text-center">
           <p className="eyebrow">{CHAPTERS[1].eyebrow}</p>
           <h2 className="type-h2 text-primary mt-3">{CHAPTERS[1].title}</h2>
+          <p className="type-lead text-secondary mx-auto mt-4 max-w-xl">
+            {CHAPTERS[1].sub}
+          </p>
         </Reveal>
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
-          {[FACTS["man-before"], FACTS["man-after"]].map((f, i) => (
-            <Reveal key={f.id} index={i} className="card spot h-full">
+          {[FACTS["proof-client"], FACTS["proof-truth"]].map((f, i) => (
+            /* rec #3: mobile shows one proof card, desktop both. */
+            <Reveal
+              key={f.id}
+              index={i}
+              className={`card spot h-full ${i === 1 ? "hidden sm:block" : ""}`}
+            >
               <p className="eyebrow">{f.eyebrow}</p>
               <h3 className="type-h3 text-primary mt-2">{f.title}</h3>
               <p className="type-body text-secondary mt-2">{f.body}</p>
@@ -185,9 +191,9 @@ export default function StaticFallback() {
       </section>
 
       {/* ---- The Complete Rebuild — narrowing slabs echo the 3D pyramid ---- */}
-      {/* Desktop-only for the same reason as "The man" above. The method is
-          still reachable on mobile: the hero sub states the right-order
-          mechanism, and /method is one tap from the nav. */}
+      {/* Desktop-only: mobile keeps the flat journey at Hero → proof → CTA
+          (rec #3). The method is still reachable there — the hero sub states
+          the right-order mechanism, and /method is one tap from the nav. */}
       <section className="container-site section relative hidden md:block">
         <Reveal className="text-center">
           <p className="eyebrow">{CHAPTERS[2].eyebrow}</p>
@@ -221,42 +227,6 @@ export default function StaticFallback() {
             See the full method →
           </Link>
         </Reveal>
-      </section>
-
-      {/* ---- The proof ---- */}
-      <section className="container-site section">
-        <Reveal className="text-center">
-          <p className="eyebrow">{CHAPTERS[3].eyebrow}</p>
-          <h2 className="type-h2 text-primary mt-3">{CHAPTERS[3].title}</h2>
-          <p className="type-lead text-secondary mx-auto mt-4 max-w-xl">
-            {CHAPTERS[3].sub}
-          </p>
-        </Reveal>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2">
-          {[FACTS["proof-client"], FACTS["proof-truth"]].map((f, i) => (
-            /* rec #3: mobile shows one proof card, desktop both. */
-            <Reveal
-              key={f.id}
-              index={i}
-              className={`card spot h-full ${i === 1 ? "hidden sm:block" : ""}`}
-            >
-              <p className="eyebrow">{f.eyebrow}</p>
-              <h3 className="type-h3 text-primary mt-2">{f.title}</h3>
-              <p className="type-body text-secondary mt-2">{f.body}</p>
-              {f.attribution && (
-                <p className="type-caption text-muted mt-3">{f.attribution}</p>
-              )}
-              {f.cta && (
-                <Link
-                  href={f.cta.href}
-                  className="link-draw type-small mt-4 inline-block font-semibold text-gold-300"
-                >
-                  {f.cta.label}
-                </Link>
-              )}
-            </Reveal>
-          ))}
-        </div>
       </section>
 
       {/* ---- One decision ---- */}

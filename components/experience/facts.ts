@@ -6,7 +6,7 @@
 // geometry, camera and behaviour only. To change a label, change it HERE and
 // nothing else.
 //
-//   CHAPTERS      the five scroll chapters — eyebrow, title, sub, and the
+//   CHAPTERS      the four scroll chapters — eyebrow, title, sub, and the
 //                 progress window each one owns
 //   FACTS         the copy an object reads out when it is pointed at
 //   OFFERS        the final scene — the three programmes and their bullets
@@ -43,6 +43,13 @@ export type Fact = {
 };
 
 export const FACTS: Record<string, Fact> = {
+  // RETAINED, NOT RENDERED. "The Man" chapter was removed from the journey on
+  // 31 Aug 2026 — the homepage now runs seal → proof → rebuild → decision, and
+  // Aditya's own before/after lives on /about instead. These two entries stay
+  // because they are his own words about his own transformation and /about is
+  // sourced from them; nothing on the homepage reads them any more. Delete
+  // only with the owner's say-so.
+  //
   // Both figures read from docs/aditya_personal_story.md and
   // docs/aditya_journey.md — his own words, kept as close to verbatim as a
   // hover card allows. The joins between his lines are mine. [review]
@@ -56,10 +63,8 @@ export const FACTS: Record<string, Fact> = {
     title: "The kid at the back of every room.",
     body: "I was sixteen when I lost my father. That was the day I made a silent decision — I would figure this out myself. I started with the only thing I could control: my body. At my heaviest, close to 100 kilograms.",
     attribution: "— Aditya, before coaching",
-    // Framed on the panel, not on the figure that used to stand here: sat on
-    // the panel's own normal 3.6 units out, aiming 0.35 to its right so the
-    // photograph lands left of centre and the fact card (right, 380px) never
-    // covers it. Re-derive both of these if PANEL_X/PANEL_Y ever move.
+    // Dead poses: the chapter these framed was removed on 31 Aug 2026, and
+    // the panel constants they were derived from went with it.
     cam: [-0.37, 1.5, -12.5],
     look: [-1.15, 1.5, -16],
   },
@@ -126,8 +131,8 @@ export const FACTS: Record<string, Fact> = {
     attribution:
       "— Client transformation · Individual results vary. These reflect real clients, not typical or guaranteed outcomes.",
     cta: { label: "See all transformations →", href: "/results" },
-    cam: [-3.2, 1.9, -49.4],
-    look: [-1.9, 1.8, -52],
+    cam: [-3.2, 1.9, -13.4],
+    look: [-1.9, 1.8, -16],
   },
   "proof-truth": {
     id: "proof-truth",
@@ -136,8 +141,8 @@ export const FACTS: Record<string, Fact> = {
     body: "The weight was never the problem. The lifestyle was. Fix that — and the body follows.",
     attribution: "— Aditya",
     cta: { label: "See all transformations →", href: "/results" },
-    cam: [3.2, 1.9, -49.4],
-    look: [1.9, 1.8, -52],
+    cam: [3.2, 1.9, -13.4],
+    look: [1.9, 1.8, -16],
   },
   // ---- THE OFFERS (§4 + §9) ----
   // "offer-audit" no longer has an object in the scene — the gateway card was
@@ -149,8 +154,8 @@ export const FACTS: Record<string, Fact> = {
     title: "Transformation Audit",
     body: "We analyse your lifestyle, health, fitness, nutrition, energy, habits, confidence and presence — and identify what is actually holding you back and what needs to be fixed first." /* [review] built from §9 */,
     cta: { label: "Book Your Transformation Audit", href: "/book" },
-    cam: [0, 1.9, -66.4],
-    look: [0, 1.5, -70],
+    cam: [0, 1.9, -48.4],
+    look: [0, 1.5, -52],
   },
   "offer-lifestyle": {
     id: "offer-lifestyle",
@@ -158,8 +163,8 @@ export const FACTS: Record<string, Fact> = {
     title: "Lifestyle Coaching",
     body: "Habits, nutrition, training, sleep, stress, supplements — full health optimisation. Better energy, fat loss, muscle gain, discipline that holds." /* [review] scope per §4.1 */,
     cta: { label: "See Coaching", href: "/programs" },
-    cam: [-3.6, 1.8, -66.5],
-    look: [-3.4, 1.4, -70],
+    cam: [-3.6, 1.8, -48.5],
+    look: [-3.4, 1.4, -52],
   },
   "offer-presence": {
     id: "offer-presence",
@@ -167,8 +172,8 @@ export const FACTS: Record<string, Fact> = {
     title: "Personality & Presence Coaching",
     body: "Body language. Social confidence. Communication. Style, grooming, skincare — dressing for your body type and colours that suit Indian skin tones. Mindset and emotional intelligence." /* [review] scope per §4.2 */,
     cta: { label: "See Coaching", href: "/programs" },
-    cam: [-1.85, 1.8, -66.3],
-    look: [-1.7, 1.4, -70],
+    cam: [-1.85, 1.8, -48.3],
+    look: [-1.7, 1.4, -52],
   },
   "offer-complete": {
     id: "offer-complete",
@@ -176,8 +181,8 @@ export const FACTS: Record<string, Fact> = {
     title: "Complete Transformation",
     body: "For men who want a complete transformation — not just a better body or a better wardrobe. Both pillars in one system: body, lifestyle, mindset, personality, presence.",
     cta: { label: "See Coaching", href: "/programs" },
-    cam: [2.85, 1.85, -66.4],
-    look: [2.6, 1.5, -70],
+    cam: [2.85, 1.85, -48.4],
+    look: [2.6, 1.5, -52],
   },
   blueprint: {
     id: "blueprint",
@@ -185,8 +190,8 @@ export const FACTS: Record<string, Fact> = {
     title: "The Lifestyle Blueprint",
     body: "10 lifestyle changes that rebuild a man completely — body, mind and hormones. Start tonight.",
     cta: { label: "Get My Free Blueprint", href: "/tools#blueprint" },
-    cam: [-1.2, 1.5, -63.2],
-    look: [-1.6, 1.0, -66],
+    cam: [-1.2, 1.5, -45.2],
+    look: [-1.6, 1.0, -48],
   },
 };
 
@@ -280,7 +285,7 @@ export const REBUILD_STEPS = [
 
 // ---- One-off labels rendered inside the canvas or over it ----
 export const SCENE = {
-  /** plates under the two photographs in chapters 1 and 3 */
+  /** plates under the two photographs of the proof gallery */
   before: "BEFORE",
   after: "AFTER",
   /** over the flipping client gallery */
@@ -299,7 +304,13 @@ export const SCENE = {
 // Labels come from the CTA vocabulary in AGENTS.md; invent nothing new here.
 export const OVERLAY_CTAS = {
   book: { label: "Book Your Transformation Audit", href: "/book" },
-  blueprint: { label: "Get My Free Blueprint", href: "/tools#blueprint" },
+  blueprint: {
+    label: "Get My Free Blueprint",
+    href: "/tools#blueprint",
+    // Rendered under the button on the closing chapter, where the free
+    // resource is now the second action. [review]
+    note: "The long-form Lifestyle Blueprint. Sent to your inbox, free.",
+  },
   // The label stays inside the CTA vocabulary in AGENTS.md; the note under it
   // is what tells a visitor the page goes into detail, rather than inventing a
   // longer button string.
@@ -339,11 +350,15 @@ export const CHAPTERS: Chapter[] = [
     sub: "A complete transformation system for men who want to build a stronger body, sharper mind, and undeniable presence." /* his hero direction, verbatim §2 */,
   },
   {
-    id: "man",
-    range: [0.15, 0.29] as const,
-    eyebrow: "THE MAN" /* [review] */,
-    title: "I rebuilt myself from the ground up.",
-    sub: "Touch the two figures — the before, and the rebuild." /* [review] */,
+    id: "proof",
+    // MOVED UP from the fourth slot (31 Aug 2026). The gallery now stands at
+    // z -16, immediately after the seal, so the first thing a visitor meets is
+    // other men's results rather than the coach's own story. Closes as the
+    // dolly reaches the frames at ≈0.256 and flies through them.
+    range: [0.15, 0.27] as const,
+    eyebrow: "THE PROOF" /* [review] */,
+    title: "Real Men. Real Results.",
+    sub: "No filters. No shortcuts. Just discipline and the right guidance.",
   },
   {
     id: "order",
@@ -351,14 +366,6 @@ export const CHAPTERS: Chapter[] = [
     eyebrow: "THE COMPLETE REBUILD" /* his framework name, §6 */,
     title: "Body. Lifestyle. Mindset. Personality. Presence." /* his five words, §16 */,
     sub: "The rebuild assembles in the right order. Touch a layer to read it." /* [review] */,
-  },
-  {
-    id: "proof",
-    // Closes as the dolly reaches the frames at ≈0.694 and flies through them.
-    range: [0.58, 0.7] as const,
-    eyebrow: "THE PROOF" /* [review] */,
-    title: "Real Men. Real Results.",
-    sub: "No filters. No shortcuts. Just discipline and the right guidance.",
   },
   {
     id: "decision",

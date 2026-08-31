@@ -23,7 +23,12 @@ import { FACTS } from "./facts";
 // at 1; KEYS_PORTRAIT is the same length and shares them.
 const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { at: 0, p: v(0, 1.7, 9), t: v(0, 1.5, 0) }, // arrival — the seal
-  { at: 1 / 6, p: v(2.4, 1.6, -8.5), t: v(-0.4, 1.2, -16) }, // drift toward the two figures
+  // THE GALLERY, PROMOTED. "The Man" used to own this beat, framing his own
+  // diptych at z -16 from x 2.4. The proof gallery inherits the slot and the
+  // z, and it brings its own framing with it: this is the old gallery key
+  // (p 2.8, 1.9, -44.5 → t -0.6, 1.8, -52) translated forward by exactly 36,
+  // so the 7.5-unit stand-off that fitted the wider proof panels is unchanged.
+  { at: 1 / 6, p: v(2.8, 1.9, -8.5), t: v(-0.6, 1.8, -16) }, // sweep the proof gallery
   { at: 2 / 6, p: v(-3.0, 2.0, -22.0), t: v(0.6, 1.4, -34) }, // approach the foundation from the left
   // Front-on, and standing WELL back. This key used to sit at z -29.5, which
   // is 4.7 units off a stack that is 2.7 tall, 4 wide and 2.6 deep — the
@@ -32,62 +37,56 @@ const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // At -26.2 the stack reads at ~45% of frame height with the whole approach
   // path visible around it.
   { at: 3 / 6, p: v(0, 2.5, -26.2), t: v(0, 1.35, -34) }, // front-on: the stack assembled
-  { at: 4 / 6, p: v(2.8, 1.9, -44.5), t: v(-0.6, 1.8, -52) }, // sweep the proof gallery
-  // THE GALLERY → GATEWAY RUN. Originally 0.667 → 0.885: against Home3D's
-  // travel of 6.2 screen-heights (TRACK_VH 7.2 minus the sticky viewport) that
-  // is 1.35 screens of scrolling for one camera move. It now spans 0.0933,
-  // about SIX TENTHS of a screen — deliberately under the one screen asked for,
-  // because the dolly is exponentially damped and lags a fast scroll by roughly
-  // velocity/lambda, so the felt distance always runs longer than the stops.
-  // See the lambda note below; that is the other half of this fix.
-  //
-  // Everything keyed off the crossing point moved with these: CHAPTERS.proof
-  // now closes at 0.70 and decision opens at 0.735, and the gallery's own
-  // button closes by 0.672 because the dolly reaches the proof panels at
-  // ≈0.694 rather than ≈0.75.
-  { at: 0.712, p: v(-2.6, 2.0, -57.0), t: v(0.3, 1.4, -70) }, // approach the offers
   // --- The final chapter is one arrival and one push-in. ---
-  // It used to be TWO beats because a gateway card stood in front of the three
-  // at z -68.4: the camera had to settle on it, then RISE and carry on over it,
-  // because a solid panel on the centre line cannot be passed at eye level.
-  // With the gate gone both of those constraints go with it. The camera now
-  // arrives on the three head-on and simply comes closer, and it can stay at
-  // standing height instead of climbing to 4.4 to see over something.
-  { at: 0.8, p: v(0, 2.4, -66.0), t: v(0, 1.85, -75) }, // all three, in frame
+  // Removing the man chapter took a whole beat out of the middle of this
+  // table. Rather than leave the visitor scrolling a dark corridor from the
+  // stack to a decision still parked at z -70, the decision came forward to
+  // -52 — and these three keys are the old ones translated by the same +18,
+  // so every framing number below still holds exactly.
+  //
+  // The run from the stack to the offers is now ONE move over 0.212 of
+  // progress (it used to be a slow leg to the gallery plus a deliberately
+  // fast 0.045 dash to the gateway). Same easing, no dash.
+  { at: 0.712, p: v(-2.6, 2.0, -39.0), t: v(0.3, 1.4, -52) }, // approach the offers
+  { at: 0.8, p: v(0, 2.4, -48.0), t: v(0, 1.85, -57) }, // all three, in frame
   // 6.5 units out: half-width 4.44 against cards reaching ±2.80, and half-height
   // 2.50 against a flagship 4.0 tall aimed at 1.9 — the vertical is the binding
   // one here, with 0.40 of headroom over the top of the tallest card.
-  { at: 1, p: v(0, 2.2, -68.5), t: v(0, 1.9, -75) }, // closer — the cards readable
+  { at: 1, p: v(0, 2.2, -50.5), t: v(0, 1.9, -57) }, // closer — the cards readable
 ];
 
 // Portrait art direction: phones lose ~60% of the horizontal frustum, so the
 // widescreen path's lateral sweeps frame empty space and crop the subjects
-// (figures at x ±1.7, slabs 4 units wide, programmes spread ±1.9). These keys
-// go head-on and pull back so each chapter's full composition fits upright.
+// (slabs 4 units wide, programmes spread ±1.9). These keys go head-on and pull
+// back so each chapter's full composition fits upright.
 // Same length as KEYS, and it borrows KEYS' progress stops.
 const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 1.7, 10.5), t: v(0, 1.6, 0) }, // arrival — seal recentres via chapters.tsx
-  { p: v(0, 1.6, -6.5), t: v(0, 1.3, -16) }, // both figures, straight on
+  // The old portrait gallery key (p 0, 1.8, -41 → t -52), moved forward by 11
+  // to sit against the promoted gallery at -16. It keeps the 11-unit stand-off
+  // the wider proof panels need; the man key it replaces stood only 9.5 back,
+  // which would clip the pair at x ±2.52 on a 0.45-aspect phone.
+  { p: v(0, 1.8, -5.0), t: v(0, 1.7, -16) }, // proof gallery, both frames visible
   { p: v(0, 2.0, -20.5), t: v(0, 1.2, -34) }, // foundation approach, centred
   // Same pull-back as the landscape key. At -25.0 the visible half-width was
   // 2.2 against a bottom slab that reaches ±2.0 — the base was touching both
   // edges of a phone screen. -23.0 gives 2.7 and room to watch it build.
   { p: v(0, 2.9, -23.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
-  { p: v(0, 1.8, -41.0), t: v(0, 1.7, -52) }, // proof gallery, both frames visible
-  { p: v(0, 1.9, -55.0), t: v(0, 1.4, -70) }, // approach the offers
-  // Arrival and push-in, matching the landscape keys. Pinned by arithmetic
-  // rather than taste: the cards span x ±2.80 and a phone's frustum reaches
-  // only 0.2446 of the viewing distance either side of centre, so -62.2 is the
-  // CLOSEST this can stop and still leave a third of a unit between the outer
-  // cards and the edge of the screen. That is also why the push-in here is a
-  // fraction of the one on a wide screen — there is nowhere to push to.
+  // Arrival and push-in, matching the landscape keys — the same +18 shift.
+  // Pinned by arithmetic rather than taste: the cards span x ±2.80 and a
+  // phone's frustum reaches only 0.2446 of the viewing distance either side of
+  // centre, so -44.2 is the CLOSEST this can stop and still leave a third of a
+  // unit between the outer cards and the edge of the screen. That is also why
+  // the push-in here is a fraction of the one on a wide screen — there is
+  // nowhere to push to.
   //
   // The tall empty band above and below the row on a phone is not a framing
   // mistake and cannot be tuned away: fitting ±2.80 across a 0.46 aspect forces
   // a half-height of 6.09 whatever the lens does, because half-height is
   // half-width over aspect. Only rearranging the row would change it.
-  { p: v(0, 2.6, -61.0), t: v(0, 1.9, -75) },
-  { p: v(0, 2.4, -62.2), t: v(0, 1.9, -75) },
+  { p: v(0, 1.9, -37.0), t: v(0, 1.4, -52) }, // approach the offers
+  { p: v(0, 2.6, -43.0), t: v(0, 1.9, -57) },
+  { p: v(0, 2.4, -44.2), t: v(0, 1.9, -57) },
 ];
 
 /** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */
@@ -134,8 +133,8 @@ export default function CameraRig() {
         tmpP.current.sub(tmpT.current).multiplyScalar(1 + 0.45 * pf).add(tmpT.current);
       }
     } else {
-      // Walk the explicit stops rather than assuming even spacing. Eight keys
-      // over an eight-entry table is a handful of comparisons per frame.
+      // Walk the explicit stops rather than assuming even spacing. Seven keys
+      // over a seven-entry table is a handful of comparisons per frame.
       let i = KEYS.length - 2;
       for (let k = 0; k < KEYS.length - 1; k++) {
         if (progress < KEYS[k + 1].at) {

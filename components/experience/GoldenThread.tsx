@@ -16,24 +16,27 @@ export default function GoldenThread() {
   const { geometry, indexCount } = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3(
       [
+        // Re-strung for the four-chapter journey (31 Aug 2026): the last
+        // stop was -71.5 when the decision stood at z -70. It ends at -57.5
+        // now, and the waypoints stitch seal (0) → gallery (-16) →
+        // stack (-34) → programmes (-52).
         [2.3, 0.25, 4.5],
         [2.0, 0.5, -3],
         [-1.4, 0.35, -10],
         [1.8, 0.8, -16],
         [-2.2, 0.5, -23],
         [2.4, 0.4, -30],
-        [0, 0.3, -37],
-        [-2.6, 0.9, -44],
-        [2.2, 1.1, -52],
-        [-2.0, 0.6, -60],
-        [0, 0.35, -66],
-        [0, 0.8, -71.5],
+        [0, 0.3, -36],
+        [-2.4, 0.9, -42],
+        [2.0, 1.1, -47],
+        [-1.6, 0.6, -52],
+        [0, 0.8, -57.5],
       ].map(([x, y, z]) => new THREE.Vector3(x, y, z)),
     );
     // 360 segments over a 70-unit curve was a vertex every 0.19 units on a
-    // 0.016-radius thread. 200 is a segment every 0.35 units — the draw-range
-    // reveal stays just as smooth, at ~55% of the geometry.
-    const geo = new THREE.TubeGeometry(curve, 200, 0.016, 6, false);
+    // 0.016-radius thread. 170 over the shortened 58-unit curve keeps the same
+    // ~0.35-unit spacing, so the draw-range reveal reads exactly as before.
+    const geo = new THREE.TubeGeometry(curve, 170, 0.016, 6, false);
     return { geometry: geo, indexCount: geo.index ? geo.index.count : 0 };
   }, []);
 

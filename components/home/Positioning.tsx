@@ -68,8 +68,8 @@ export default function Positioning() {
         sub="Forty-five minutes on WhatsApp. We find what is actually holding you back, and the order to fix it in."
         primaryLabel="Book Your Transformation Audit"
         primaryHref="/book"
-        secondaryLabel="See the Programs"
-        secondaryHref="/programs"
+        secondaryLabel="Get My Free Blueprint"
+        secondaryHref="/tools#blueprint"
       />
       {/* [review] — CTA band copy in his voice */}
 
