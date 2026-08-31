@@ -10,7 +10,7 @@ export const WHATSAPP_NUMBER =
 export const COACH_WHATSAPP =
   process.env.NEXT_PUBLIC_COACH_WHATSAPP || "918420707031"; // same number for booking notifications
 export const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "adityau78@gmail.com";
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "adityaupadhyaycoach@gmail.com";
 export const IG_URL =
   process.env.NEXT_PUBLIC_IG_URL ||
   "https://www.instagram.com/adityakumarupadhyay_"; // confirmed handle (trailing underscore)

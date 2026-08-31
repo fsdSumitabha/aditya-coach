@@ -35,9 +35,9 @@ export const LEGAL = {
   // Sole proprietor trading under his own name — there is no separate firm name.
   BUSINESS_NAME: "Aditya Kumar Upadhyay",
   LEGAL_BASIS_NOTE: "sole proprietor",
-  CONTACT_EMAIL: "adityau78@gmail.com",
+  CONTACT_EMAIL: "adityaupadhyaycoach@gmail.com",
   GRIEVANCE_NAME: "Aditya Kumar Upadhyay", // Grievance Officer
-  GRIEVANCE_EMAIL: "adityau78@gmail.com",
+  GRIEVANCE_EMAIL: "adityaupadhyaycoach@gmail.com",
   GRIEVANCE_ADDRESS: ADDRESS_FULL,
   WHATSAPP_E164: `+${WHATSAPP_NUMBER}`,
   WHATSAPP_WA_LINK: `https://wa.me/${WHATSAPP_NUMBER}`,
@@ -125,5 +125,5 @@ export const CONSULT_INCLUDES = {
   /** Takeaway gift card handed over at the end of the call. */
   GIFT_CARD: "An instant gift card, yours at the end of the call.",
   /** The long-form Lifestyle Blueprint, free with the audit. */
-  BLUEPRINT: "The full long-form Lifestyle Blueprint. Free, and yours to keep.",
+  BLUEPRINT: "The Lifestyle Blueprint. Free, and yours to keep.",
 };

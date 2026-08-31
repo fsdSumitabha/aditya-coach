@@ -35,7 +35,7 @@ import {
 // selectable text. City-level ("Kolkata, India") is shown for privacy; if the
 // gateway requires a full postal address, add an ADDRESS_FULL constant here and
 // surface it in the Direct Contact block and the JSON-LD `address`. Flag to owner.
-const EMAIL = CONTACT_EMAIL || "TODO@REPLACE.com"; // TODO: real business email (Razorpay-visible)  [review]
+const EMAIL = CONTACT_EMAIL || "adityaupadhyaycoach@gmail.com"; // TODO: real business email (Razorpay-visible)  [review]
 const COACH_NAME = "Aditya Kumar Upadhyay";
 const CITY = "Kolkata, India";
 const SERVICE_AREA = "Coaching worldwide";
