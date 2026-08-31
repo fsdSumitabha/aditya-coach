@@ -79,9 +79,9 @@ what he never built properly in the first place.
 Two years of professional coaching.
 Eight years of personal mastery.
 
-Every single thing I teach
-has been earned —
-not learned.
+Everything I teach
+in reallife before
+it reaches a client.
 
 That is the difference.
 

@@ -67,7 +67,7 @@ export const FACTS: Record<string, Fact> = {
     id: "man-after",
     eyebrow: "The rebuild",
     title: "The man who walks in and belongs there.",
-    body: "Eight years of testing every method on myself before it ever reached a client. The body transformation was the easy part. The harder work was becoming the man who could walk into any room and belong there — from the kid who could not make eye contact to coaching some of the most successful men in Kolkata. Every single thing I teach has been earned, not learned." /* [review] — aditya_personal_story.md + aditya_journey.md */,
+    body: "Eight years of testing every method on myself before it ever reached a client. The body transformation was the easy part. The harder work was becoming the man who could walk into any room and belong there — from the kid who could not make eye contact to coaching some of the most successful men in Kolkata. Everything I teach has been tested in real life before it reaches a client." /* [review] — aditya_personal_story.md + aditya_journey.md */,
     cta: { label: "My story →", href: "/about" },
     cam: [1.07, 1.5, -12.5],
     look: [1.85, 1.5, -16],

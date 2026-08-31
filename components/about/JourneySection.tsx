@@ -179,7 +179,7 @@ export default function JourneySection() {
         {/* ---- The close ---- */}
         <div className="mt-12 max-w-[56ch]">
           <Reveal as="p" index={0} className="reveal-blur type-lead text-primary leading-[1.7]">
-            Every single thing I teach has been earned — not learned.
+            Everything I teach has been tested in real life before it reaches a client.
           </Reveal>
           <Reveal as="p" index={1} className="reveal-blur type-lead text-gold-300 mt-6">
             That is the difference.

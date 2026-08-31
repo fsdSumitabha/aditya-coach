@@ -140,8 +140,8 @@ export default function AboutPage() {
       {/* ============ Section 2 — MY JOURNEY — REMOVED 2026-08-31 ============ */}
       {/* <JourneySection /> retold the same narrative as StoryHero above — the
           100kg story, the years of self-testing, becoming a coach — so the page
-          told one story twice. Its one unique point, "Every single thing I
-          teach has been earned — not learned.", now closes <StoryHero />.
+          told one story twice. Its one unique point, "Everything I teach has been
+          tested in real life before it reaches a client.", now closes <StoryHero />.
           components/about/JourneySection.tsx is left on disk unreferenced: it
           holds docs/aditya_journey.md verbatim and is the starting point for
           the long-form blog post. Do not re-mount it here. */}

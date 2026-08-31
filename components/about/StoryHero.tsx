@@ -22,7 +22,7 @@ import { PinIcon } from "@/components/icons";
  * never how one reads.
  *
  * Merged in from the removed §02 MY JOURNEY (docs/aditya_journey.md):
- * "Every single thing I teach has been earned — not learned." — that section's
+ * "Everything I teach has been tested in real life before it reaches a client." — that section's
  * one unique point. The rest of it retold this same 100kg / self-testing /
  * became-a-coach story a second time on one page.
  *
@@ -200,7 +200,7 @@ export default function StoryHero() {
         <div className="mt-12 max-w-[58ch] nav:mt-14">
           <Reveal className="reveal-blur">
             <p className="font-display border-l-2 border-gold-500 pl-6 text-[clamp(1.35rem,2.6vw,2rem)] leading-[1.3] text-primary">
-              Every single thing I teach has been earned — not learned.
+              Everything I teach has been tested in real life before it reaches a client.
             </p>
           </Reveal>
 
