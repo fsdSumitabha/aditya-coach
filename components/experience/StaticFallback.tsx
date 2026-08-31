@@ -145,12 +145,6 @@ export default function StaticFallback() {
             Get the Free Lifestyle Blueprint
           </Link>
         </div>
-        <p
-          className="type-caption text-muted fb-enter absolute bottom-6 tracking-[0.24em]"
-          style={{ "--fb-delay": "700ms" } as CSSProperties}
-        >
-          SCROLL
-        </p>
       </section>
 
       <Marquee
