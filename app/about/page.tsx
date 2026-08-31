@@ -213,41 +213,6 @@ export default function AboutPage() {
             })}
           </div>
 
-          <div className="mx-auto mt-8 flex max-w-md flex-col items-stretch justify-center gap-4 sm:max-w-none sm:flex-row sm:items-center">
-            <Reveal index={1} className="sm:w-auto">
-              <a
-                href={SOCIAL_INSTAGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
-              >
-                <span className="float-idle inline-flex"><InstagramIcon className="h-5 w-5" /></span>
-                Instagram
-              </a>
-            </Reveal>
-            <Reveal index={2} className="sm:w-auto">
-              <a
-                href={SOCIAL_YOUTUBE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-[10px] border border-hairline-soft px-6 font-medium text-secondary transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-hairline-gold hover:text-primary sm:w-auto"
-              >
-                <span className="float-idle inline-flex" style={{ animationDelay: "0.5s" }}><YouTubeIcon className="h-5 w-5" /></span>
-                YouTube
-              </a>
-            </Reveal>
-            <Reveal index={3} className="sm:w-auto">
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-wa w-full sm:w-auto"
-              >
-                <span className="float-idle inline-flex" style={{ animationDelay: "1s" }}><WhatsAppIcon className="h-5 w-5" /></span>
-                Chat with Aditya
-              </a>
-            </Reveal>
-          </div>
         </div>
       </section>
 
