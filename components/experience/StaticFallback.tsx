@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import Reveal from "../Reveal";
 import Marquee from "../Marquee";
 import { FACTS, CHAPTERS } from "./facts";
+import { LEGAL } from "@/lib/legal";
 
 /**
  * The 2D journey — served when WebGL is unavailable, the device can't hold a
@@ -102,7 +103,7 @@ export default function StaticFallback() {
       <section className="aurora relative flex min-h-[92svh] flex-col items-center justify-center px-5 py-20 text-center">
         <DiamondEmblem />
         <p className="eyebrow fb-enter mt-8" style={{ "--fb-delay": "120ms" } as CSSProperties}>
-          COMPLETE TRANSFORMATION COACH FOR MEN{/* [review] */}
+          MEN&apos;S TRANSFORMATION COACH &middot; KOLKATA &amp; WORLDWIDE{/* [review] */}
         </p>
         {/* visually the hero headline — the page's real h1 is the permanent
             sr-only one in app/page.tsx (exactly one h1 in every mode) */}
@@ -112,22 +113,36 @@ export default function StaticFallback() {
         >
           Become harder to ignore.
         </p>
+        {/* [review] — replaces the verbatim §2 hero line at his instruction.
+            Carries the result AND the mechanism ("in the right order"), which
+            the old three-abstraction line did not. Needs Aditya's sign-off. */}
         <p
           className="type-lead text-secondary fb-enter mx-auto mt-5 max-w-xl"
           style={{ "--fb-delay": "340ms" } as CSSProperties}
         >
-          A complete transformation system for men who want to build a
-          stronger body, sharper mind, and undeniable presence.
+          I coach men to rebuild their body, presence, and daily habits &mdash;
+          in the right order, so the change actually lasts.
+        </p>
+        {/* [review] — credibility marker. Figures are the ones the repo can
+            source (facts.ts "man-after", about/JourneySection): eight years of
+            self-testing, two years coaching. No client count is claimed
+            because none is confirmed anywhere. */}
+        <p
+          className="type-small text-muted fb-enter mx-auto mt-4"
+          style={{ "--fb-delay": "430ms" } as CSSProperties}
+        >
+          Eight years of self-testing. Two years coaching men in Kolkata and
+          worldwide.
         </p>
         <div
           className="cta-stack fb-enter mt-8 justify-center"
-          style={{ "--fb-delay": "460ms" } as CSSProperties}
+          style={{ "--fb-delay": "520ms" } as CSSProperties}
         >
           <Link href="/book" className="btn-gold shine-loop">
-            Book Your Transformation Audit
+            Book Your Transformation Audit &mdash; {LEGAL.CONSULT_PRICE}
           </Link>
           <Link href="/tools#blueprint" className="btn-outline">
-            Get My Free Blueprint
+            Get the Free Lifestyle Blueprint
           </Link>
         </div>
         <p
@@ -145,7 +160,10 @@ export default function StaticFallback() {
       />
 
       {/* ---- The man ---- */}
-      <section className="container-site section">
+      {/* Mobile shortens the flat journey to Hero → proof → CTA (rec #3), so
+          this chapter is desktop-only. Hidden, not deleted: the desktop flat
+          page still mirrors all five 3D chapters. */}
+      <section className="container-site section hidden md:block">
         <Reveal className="text-center">
           <p className="eyebrow">{CHAPTERS[1].eyebrow}</p>
           <h2 className="type-h2 text-primary mt-3">{CHAPTERS[1].title}</h2>
@@ -173,7 +191,10 @@ export default function StaticFallback() {
       </section>
 
       {/* ---- The Complete Rebuild — narrowing slabs echo the 3D pyramid ---- */}
-      <section className="container-site section relative">
+      {/* Desktop-only for the same reason as "The man" above. The method is
+          still reachable on mobile: the hero sub states the right-order
+          mechanism, and /method is one tap from the nav. */}
+      <section className="container-site section relative hidden md:block">
         <Reveal className="text-center">
           <p className="eyebrow">{CHAPTERS[2].eyebrow}</p>
           <h2 className="type-h2 text-primary mt-3">{CHAPTERS[2].title}</h2>
@@ -219,7 +240,12 @@ export default function StaticFallback() {
         </Reveal>
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {[FACTS["proof-client"], FACTS["proof-truth"]].map((f, i) => (
-            <Reveal key={f.id} index={i} className="card spot h-full">
+            /* rec #3: mobile shows one proof card, desktop both. */
+            <Reveal
+              key={f.id}
+              index={i}
+              className={`card spot h-full ${i === 1 ? "hidden sm:block" : ""}`}
+            >
               <p className="eyebrow">{f.eyebrow}</p>
               <h3 className="type-h3 text-primary mt-2">{f.title}</h3>
               <p className="type-body text-secondary mt-2">{f.body}</p>
