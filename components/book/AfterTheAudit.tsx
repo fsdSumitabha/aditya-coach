@@ -15,7 +15,7 @@ import { AFTER_FORK, AFTER_STEPS } from "@/components/book/book-data";
  * under the fork says so in words, because this is the objection men bring
  * to a paid first call — that it is a sales trap.
  *
- * The three fork links are lateral (/programs), which is the only direction
+ * The three fork links are lateral (/coaching), which is the only direction
  * /book is allowed to link (CONVENTIONS funnel discipline).
  */
 export default function AfterTheAudit() {

@@ -1,6 +1,6 @@
 import Reveal from "@/components/Reveal";
-import CtaLink from "@/components/programs/CtaLink";
-import { BLUEPRINT_URL } from "@/components/programs/programs-data";
+import CtaLink from "@/components/coaching/CtaLink";
+import { BLUEPRINT_URL } from "@/components/coaching/coaching-data";
 
 /**
  * §7 — the catch-net. For the man who is interested but not paying today.
@@ -26,7 +26,7 @@ export default function FreeStartingPoint() {
           <CtaLink
             href={BLUEPRINT_URL}
             className="btn-outline w-full shrink-0 md:w-auto"
-            data={{ page: "programs", cta: "free_blueprint", target: BLUEPRINT_URL }}
+            data={{ page: "coaching", cta: "free_blueprint", target: BLUEPRINT_URL }}
           >
             Get the Free Blueprint
           </CtaLink>

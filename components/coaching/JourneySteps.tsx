@@ -1,12 +1,12 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
-import { JOURNEY_STEPS } from "@/components/programs/programs-data";
+import { JOURNEY_STEPS } from "@/components/coaching/coaching-data";
 
 /**
  * §3 — "What Happens After You Choose."
  *
  * The job of this section is to kill one specific misreading: that the three
- * programs are three separate processes you commit to blind. They aren't —
+ * paths are three separate processes you commit to blind. They aren't —
  * they're three destinations off one starting point.
  *
  * So the gold thread does the arguing. Desktop: one horizontal line runs

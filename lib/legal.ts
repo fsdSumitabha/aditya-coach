@@ -117,7 +117,7 @@ export const DELIVERY = {
 };
 
 // What the Transformation Audit includes beyond the call itself.
-// Confirmed 6 Aug 2026. Rendered on /programs and /book — edit here, not in JSX.
+// Confirmed 6 Aug 2026. Rendered on /coaching and /book — edit here, not in JSX.
 export const CONSULT_INCLUDES = {
   /** Fee credited against the program price the moment he joins. */
   CREDIT:

@@ -1,7 +1,7 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import { CheckIcon } from "@/components/icons";
-import { COMPARE_ROWS, PATHS } from "@/components/programs/programs-data";
+import { COMPARE_ROWS, PATHS } from "@/components/coaching/coaching-data";
 
 /**
  * §5 — "What's Included in the Coaching."

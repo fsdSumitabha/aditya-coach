@@ -76,7 +76,7 @@ const BOOKING = {
 // app/book/page.tsx (Server Component) — not from this island.
 
 // ---------------------------------------------------------------------------
-// §1 checkout summary — two lines. The earlier five restated what /programs
+// §1 checkout summary — two lines. The earlier five restated what /coaching
 // and §3 "What You Get" already say, so the summary now carries only the
 // promise a man needs at the point of payment. The Blueprint and the gift
 // card are not dropped from the page: the §4 payment block below states both

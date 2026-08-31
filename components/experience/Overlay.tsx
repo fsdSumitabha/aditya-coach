@@ -179,26 +179,26 @@ export default function Overlay() {
                 </Link>
               </div>
             )}
-            {/* THE METHOD chapter carries the programmes link (31 Aug 2026).
+            {/* THE METHOD chapter carries the coaching link (31 Aug 2026).
                 It used to sit on the closing chapter; the closing chapter now
                 offers the free blueprint instead, and this is the better place
                 for it anyway — a visitor who has just watched the rebuild
                 assemble is being shown what delivers it. */}
             {chapter.id === "order" && (
               <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
-                <Link href={OVERLAY_CTAS.programs.href} className={BTN_OUTLINE}>
-                  {OVERLAY_CTAS.programs.label}
+                <Link href={OVERLAY_CTAS.coaching.href} className={BTN_OUTLINE}>
+                  {OVERLAY_CTAS.coaching.label}
                 </Link>
                 {/* Says what is on the other side of the button. The label
                     itself stays inside the CTA vocabulary in AGENTS.md rather
                     than growing into a sentence. */}
                 <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
-                  {OVERLAY_CTAS.programs.note}
+                  {OVERLAY_CTAS.coaching.note}
                 </p>
               </div>
             )}
             {/* The closing chapter's two buttons are the two ways to start:
-                book the audit, or take the free blueprint. The programmes link
+                book the audit, or take the free blueprint. The coaching link
                 moved up to the method chapter — see above.
                 These live here rather than anchored in the scene because the
                 overlay owns the bottom third of the screen and the header the

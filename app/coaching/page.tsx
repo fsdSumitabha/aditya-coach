@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
-import ProgramsHero from "@/components/programs/ProgramsHero";
-import PathGrid from "@/components/programs/PathGrid";
-import JourneySteps from "@/components/programs/JourneySteps";
-import ExpectedTransformation from "@/components/programs/ExpectedTransformation";
-import FreeStartingPoint from "@/components/programs/FreeStartingPoint";
-import ProgramsFinalCta from "@/components/programs/ProgramsFinalCta";
-import { PATHS, PRICE_CONSULT } from "@/components/programs/programs-data";
+import CoachingHero from "@/components/coaching/CoachingHero";
+import PathGrid from "@/components/coaching/PathGrid";
+import JourneySteps from "@/components/coaching/JourneySteps";
+import ExpectedTransformation from "@/components/coaching/ExpectedTransformation";
+import FreeStartingPoint from "@/components/coaching/FreeStartingPoint";
+import CoachingFinalCta from "@/components/coaching/CoachingFinalCta";
+import { PATHS, PRICE_CONSULT } from "@/components/coaching/coaching-data";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
 
 // ============================================================
-// /programs — sells the three coaching paths. It does NOT take money.
+// /coaching — sells the three coaching paths. It does NOT take money.
 //
-//   Programs (choose a path) → /book → Transformation Audit ₹999 → payment
+//   Coaching (choose a path) → /book → Transformation Audit ₹999 → payment
 //
 // Every CTA on this page lands on /book. The page answers three questions and
 // nothing else: what can I get from Aditya, which path is right for me, and
@@ -21,7 +21,7 @@ import { LEGAL } from "@/lib/legal";
 //
 // Sections (direction 2026-08-25):
 //   1 hero — three paths      5 comparison table
-//   2 the three programs      6 expected transformation
+//   2 the three paths         6 expected transformation
 //   3 what happens next       7 free starting point
 //   4 why the audit first     8 final CTA
 //
@@ -30,10 +30,10 @@ import { LEGAL } from "@/lib/legal";
 // ============================================================
 
 export const metadata: Metadata = pageMetadata({
-  title: "Programs for Men | Coaching with Aditya, Kolkata",
+  title: "Coaching for Men | Transformation with Aditya, Kolkata", /* [review] */
   /* [review] — three paths + the one entry point */
   description: `Three coaching paths for men in Kolkata and online — Lifestyle Coaching, Personality & Presence Coaching, or the Complete Transformation. Every path starts with a ${PRICE_CONSULT} Transformation Audit, credited against your program.`,
-  path: "/programs",
+  path: "/coaching",
 });
 
 // ---- Page-level structured data ----
@@ -75,17 +75,17 @@ const breadcrumbSchema = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
-    { "@type": "ListItem", position: 2, name: "Programs", item: `${SITE_ORIGIN}/programs` },
+    { "@type": "ListItem", position: 2, name: "Coaching", item: `${SITE_ORIGIN}/coaching` },
   ],
 };
 
-export default function ProgramsPage() {
+export default function CoachingPage() {
   return (
     <>
       <JsonLd data={[auditSchema, ...pathSchemas, breadcrumbSchema]} />
 
       {/* 1 — three paths, one door */}
-      <ProgramsHero />
+      <CoachingHero />
 
 
       {/* 2 — the showpiece: two paths + the flagship band */}
@@ -101,7 +101,7 @@ export default function ProgramsPage() {
       <FreeStartingPoint />
 
       {/* 8 — the close */}
-      <ProgramsFinalCta />
+      <CoachingFinalCta />
     </>
   );
 }

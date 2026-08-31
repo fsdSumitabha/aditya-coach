@@ -47,8 +47,8 @@ const TRUST_POINTS = [
     // [review] Matches the timeline copy on this page: two years coaching men,
     // eight years testing every method on himself. No invented figure.
     body: "Two years coaching men. Eight years testing every method on his own body first.",
-    href: "/programs",
-    linkLabel: "See the programs",
+    href: "/coaching",
+    linkLabel: "See Coaching", /* [review] */
     external: false,
   },
   {

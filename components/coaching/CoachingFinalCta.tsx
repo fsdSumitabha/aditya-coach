@@ -1,8 +1,8 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import { WhatsAppIcon } from "@/components/icons";
-import CtaLink from "@/components/programs/CtaLink";
-import { BOOK_URL, PRICE_CONSULT } from "@/components/programs/programs-data";
+import CtaLink from "@/components/coaching/CtaLink";
+import { BOOK_URL, PRICE_CONSULT } from "@/components/coaching/coaching-data";
 import { waLink } from "@/lib/config";
 
 /**
@@ -14,7 +14,7 @@ import { waLink } from "@/lib/config";
  *
  * 112px bottom padding keeps the WhatsApp FAB clear of the button.
  */
-export default function ProgramsFinalCta() {
+export default function CoachingFinalCta() {
   return (
     <section className="bg-void aurora grain border-hairline-soft relative overflow-hidden border-t">
       <div
@@ -35,7 +35,7 @@ export default function ProgramsFinalCta() {
           <CtaLink
             href={BOOK_URL}
             className="btn-gold shine-loop w-full leading-snug sm:w-auto"
-            data={{ page: "programs", cta: "final_book", target: BOOK_URL }}
+            data={{ page: "coaching", cta: "final_book", target: BOOK_URL }}
           >
             Start With Your Transformation Audit — {PRICE_CONSULT}
           </CtaLink>
@@ -50,7 +50,7 @@ export default function ProgramsFinalCta() {
         <Reveal delayMs={340} className="mt-7">
           <a
             href={waLink(
-              "Hi Aditya, I've read the programs and want to know which path fits me." /* [review] */,
+              "Hi Aditya, I've read the coaching page and want to know which path fits me." /* [review] */,
             )}
             target="_blank"
             rel="noopener noreferrer"

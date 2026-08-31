@@ -94,7 +94,7 @@ export default function PricingPage() {
         <strong>Lifestyle Coaching</strong>,{" "}
         <strong>Personality &amp; Presence Coaching</strong> and{" "}
         <strong>Complete Transformation</strong>. See{" "}
-        <Link href="/programs">Coaching</Link> for what each one covers.
+        <Link href="/coaching">Coaching</Link> for what each one covers.
       </p>
       <p>
         These carry no public price, and that is deliberate. Each program is

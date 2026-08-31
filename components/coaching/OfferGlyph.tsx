@@ -1,5 +1,5 @@
 /**
- * Offer glyphs (programs page) — replaces the photo-in-a-square offer icons.
+ * Offer glyphs (coaching page) — replaces the photo-in-a-square offer icons.
  *
  * Four hand-authored marks, one per offer, drawn from the site's own art
  * direction ("the tailor's atelier at night"): 1px-feel gold line work inside a

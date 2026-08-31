@@ -2,7 +2,7 @@
  * Audit glyphs (/book §2) — four hand-authored marks, one per stage of the
  * Transformation Audit.
  *
- * Same house style as components/programs/OfferGlyph.tsx: 1px-feel gold line
+ * Same house style as components/coaching/OfferGlyph.tsx: 1px-feel gold line
  * work inside a hairline medallion, so the mark reads as an emblem from the
  * tailor's atelier rather than an app icon. Inline SVG only — no new packages.
  *

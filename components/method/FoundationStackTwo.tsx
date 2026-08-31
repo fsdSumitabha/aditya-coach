@@ -127,7 +127,7 @@ export default function FoundationStack() {
           bottom is built first.
         </p>{/* [review] */}
         <Link
-          href="/programs"
+          href="/coaching"
           className="type-small inline-flex min-h-[48px] items-center gap-2 rounded-full border border-hairline-gold px-6 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
         >
           See the coaching that builds this →{/* [review] */}

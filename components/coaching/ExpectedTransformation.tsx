@@ -1,6 +1,6 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
-import { EXPECTED_OUTCOMES } from "@/components/programs/programs-data";
+import { EXPECTED_OUTCOMES } from "@/components/coaching/coaching-data";
 
 /**
  * §6 — "The Expected Transformation." Outcomes, not features.

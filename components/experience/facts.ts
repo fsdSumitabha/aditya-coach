@@ -162,7 +162,7 @@ export const FACTS: Record<string, Fact> = {
     eyebrow: "Lifestyle Coaching · Your Body",
     title: "Lifestyle Coaching",
     body: "Habits, nutrition, training, sleep, stress, supplements — full health optimisation. Better energy, fat loss, muscle gain, discipline that holds." /* [review] scope per §4.1 */,
-    cta: { label: "See Coaching", href: "/programs" },
+    cta: { label: "See Coaching", href: "/coaching" },
     cam: [-3.6, 1.8, -48.5],
     look: [-3.4, 1.4, -52],
   },
@@ -171,7 +171,7 @@ export const FACTS: Record<string, Fact> = {
     eyebrow: "Personality & Presence Coaching · Monthly · Price disclosed after your audit",
     title: "Personality & Presence Coaching",
     body: "Body language. Social confidence. Communication. Style, grooming, skincare — dressing for your body type and colours that suit Indian skin tones. Mindset and emotional intelligence." /* [review] scope per §4.2 */,
-    cta: { label: "See Coaching", href: "/programs" },
+    cta: { label: "See Coaching", href: "/coaching" },
     cam: [-1.85, 1.8, -48.3],
     look: [-1.7, 1.4, -52],
   },
@@ -180,7 +180,7 @@ export const FACTS: Record<string, Fact> = {
     eyebrow: "Complete Transformation · Premium · Price disclosed after your audit",
     title: "Complete Transformation",
     body: "For men who want a complete transformation — not just a better body or a better wardrobe. Both pillars in one system: body, lifestyle, mindset, personality, presence.",
-    cta: { label: "See Coaching", href: "/programs" },
+    cta: { label: "See Coaching", href: "/coaching" },
     cam: [2.85, 1.85, -48.4],
     look: [2.6, 1.5, -52],
   },
@@ -314,10 +314,10 @@ export const OVERLAY_CTAS = {
   // The label stays inside the CTA vocabulary in AGENTS.md; the note under it
   // is what tells a visitor the page goes into detail, rather than inventing a
   // longer button string.
-  programs: {
-    label: "See the Programs",
-    href: "/programs",
-    note: "What each programme covers, how it runs, and who it is for.",
+  coaching: {
+    label: "See Coaching",
+    href: "/coaching",
+    note: "What each path covers, how it runs, and who it is for.", /* [review] */
   },
 };
 

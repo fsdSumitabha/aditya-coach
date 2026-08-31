@@ -24,7 +24,7 @@ import { LEGAL } from "@/lib/legal";
 // are Server Components passed to it as children, so they carry zero JS and
 // still hide with STATE A once payment succeeds.
 //
-// This page links only laterally (/programs, /refund, /privacy) — never back
+// This page links only laterally (/coaching, /refund, /privacy) — never back
 // up the funnel.
 //
 // Indexable + follow (primary conversion landing page despite nav:false) —

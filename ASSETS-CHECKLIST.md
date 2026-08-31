@@ -40,7 +40,7 @@ Aditya reads **every page top to bottom** on the preview site and flags anything
 3. The calorie calculator method: **2g protein per kg of ideal weight; calories = ideal weight × 14/16/18 by activity** — he must be willing to defend this framework
 4. Prices: **₹2,000** consultation; coaching/plan prices "disclosed after consultation"
 5. The refund promise on /refund — he must actually honor whatever it says
-6. FAQ answers on /programs
+6. FAQ answers on /coaching
 
 ## E. Legal 🔴 (required before Razorpay will approve live payments)
 1. A lawyer (any Indian advocate) reviews **Privacy Policy, Terms, Refund Policy** — starter drafts are already written on the site

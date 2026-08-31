@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/", priority: 1 },
     { path: "/about", priority: 0.8 },
     { path: "/method", priority: 0.8 },
-    { path: "/programs", priority: 0.9 },
+    { path: "/coaching", priority: 0.9 },
     { path: "/results", priority: 0.8 },
     { path: "/tools", priority: 0.9 },
     { path: "/blog", priority: 0.7 },

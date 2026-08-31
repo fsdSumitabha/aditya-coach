@@ -174,7 +174,7 @@ const TRANSFORMATIONS: Transformation[] = [
   // Uncomment + fill to publish. Grid scales automatically to 6–9 entries.
   // { id:'client-04', featured:false, eyebrow:'CLIENT', who:'', stat:'',
   //   before:IMG.t4_before, after:IMG.t4_after, beforeAlt:'', afterAlt:'',
-  //   quote:'', attribution:'— Aditya, on a client', linkHref:'/programs',
+  //   quote:'', attribution:'— Aditya, on a client', linkHref:'/coaching',
   //   linkLabel:'The coaching behind this' },
   // { id:'client-05', ... },
   // { id:'client-06', ... },

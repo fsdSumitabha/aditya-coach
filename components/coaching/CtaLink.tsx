@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { track } from "@/lib/config";
 
 /**
- * Tracked CTA link for the /programs page.
+ * Tracked CTA link for the /coaching page.
  * Fires the no-op `track("cta_click", …)` stub on click (Phase-2 seam).
  * External links (WhatsApp deep links) open in a new tab with rel="noopener";
  * internal links go through next/link.

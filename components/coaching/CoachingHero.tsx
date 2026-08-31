@@ -1,6 +1,6 @@
 import Reveal from "@/components/Reveal";
-import CtaLink from "@/components/programs/CtaLink";
-import { BOOK_URL, PATHS } from "@/components/programs/programs-data";
+import CtaLink from "@/components/coaching/CtaLink";
+import { BOOK_URL, PATHS } from "@/components/coaching/coaching-data";
 
 /**
  * §1 — the opener. States the offer, names the three paths, points at one door.
@@ -12,7 +12,7 @@ import { BOOK_URL, PATHS } from "@/components/programs/programs-data";
  *
  * Server component. The h1 carries no Reveal — LCP paints at final state.
  */
-export default function ProgramsHero() {
+export default function CoachingHero() {
   return (
     <section className="bg-void aurora grain relative overflow-hidden">
       <div className="container-site relative z-10 flex min-h-[calc(56dvh-var(--header-h))] flex-col justify-center py-12 md:py-16">
@@ -65,7 +65,7 @@ export default function ProgramsHero() {
               <CtaLink
                 href={BOOK_URL}
                 className="btn-gold shine-loop w-full sm:w-auto"
-                data={{ page: "programs", cta: "hero_start", target: BOOK_URL }}
+                data={{ page: "coaching", cta: "hero_start", target: BOOK_URL }}
               >
                 Start Your Transformation
               </CtaLink>

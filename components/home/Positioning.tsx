@@ -47,7 +47,7 @@ export default function Positioning() {
               Everything that decides how a man is received — before he speaks,
               while he speaks, and after he has left.
             </p>{/* [review] */}
-            {/* reconciles this page with /method + /programs — the body work
+            {/* reconciles this page with /method + /coaching — the body work
                 still exists, it is simply the floor rather than the product */}
             <p className="type-lead mt-5 text-secondary">
               The training and the food still happen — they are the floor, not

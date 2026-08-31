@@ -1,7 +1,7 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
-import PathCard from "@/components/programs/PathCard";
-import { PATHS } from "@/components/programs/programs-data";
+import PathCard from "@/components/coaching/PathCard";
+import { PATHS } from "@/components/coaching/coaching-data";
 
 /**
  * §2 — the showpiece. Two paths side by side, the flagship full-width beneath:
@@ -40,7 +40,7 @@ export default function PathGrid() {
         </Reveal>
         <SplitHeading
           as="h2"
-          text="The Three Coaching Programs"
+          text="The Three Coaching Paths"
           className="type-h2 text-primary mx-auto mt-4 max-w-[20ch] text-center"
         />
         <Reveal delayMs={120} className="reveal-blur mx-auto mt-5 max-w-[54ch] text-center">

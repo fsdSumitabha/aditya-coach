@@ -176,5 +176,5 @@ import { LEGAL } from "@/lib/legal";
 ## Funnel wiring (A5 — internal-linking is checked link-by-link)
 
 Deep pages funnel IN → `/book` (primary) + `/tools` (secondary). `/book` links
-only laterally (/programs, /refund, /privacy). Home is the hub. Follow your
+only laterally (/coaching, /refund, /privacy). Home is the hub. Follow your
 spec's LINK MAP / INTERNAL LINKING section exactly.

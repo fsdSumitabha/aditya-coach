@@ -1,10 +1,10 @@
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import { CheckIcon } from "@/components/icons";
-import CtaLink from "@/components/programs/CtaLink";
-import OfferGlyph from "@/components/programs/OfferGlyph";
-import PriceTicker from "@/components/programs/PriceTicker";
-import { AUDIT_UNCOVERS, BOOK_URL } from "@/components/programs/programs-data";
+import CtaLink from "@/components/coaching/CtaLink";
+import OfferGlyph from "@/components/coaching/OfferGlyph";
+import PriceTicker from "@/components/coaching/PriceTicker";
+import { AUDIT_UNCOVERS, BOOK_URL } from "@/components/coaching/coaching-data";
 import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
 
 /**
@@ -111,7 +111,7 @@ export default function WhyAuditFirst() {
                   <CtaLink
                     href={BOOK_URL}
                     className="btn-gold w-full"
-                    data={{ page: "programs", cta: "audit_start", target: BOOK_URL }}
+                    data={{ page: "coaching", cta: "audit_start", target: BOOK_URL }}
                   >
                     Start Your Audit
                   </CtaLink>

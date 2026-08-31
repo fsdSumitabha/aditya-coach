@@ -1,15 +1,15 @@
-import type { OfferGlyphKind } from "@/components/programs/OfferGlyph";
+import type { OfferGlyphKind } from "@/components/coaching/OfferGlyph";
 import { LEGAL } from "@/lib/legal";
 
 /**
- * /programs — single source of truth for the three coaching paths.
+ * /coaching — single source of truth for the three coaching paths.
  *
  * One entry here drives ALL of it: the path cards (§2), the "diverging thread"
  * device in the hero, the comparison table columns (§5) and the Service JSON-LD
  * on the page. Adding a fourth path is a new entry in PATHS — not a redesign.
  *
  * Page flow this data serves:
- *   Programs (choose a path) → /book → Transformation Audit ₹999 → payment.
+ *   Coaching (choose a path) → /book → Transformation Audit ₹999 → payment.
  * Every path CTA therefore points at /book. The audit fee is credited against
  * the program price — that promise lives in CONSULT_INCLUDES, never inline.
  */

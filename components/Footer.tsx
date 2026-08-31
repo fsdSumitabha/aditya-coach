@@ -23,9 +23,9 @@ const COLUMNS: {
     heading: "Coaching",
     links: [
       /* [review] lineup per direction doc 2026-07-21 */
-      { label: "Lifestyle Coaching", href: "/programs" },
-      { label: "Personality & Presence Coaching", href: "/programs" },
-      { label: "Complete Transformation", href: "/programs" },
+      { label: "Lifestyle Coaching", href: "/coaching" },
+      { label: "Personality & Presence Coaching", href: "/coaching" },
+      { label: "Complete Transformation", href: "/coaching" },
     ],
   },
   { 

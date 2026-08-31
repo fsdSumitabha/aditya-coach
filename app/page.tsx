@@ -114,7 +114,7 @@ export default function Home() {
             <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
           </li>
           <li>
-            <Link href="/programs">Coaching — Transformation Audit {LEGAL.CONSULT_PRICE}, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>
+            <Link href="/coaching">Coaching — Transformation Audit {LEGAL.CONSULT_PRICE}, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>
           </li>
           <li>
             <Link href="/book">Book your {LEGAL.CONSULT_PRICE} Transformation Audit</Link>

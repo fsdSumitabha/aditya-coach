@@ -188,7 +188,7 @@ export default function FoundationStack() {
           </div>
         </div>
         <Link
-          href="/programs"
+          href="/coaching"
           className="type-small pointer-events-auto inline-flex min-h-[48px] shrink-0 items-center gap-2 rounded-full border border-hairline-gold px-5 font-medium text-gold-300 transition-colors hover:border-gold-500/60 hover:text-gold-200"
         >
           See the coaching that builds this →{/* [review] */}

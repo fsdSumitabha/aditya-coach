@@ -70,7 +70,7 @@ export const TX_SETS: TxSet[] = [
     eyebrow: "CLIENT 02",
     headline: "The weight was never the problem. The lifestyle was.",
     // His story is published — the headline reads through to it rather than to
-    // the generic programs page. See lib/stories.ts.
+    // the generic coaching page. See lib/stories.ts.
     href: "/results/success-had-already-found-him-presence-hadnt",
     linkLabel: "Read his story",
     before: {

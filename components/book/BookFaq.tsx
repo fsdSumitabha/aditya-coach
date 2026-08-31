@@ -48,15 +48,15 @@ export default function BookFaq() {
           </div>
 
           {/* ONE lateral context link — funnel discipline keeps /book pointing
-              only sideways (/programs, /refund, /privacy), never back up. */}
+              only sideways (/coaching, /refund, /privacy), never back up. */}
           <Reveal delayMs={420}>
             <p className="type-small text-muted mt-10 text-center">
               Wondering what comes after the call?{" "}
               <Link
-                href="/programs"
+                href="/coaching"
                 className="underline underline-offset-2 hover:text-secondary"
               >
-                See the full coaching programs
+                See the full coaching paths
               </Link>
             </p>
           </Reveal>

@@ -1,8 +1,8 @@
 import { CheckIcon } from "@/components/icons";
-import CtaLink from "@/components/programs/CtaLink";
-import OfferGlyph from "@/components/programs/OfferGlyph";
+import CtaLink from "@/components/coaching/CtaLink";
+import OfferGlyph from "@/components/coaching/OfferGlyph";
 import TiltCard from "@/components/TiltCard";
-import { BOOK_URL, type CoachingPath } from "@/components/programs/programs-data";
+import { BOOK_URL, type CoachingPath } from "@/components/coaching/coaching-data";
 
 /**
  * One coaching path, rendered two ways from the same data:
@@ -46,7 +46,7 @@ function Cta({ path }: { path: CoachingPath }) {
     <CtaLink
       href={BOOK_URL}
       className={`w-full ${path.flagship ? "btn-gold" : "btn-outline"}`}
-      data={{ page: "programs", cta: `${path.id}_start_journey`, target: BOOK_URL }}
+      data={{ page: "coaching", cta: `${path.id}_start_journey`, target: BOOK_URL }}
     >
       Start This Journey
       <span className="sr-only"> — {path.name}</span>

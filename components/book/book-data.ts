@@ -69,9 +69,9 @@ export const AFTER_STEPS = [
 ] as const;
 
 export const AFTER_FORK = [
-  { label: "Lifestyle Coaching", href: "/programs#lifestyle" },
-  { label: "Personality & Presence", href: "/programs#presence" },
-  { label: "Complete Transformation", href: "/programs#complete" },
+  { label: "Lifestyle Coaching", href: "/coaching#lifestyle" },
+  { label: "Personality & Presence", href: "/coaching#presence" },
+  { label: "Complete Transformation", href: "/coaching#complete" },
 ] as const;
 
 /** §6 — qualification. Second person, one male reader (see AGENTS.md). */
