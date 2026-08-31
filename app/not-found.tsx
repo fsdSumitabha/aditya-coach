@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import WhatsAppFab from "@/components/WhatsAppFab";
 import { WhatsAppIcon } from "@/components/icons";
 import { waLink } from "@/lib/config";
 import { pageMetadata } from "@/lib/site";
@@ -9,7 +12,13 @@ import { pageMetadata } from "@/lib/site";
  * /404 — on-brand recovery page for every unmatched route (e.g.
  * /blog/does-not-exist). Static export emits 404.html, which hosts serve with
  * a real HTTP 404 status. No auto-redirect — the user chooses the way back.
- * Global header, footer and WhatsApp FAB still render (extra recovery paths).
+ * Header, footer and WhatsApp FAB render here too (extra recovery paths).
+ *
+ * They are imported directly rather than inherited. This file has to sit at
+ * app/ root — Next only resolves unmatched URLs against a root not-found, and
+ * a copy inside app/(site) is not picked up — which puts it outside the layout
+ * that carries the chrome. So: any change to app/(site)/layout.tsx needs
+ * mirroring here, or the 404 drifts from the rest of the site.
  */
 
 export const metadata: Metadata = {
@@ -29,7 +38,9 @@ const WA_404_PREFILL =
 
 export default function NotFound() {
   return (
-    <div className="bg-void">
+    <>
+      <Header />
+      <main id="main" className="flex-1 bg-void">
       <section className="section-lg glow-top relative overflow-hidden">
         {/* Oversized ghost "404" drifting behind the content — one showpiece
             watermark, filled + whisper-faint, aria-hidden, clipped by the
@@ -115,6 +126,9 @@ export default function NotFound() {
           </div>
         </div>
       </section>
-    </div>
+      </main>
+      <Footer />
+      <WhatsAppFab />
+    </>
   );
 }

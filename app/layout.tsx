@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WhatsAppFab from "@/components/WhatsAppFab";
 import CookieBanner from "@/components/CookieBanner";
 import TrackPageview from "@/components/TrackPageview";
 import FxController from "@/components/FxController";
@@ -73,12 +70,10 @@ export default function RootLayout({
         </a>
         <JsonLd data={[personSchema, businessSchema]} />
         <TrackPageview />
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-        <WhatsAppFab />
+        {/* Header, <main>, footer and the WhatsApp FAB are NOT global: they
+            belong to app/(site)/layout.tsx. /landing-page has its own layout
+            with its own minimal chrome, so no route needs a conditional. */}
+        {children}
         <CookieBanner />
         <FxController />
       </body>

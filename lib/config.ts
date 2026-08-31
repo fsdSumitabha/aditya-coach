@@ -186,10 +186,15 @@ export type BookingPayload = {
       "intake" = his optional pre-call answers, sent afterwards. */
   stage: "paid" | "intake";
   name: string;
+  /** Optional — the ads landing page collects a WhatsApp number instead.
+      Pass "" there; the server then requires a valid phone. */
   email: string;
   phone: string;
+  /** Optional — the ads landing page does not ask for it. Pass "". */
   age: string;
   goal: string;
+  /** Which page took the booking, e.g. "transformation-audit-landing". */
+  source?: string;
   /** UPI reference (UTR) he copied from his app. Unverified by anything. */
   upiReference: string;
   submittedAt: string;

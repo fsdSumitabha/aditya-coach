@@ -27,6 +27,8 @@ const NAME_MIN = 2;
 const NAME_MAX = 120;
 const EMAIL_MAX = 254;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/** Optional leading +, then 10–15 digits, once spaces and dashes are stripped. */
+const PHONE_RE = /^\+?\d{10,15}$/;
 /** Same loose rule the client uses — PSPs return their own reference formats. */
 const UTR_RE = /^[A-Za-z0-9]{6,25}$/;
 /** Free-text intake answers: generous, but not an open relay for essays. */
@@ -96,6 +98,8 @@ export async function POST(request: NextRequest) {
   const age = str(payload.age).slice(0, 8);
   const goal = str(payload.goal).slice(0, 80);
   const upiReference = str(payload.upiReference).slice(0, 40);
+  /** Which surface took the booking — /book, or an ads landing page. */
+  const source = str(payload.source).slice(0, 60);
 
   const submittedAtRaw = str(payload.submittedAt);
   const submittedAt = Number.isNaN(Date.parse(submittedAtRaw))
@@ -105,8 +109,21 @@ export async function POST(request: NextRequest) {
   if (name.length < NAME_MIN || name.length > NAME_MAX) {
     return json({ ok: false, error: "A name is required." }, 422);
   }
-  if (!email || email.length > EMAIL_MAX || !EMAIL_RE.test(email)) {
-    return json({ ok: false, error: "A valid email is required." }, 422);
+  // Email is OPTIONAL, and only here. /book collects it; the ads landing page
+  // deliberately does not — a cold Meta visitor gets three fields before he
+  // pays (Transformation Audit brief §7), and WhatsApp is how the audit is
+  // actually run. So the rule is: one reachable channel, not a specific one.
+  // Without an email the WhatsApp number is the ONLY way back to a man who has
+  // already paid, so it is validated hard in that case.
+  if (email) {
+    if (email.length > EMAIL_MAX || !EMAIL_RE.test(email)) {
+      return json({ ok: false, error: "A valid email is required." }, 422);
+    }
+  } else if (!PHONE_RE.test(phone.replace(/[\s-]/g, ""))) {
+    return json(
+      { ok: false, error: "A valid email or WhatsApp number is required." },
+      422,
+    );
   }
   if (!UTR_RE.test(upiReference)) {
     return json({ ok: false, error: "A valid UPI reference is required." }, 422);
@@ -142,6 +159,7 @@ export async function POST(request: NextRequest) {
     amountLabel: LEGAL.CONSULT_PRICE,
     upiId: UPI.ID,
     submittedAt,
+    source: source || undefined,
   };
 
   const mail =
@@ -161,8 +179,11 @@ export async function POST(request: NextRequest) {
       subject: sanitizeHeader(mail.subject),
       html: mail.html,
       text: mail.text,
-      // Hitting Reply answers the man who booked, not the mailbox.
-      replyTo: `"${sanitizeHeader(name).replace(/"/g, "")}" <${email}>`,
+      // Hitting Reply answers the man who booked, not the mailbox. Omitted
+      // when he gave no email — the mail then carries his WhatsApp link only.
+      replyTo: email
+        ? `"${sanitizeHeader(name).replace(/"/g, "")}" <${email}>`
+        : undefined,
     });
   } catch (error) {
     console.error(`[booking] failed to deliver the ${stage} notification:`, error);

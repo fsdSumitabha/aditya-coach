@@ -71,6 +71,7 @@ export default function UpiPayPanel({
   confirming,
   confirmFailed,
   whatsAppFallbackHref,
+  productLabel = `Transformation Audit · 45 minutes with Aditya`,
 }: {
   payerName: string;
   reference: string;
@@ -82,6 +83,9 @@ export default function UpiPayPanel({
   confirmFailed: boolean;
   /** Recovery link, pre-filled with his UTR. */
   whatsAppFallbackHref: string;
+  /** What the money buys, shown under the amount. Overridable because the ads
+      landing page must not name a duration (Transformation Audit brief §1). */
+  productLabel?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -114,9 +118,7 @@ export default function UpiPayPanel({
       <p className="font-display text-gold-grad mt-2 text-[clamp(2.4rem,5vw,3rem)] leading-none">
         {LEGAL.CONSULT_PRICE}
       </p>
-      <p className="type-small text-secondary mt-2">
-        Transformation Audit · 45 minutes with Aditya
-      </p>
+      <p className="type-small text-secondary mt-2">{productLabel}</p>
 
       <div className="gold-line my-6" aria-hidden="true" />
 

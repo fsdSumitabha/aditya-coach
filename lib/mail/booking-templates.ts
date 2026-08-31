@@ -37,10 +37,14 @@ import {
 
 export type BookingSubmission = {
   name: string;
+  /** Optional: the ads landing page collects WhatsApp only, no email. */
   email: string;
   phone: string;
+  /** Optional: the ads landing page does not ask for it. */
   age: string;
   goal: string;
+  /** Which page took the booking, e.g. "transformation-audit-landing". */
+  source?: string;
   /** UPI reference (UTR) the payer copied out of his app. Unverified. */
   upiReference: string;
   /** Server-side amount — never taken from the client. */
@@ -57,21 +61,30 @@ export type BookingIntake = {
   success: string;
 };
 
+/**
+ * Only the rows that carry a value. Email and age are optional — the ads
+ * landing page collects name, WhatsApp and goal and nothing else — and an
+ * empty "Email: —" row on a booking mail reads as a bug, not as a fact.
+ */
 function contactRows(s: BookingSubmission): [string, string][] {
   const tel = s.phone.replace(/\s+/g, "");
-  return [
+  const rows: [string, string][] = [
     ["Name", escapeHtml(sanitizeHeader(s.name))],
     [
       "WhatsApp",
       `<a href="https://wa.me/${escapeHtml(tel.replace(/^\+/, ""))}" style="color:#8a6d1f">${escapeHtml(s.phone)}</a>`,
     ],
-    [
+  ];
+  if (s.email) {
+    rows.push([
       "Email",
       `<a href="mailto:${escapeHtml(s.email)}" style="color:#8a6d1f">${escapeHtml(s.email)}</a>`,
-    ],
-    ["Age", escapeHtml(s.age)],
-    ["Main goal", escapeHtml(s.goal)],
-  ];
+    ]);
+  }
+  if (s.age) rows.push(["Age", escapeHtml(s.age)]);
+  rows.push(["Main goal", escapeHtml(s.goal)]);
+  if (s.source) rows.push(["Came from", escapeHtml(sanitizeHeader(s.source))]);
+  return rows;
 }
 
 /** Stage 1 — he says he has paid. Verify the UTR before confirming a slot. */
@@ -114,9 +127,10 @@ export function bookingNotification(s: BookingSubmission): {
     ``,
     `Name:      ${name}`,
     `WhatsApp:  ${s.phone}`,
-    `Email:     ${s.email}`,
-    `Age:       ${s.age}`,
+    ...(s.email ? [`Email:     ${s.email}`] : []),
+    ...(s.age ? [`Age:       ${s.age}`] : []),
     `Main goal: ${s.goal}`,
+    ...(s.source ? [`Came from: ${sanitizeHeader(s.source)}`] : []),
   ].join("\n");
 
   return { subject, html: renderEmail({ preheader: `${s.amountLabel} · UTR ${utr}`, bodyHtml }), text };
