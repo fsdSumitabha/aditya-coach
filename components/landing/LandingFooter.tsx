@@ -47,10 +47,11 @@ export default function LandingFooter() {
           </p>
           {/* Health / coaching disclaimer — same wording as the site footer. */}
           <p className="type-caption text-muted max-w-3xl">
-            Aditya is a lifestyle coach, not a doctor or registered dietitian.
-            All content, tools and coaching are for general guidance only, are
-            not medical advice, and individual results vary. Consult a
-            qualified physician before making health, diet or exercise changes.
+                Aditya provides evidence-informed coaching across lifestyle, fitness,
+                nutrition and personal development. Guidance is tailored to the individual
+                and designed to support better health, body composition, energy,
+                recovery and overall performance. Coaching does not replace medical diagnosis or treatment;
+                where clinical concerns arise, clients are referred to an appropriately qualified healthcare professional.
           </p>
           <p className="type-caption text-muted">
             Questions before you book?{" "}
