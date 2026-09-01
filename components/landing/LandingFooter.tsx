@@ -19,8 +19,6 @@ const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Cancellation & Refund Policy", href: "/refund" },
-  { label: "Shipping & Delivery Policy", href: "/shipping" },
-  { label: "Pricing", href: "/pricing" },
 ];
 
 export default function LandingFooter() {

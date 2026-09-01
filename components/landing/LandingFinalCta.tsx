@@ -28,9 +28,7 @@ export default function LandingFinalCta() {
           <p className="type-lead text-secondary mt-5">{FINAL_CTA.sub}</p>
         </Reveal>
 
-        <Reveal delayMs={200}>
-          <p className="type-small text-gold-300 mt-8">{FINAL_CTA.meta}</p>
-        </Reveal>
+
 
         <Reveal
           delayMs={280}

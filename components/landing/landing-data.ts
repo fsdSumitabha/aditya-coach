@@ -37,7 +37,7 @@ export const LANDING_SOURCE = "transformation-audit-landing";
 export const HERO = {
   eyebrow: "TRANSFORMATION AUDIT",
   headline: "Find what is actually holding you back.",
-  body: "A private 1:1 assessment to understand where you are, what needs to change, and what you should focus on first.",
+  body: "A private 1:1 assessment to understand where you are, what needs to change, and what deserves your attention first",
   meta: `${PRICE} · Online via WhatsApp`,
   cta: "Book Your Transformation Audit",
   microproof: ["Personal assessment", "Clear priorities", "No generic plan"],
@@ -76,7 +76,6 @@ export const WHO_FOR = [
   "You have tried diets, workouts or routines but struggle to make them last.",
   "Your body, energy, habits or confidence no longer reflect your standards.",
   "You want personalised direction rather than another generic plan.",
-  "You are serious about improving how you look, live and carry yourself.",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -88,14 +87,14 @@ export const ASSESS_HEADING = "We look at the whole picture.";
 export const ASSESS: { title: string; body: string }[] = [
   { title: "Lifestyle", body: "Sleep, routine, habits, energy and stress." },
   { title: "Body", body: "Training, movement, fitness and physical goals." },
-  { title: "Nutrition", body: "Your current eating structure and consistency." },
+  { title: "Nutrition", body: "Eating structure, food choices and consistency." },
   {
     title: "Mindset",
-    body: "Discipline, behaviour and the patterns keeping you stuck.",
+    body: "Discipline, behaviour and the patterns that keep you stuck.",
   },
   {
     title: "Presence",
-    body: "Confidence, communication, body language and presentation where relevant.",
+    body: "Confidence, communication, body language and presentation - where relevant.",
   },
 ];
 
@@ -147,12 +146,9 @@ export const HOW_STEPS: { num: string; title: string; body: string }[] = [
 // pre-assessment is a Google Form sent on WhatsApp AFTER payment clears.
 // ---------------------------------------------------------------------------
 export const GOAL_OPTIONS = [
-  "Body / Fitness",
-  "Lifestyle",
-  "Nutrition",
-  "Confidence / Presence",
-  "Overall Transformation",
-  "Other",
+  "Lifestyle Coaching",
+  "Personality & Presence Coaching",
+  "Complete Transformation Coaching",
 ] as const;
 
 export const PAY_CTA = `Book My Transformation Audit — ${PRICE}`;
