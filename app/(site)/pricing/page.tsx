@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
-import { CONSULT_INCLUDES, DELIVERY, LEGAL } from "@/lib/legal";
+import { CONSULT_INCLUDES, DELIVERY, LEGAL, UPI } from "@/lib/legal";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -19,6 +19,12 @@ export const metadata: Metadata = pageMetadata({
  * leaving pricing undisclosed, which is what a reviewer flags.
  *
  * The price string comes from LEGAL.CONSULT_PRICE. Never hardcode it.
+ *
+ * PAYMENT METHOD: Razorpay is NOT integrated. §6 describes the live flow —
+ * manual UPI to Aditya's PhonePe (lib/legal.ts UPI), reconciled by hand against
+ * the UTR submitted on /book. Keep this page and components/book/UpiPayPanel
+ * saying the same thing. When a gateway goes live, §6 and the "outside India"
+ * bullet in §5 both change.
  */
 
 const TOC = [
@@ -147,9 +153,13 @@ export default function PricingPage() {
           checkout.
         </li>
         <li>
-          <strong>Paying from outside India:</strong> your bank converts to INR
-          at its own rate and may add a foreign-transaction fee. That charge is
-          your bank&apos;s, not mine, and I have no control over it.
+          {/* [review] — UPI is domestic-only, so this replaces the old
+              foreign-card line. Revisit if a card gateway goes live. */}
+          <strong>Paying from outside India:</strong> payment is taken over UPI,
+          which needs an Indian bank account. If you are abroad and cannot pay
+          by UPI, message me on{" "}
+          <a href={LEGAL.WHATSAPP_WA_LINK}>WhatsApp</a> before booking and we
+          will arrange it.
         </li>
         <li>
           <strong>No hidden costs:</strong> no setup fee, no cancellation fee,
@@ -161,12 +171,45 @@ export default function PricingPage() {
         6. How payment is taken
       </h2>
       <p>
-        Payments are processed by <strong>Razorpay</strong>, which supports UPI,
-        credit and debit cards, netbanking and wallets. Your card and banking
-        details are handled by Razorpay on their own secure checkout — they are
-        never stored on this website. Razorpay&apos;s own terms apply alongside
-        the <Link href="/terms">Terms of Service</Link>, and how your data is
-        handled is set out in the <Link href="/privacy">Privacy Policy</Link>.
+        Payment is taken by <strong>UPI</strong>, direct to {UPI.PAYEE_NAME}. On
+        the <Link href="/book">booking page</Link> you get the amount, the UPI
+        ID (<code>{UPI.ID}</code>) and a QR code. Pay from any UPI app —
+        PhonePe, Google Pay, Paytm, or your own bank&apos;s app — then paste the
+        UPI reference number (UTR) from your app to confirm the booking.
+      </p>
+      <ul>
+        <li>
+          <strong>No card details are entered or stored on this site.</strong>{" "}
+          There is no card form here. No card number, UPI PIN or banking
+          credential ever reaches this website — UPI settles bank to bank,
+          inside your own app.
+        </li>
+        <li>
+          <strong>Check the payee name.</strong> Your UPI app should show{" "}
+          {UPI.PAYEE_NAME} before you confirm. If it shows any other name, stop
+          and message Aditya.
+        </li>
+        <li>
+          <strong>Payment is verified by hand.</strong> Aditya matches your
+          reference against the payment received and confirms your slot on
+          WhatsApp within {DELIVERY.CONFIRM_WINDOW}. Submitting the booking form
+          is a booking request, not an automatic confirmation.
+        </li>
+        <li>
+          <strong>Nothing recurring.</strong> A UPI payment is a one-time
+          transfer you approve in your own app. No mandate, no auto-debit, no
+          card kept on file — nothing can be charged to you again unless you
+          start it yourself.
+        </li>
+      </ul>
+      <p>
+        {/* [review] */}
+        The <Link href="/terms">Terms of Service</Link> govern the purchase, and
+        how your booking details are handled is set out in the{" "}
+        <Link href="/privacy">Privacy Policy</Link>. If your payment goes out
+        but the booking does not come back, message Aditya on{" "}
+        <a href={LEGAL.WHATSAPP_WA_LINK}>WhatsApp</a> with the reference — no
+        payment is lost, and nothing is charged twice.
       </p>
 
       <h2 id="after" className="scroll-mt-28">

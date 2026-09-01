@@ -10,7 +10,7 @@ import LandingFinalCta from "@/components/landing/LandingFinalCta";
 import { LANDING_FAQS } from "@/components/landing/landing-data";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
-import TransformationStage from "@/components/results/TransformationStage";
+import TransformationShowcase from "@/components/landing/TransformationShowcase";
 
 // ============================================================
 // /landing-page — the Meta-ads landing page for the Transformation Audit.
@@ -101,7 +101,7 @@ export default function LandingPage() {
         middle={
           <>
             {/* 03 — the outputs, so the price reads as concrete */}
-            <TransformationStage />
+            <TransformationShowcase />
             {/* 04 — qualification, five lines */}
             <WhoThisIsFor />
             {/* 05 — scope, five categories */}
