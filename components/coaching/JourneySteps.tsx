@@ -20,7 +20,7 @@ export default function JourneySteps() {
       <div className="container-site section">
         <SplitHeading
           as="h2"
-          text="What Happens After You Choose"
+          text="How Coaching Starts"
           className="type-h2 text-primary mx-auto max-w-[18ch] text-center"
         />
         <Reveal delayMs={120} className="reveal-blur mx-auto mt-5 max-w-[52ch] text-center">

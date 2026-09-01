@@ -9,6 +9,7 @@ import CoachingFinalCta from "@/components/coaching/CoachingFinalCta";
 import { PATHS, PRICE_CONSULT } from "@/components/coaching/coaching-data";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
+import TransformationStage from "@/components/results/TransformationStage";
 
 // ============================================================
 // /coaching — sells the three coaching paths. It does NOT take money.
@@ -87,21 +88,21 @@ export default function CoachingPage() {
       {/* 1 — three paths, one door */}
       <CoachingHero />
 
-
-      {/* 2 — the showpiece: two paths + the flagship band */}
-      <PathGrid />
-
-      {/* 3 — three destinations, one starting point */}
+      {/* 2 — three destinations, one starting point */}
       <JourneySteps />
 
-      {/* 6 — outcomes, not features */}
-      <ExpectedTransformation />
+      {/* 3 — the showpiece: two paths + the flagship band */}
+      <PathGrid />
 
-      {/* 7 — the catch-net for men who aren't paying today */}
-      <FreeStartingPoint />
+      {/* 4 — why the audit first */}
+      <TransformationStage />
 
       {/* 8 — the close */}
       <CoachingFinalCta />
+      
+      {/* 7 — the catch-net for men who aren't paying today */}
+      <FreeStartingPoint />
+
     </>
   );
 }

@@ -48,7 +48,7 @@ function Cta({ path }: { path: CoachingPath }) {
       className={`w-full ${path.flagship ? "btn-gold" : "btn-outline"}`}
       data={{ page: "coaching", cta: `${path.id}_start_journey`, target: BOOK_URL }}
     >
-      Start This Journey
+      Start With the Audit
       <span className="sr-only"> — {path.name}</span>
       <span aria-hidden="true">→</span>
     </CtaLink>

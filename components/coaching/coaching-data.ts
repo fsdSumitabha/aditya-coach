@@ -53,36 +53,36 @@ export const PATHS: CoachingPath[] = [
     name: "Lifestyle Coaching",
     shortName: "Lifestyle",
     glyph: "lifestyle",
-    who: "The man whose body, energy and health have slipped — and who wants them back." /* [review] */,
+    who: "For men who want their body, energy and daily structure working again. Build a stronger body and a lifestyle you can actually sustain." /* [review] */,
     outcome: "A body and a daily life that finally work in your favour." /* [review] */,
-    pricing: "Monthly · price disclosed after your Transformation Audit",
+    pricing: "Private 1:1 coaching Investment discussed after your Audit",
     includes: [
-      "Habit building and daily structure that holds",
-      "Nutrition guidance built around how you actually eat",
-      "Fat loss, muscle gain and the training to get there",
-      "Energy, sleep and stress under control — checked every week",
+      "Training & body composition",
+      "Nutrition & daily structure",
+      "Energy, sleep & recovery",
+      "Weekly accountability",
     ] /* [review] — condensed from the lifestyle brief; recovery + weekly
          accountability merged into the fourth line to hold the four-point cap */,
     schemaDescription:
-      "Monthly one-to-one lifestyle coaching for men — habit building, nutrition guidance, fat loss and muscle gain, workout and fitness protocols, better energy, sleep and recovery, stress management and overall health optimisation. Pricing disclosed after a Transformation Audit.",
+      "Private 1:1 coaching Investment discussed after your Audit",
   },
   {
     id: "presence",
     name: "Personality & Presence Coaching",
     shortName: "Presence",
     glyph: "presence",
-    who: "The man who is capable, but does not yet come across that way." /* [review] */,
+    who: "For men who know they are capable but do not yet come across that way. Carry yourself with more confidence, clarity and intention - without forcing it." /* [review] */,
     outcome: "You walk into a room and people notice. Nothing forced." /* [review] */,
-    pricing: "Monthly · price disclosed after your Transformation Audit",
+    pricing: "Private 1:1 coaching Investment discussed after your Audit",
     includes: [
-      "Body language and presence — how you carry yourself",
-      "Social confidence, communication and networking",
-      "Style, grooming and dressing for your body type — in colours that work with Indian skin tones",
-      "Mindset and emotional intelligence underneath it all",
+      "Body language & presence",
+      "Communication & social confidence",
+      "Grooming & personal style",
+      "Mindset & emotional intelligence",
     ] /* [review] — condensed from the personality & presence brief; the skin-tone
          line folded into the style point to hold the four-point cap */,
     schemaDescription:
-      "Monthly one-to-one coaching in personality and presence for men — body language, social confidence, communication and networking, style, grooming, dressing for your body type and colours for Indian skin tones, plus the mindset and emotional intelligence underneath it. Pricing disclosed after a Transformation Audit.",
+      "Private 1:1 coaching Investment discussed after your Audit",
   },
   {
     id: "complete",
@@ -90,15 +90,15 @@ export const PATHS: CoachingPath[] = [
     shortName: "Complete",
     glyph: "complete",
     flagship: true,
-    who: "The man who wants the whole thing rebuilt — not one half of it." /* [review] */,
+    who: "For the man who does not want to improve one part of himself while ignoring the rest. Build the body, lifestyle and presence to match your standards." /* [review] */,
     // verbatim from Aditya's brief — do not reword
     outcome: "A strong body should be matched with a strong presence.",
-    pricing: "Both pillars · price disclosed after your Transformation Audit",
+    pricing: "Flagship private coaching Investment discussed after your Audit",
     includes: [
-      "Everything in Lifestyle Coaching — body, health, training, nutrition",
-      "Everything in Personality & Presence — style, grooming, communication",
-      "Mindset and confidence built alongside a stronger body",
-      "One coach, one plan, weekly check-ins across both pillars",
+      "Everything in Lifestyle Coaching",
+      "Everything in Personality & Presence Coaching",
+      "One integrated transformation plan",
+      "Weekly review, accountability and adjustment across the whole system",
     ] /* [review] — both pillars, in one list; accountability and the
          one-coach line merged to hold the four-point cap */,
     schemaDescription:
@@ -111,17 +111,17 @@ export const JOURNEY_STEPS = [
   {
     num: "01",
     title: "Transformation Audit",
-    body: "Understand where you are now.",
+    body: "We understand where you are, what you want and what is currently holding you back.",
   },
   {
     num: "02",
-    title: "Personal Assessment",
-    body: "Aditya identifies what actually needs work.",
+    title: "Your Recommendation",
+    body: "I identify what needs attention first and which coaching path best fits your priorities.",
   },
   {
     num: "03",
-    title: "Your Transformation Path",
-    body: "You move into the coaching approach that fits you.",
+    title: "Your Coaching Begins",
+    body: "We build the appropriate plan and start working through your priorities in the right order.",
   },
 ] as const;
 

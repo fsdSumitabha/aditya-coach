@@ -31,9 +31,8 @@ export default function CoachingHero() {
           <Reveal delayMs={80}>
             <p className="type-body text-secondary mx-auto mt-4 max-w-[56ch]">
               {/* [review] */}
-              Body and lifestyle. Personality and presence. Or both, rebuilt
-              together. Every path starts the same way — with a Transformation
-              Audit.
+              Body and lifestyle. Personality and presence. Or the complete rebuild.
+              You do not need to choose alone - the Transformation Audit determines where we start.
             </p>
           </Reveal>
 
@@ -67,7 +66,7 @@ export default function CoachingHero() {
                 className="btn-gold shine-loop w-full sm:w-auto"
                 data={{ page: "coaching", cta: "hero_start", target: BOOK_URL }}
               >
-                Start Your Transformation
+                Start With Your Transformation Audit
               </CtaLink>
               <a
                 href="#paths"
