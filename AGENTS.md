@@ -104,7 +104,7 @@ hardcoded in JSX:
 
 1. The fee credited as an instant discount on the program price
 2. An instant gift card, handed over at the end of the call
-3. The long-form Lifestyle Blueprint, free
+3. The Lifestyle Blueprint, free
 
 The gift card has no stated value or issuer yet — do not invent one.
 

@@ -309,7 +309,7 @@ export const OVERLAY_CTAS = {
     href: "/tools#blueprint",
     // Rendered under the button on the closing chapter, where the free
     // resource is now the second action. [review]
-    note: "The long-form Lifestyle Blueprint. Sent to your inbox, free.",
+    note: "The Lifestyle Blueprint. Sent to your inbox, free.",
   },
   // The label stays inside the CTA vocabulary in AGENTS.md; the note under it
   // is what tells a visitor the page goes into detail, rather than inventing a

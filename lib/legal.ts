@@ -124,7 +124,7 @@ export const CONSULT_INCLUDES = {
     "Your fee comes straight off your program price the day you join. An instant discount, not a promise.",
   /** Takeaway gift card handed over at the end of the call. */
   GIFT_CARD: "An instant gift card, yours at the end of the call.",
-  /** The long-form Lifestyle Blueprint, free with the audit. */
+  /** The Lifestyle Blueprint, free with the audit. */
   BLUEPRINT: "The Lifestyle Blueprint. Free, and yours to keep.",
 };
 
