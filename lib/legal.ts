@@ -127,3 +127,42 @@ export const CONSULT_INCLUDES = {
   /** The long-form Lifestyle Blueprint, free with the audit. */
   BLUEPRINT: "The Lifestyle Blueprint. Free, and yours to keep.",
 };
+
+// ---- Refund facts ----
+// Confirmed 1 Sep 2026 (Karthik, relaying Aditya). This unblocks the refund
+// copy that AGENTS.md froze, and settles the two open questions in
+// docs/pricing-refund-voice-decisions.md §2.
+//
+// The money model, end to end:
+//
+//   audit fee            = CONSULT_PRICE            (call it x)
+//   program price        = quoted after the audit   (call it y)
+//   what he pays to join = y − x                    (the audit fee is credited)
+//   refund after a month = 50% of y, NOT 50% of (y − x)
+//
+// The percentage attaches to the FULL program price, not to the reduced amount
+// he actually transferred. That is deliberate and generous, and it is the one
+// detail every version of this copy must get right — writing "half of what you
+// paid" understates it and is wrong.
+//
+// The audit fee itself is never refunded once the call is delivered. It is not
+// a worse deal — it comes back as the credit (CONSULT_INCLUDES.CREDIT) and it
+// counts inside y for the refund calculation. Do not describe the audit as
+// refundable anywhere. A booking cancelled BEFORE the call is a cancellation,
+// not a refund, and is governed by CANCEL_NOTICE below.
+export const REFUND = {
+  /** Share of the full program price returned. Written as a display string. */
+  COACHING_SHARE: "50%",
+  /** How long he must be in the program before the refund can be claimed. */
+  QUALIFYING_PERIOD: "one full month",
+  /** Window to claim, counted from the end of the qualifying period. [review] */
+  CLAIM_WINDOW: "7 days",
+  /** Notice needed to cancel or move an audit booking without losing the fee. */
+  CANCEL_NOTICE: "24 hours",
+  /** Acknowledgement of a refund request. [review] */
+  ACK_WINDOW: "2 business days",
+  /** Time to send the money back once approved. [review] */
+  INITIATE_WINDOW: "3–5 business days",
+  /** Bank-side settlement after initiation. [review] */
+  BANK_WINDOW: "5–7 business days",
+};

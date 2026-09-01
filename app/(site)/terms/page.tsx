@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
-import { LEGAL } from "@/lib/legal";
+import { LEGAL, REFUND } from "@/lib/legal";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -152,12 +152,23 @@ export default function TermsPage() {
           before any payment.
         </li>
         <li>
-          Payments are processed securely by our payment provider (Razorpay). By
-          paying, you agree to their terms as well as these.
+          {/* [review] — Razorpay is not integrated. Payment is manual UPI;
+              keep this aligned with /pricing §6 and /refund §5. */}
+          Payment is taken over <strong>UPI</strong>, paid directly to me. No
+          card details are entered or stored on this site. How payment works is
+          set out in full on <Link href="/pricing">Pricing</Link>.
         </li>
         <li>
-          Refunds are governed by our <Link href="/refund">Refund Policy</Link>,
-          which forms part of these terms.
+          The consultation fee is credited against your program price if you go
+          on to join coaching. It is a discount on that program, not a
+          refundable deposit.
+        </li>
+        <li>
+          Coaching carries a {REFUND.COACHING_SHARE} refund of your program
+          price after {REFUND.QUALIFYING_PERIOD}, on the conditions set out in
+          the <Link href="/refund">Cancellation &amp; Refund Policy</Link>,
+          which forms part of these terms. That policy governs all
+          cancellations and refunds.
         </li>
       </ul>
 

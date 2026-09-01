@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, type ChangeEvent } from "react";
 import { WhatsAppIcon } from "@/components/icons";
-import { LEGAL, UPI, upiPayLink } from "@/lib/legal";
+import { CONSULT_INCLUDES, LEGAL, UPI, upiPayLink } from "@/lib/legal";
 
 /**
  * The payment step — a UPI hand-off dressed as a gateway.
@@ -292,13 +292,16 @@ export default function UpiPayPanel({
           confirms your slot on WhatsApp within 24h.
         </li>
         <li>
-          {/* [review] refund risk-reducer */}
-          If it&apos;s not the right fit, our refund policy has you covered —{" "}
+          {/* [review] risk-reducer. NOT a refund promise: the audit fee is not
+              refundable once the call happens (/refund §1). The credit is the
+              honest reassurance here — the fee comes off the program price —
+              and the refund link stays for the coaching terms behind it. */}
+          <span aria-hidden="true">↩︎</span> {CONSULT_INCLUDES.CREDIT}{" "}
           <Link
             href="/refund"
             className="underline underline-offset-2 hover:text-secondary"
           >
-            read it
+            Refund policy
           </Link>
           .
         </li>

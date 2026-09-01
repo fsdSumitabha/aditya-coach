@@ -15,7 +15,7 @@ Personal-brand site and client-acquisition system for Aditya Kumar Upadhyay, a l
 
 Requirements history, newest first. Later overrules earlier:
 
-- `docs/pricing-refund-voice-decisions.md` — 23 Jul 2026
+- `docs/pricing-refund-voice-decisions.md` — 23 Jul 2026, with a 1 Sep 2026 resolution addendum
 - `docs/client-brief-2026-07-23.md` — full site brief
 
 ## Positioning — do not drift
@@ -110,16 +110,32 @@ The gift card has no stated value or issuer yet — do not invent one.
 
 ## Refund — applies to coaching, not the consultation
 
-Superseded rule: the site currently promises a full consultation refund. That promise is withdrawn.
+**Confirmed 1 Sep 2026 (Karthik, relaying Aditya). The freeze on refund copy is
+lifted.** The old promise of a full consultation refund is dead — do not
+reinstate it anywhere.
 
-Current position:
+The money model, end to end:
 
-- The refund is for **coaching clients**, not consultation bookings.
-- It becomes available after **one full month** of coaching.
-- Trigger: the client does not feel more confident or better about himself.
-- **The refund amount is unconfirmed.** He said "you will get 50%" but it is unclear what that attaches to.
+| Step | What happens |
+|---|---|
+| 1 | He pays the audit fee — `CONSULT_PRICE` (call it **x**) |
+| 2 | After the audit he is quoted a program price in writing (call it **y**). Never public, never a number on this site |
+| 3 | He joins and transfers **y − x** — the audit fee is credited as a flat discount |
+| 4 | After **one full month**, if he does not feel more confident or better about himself, he is refunded **50% of y** |
 
-Do not write refund copy, do not edit `/refund`, and do not rewrite the existing refund line until he confirms the amount and conditions in writing. This is legal copy that a lawyer reviews and Razorpay checks.
+The trap: the refund is **50% of the full quoted program price y**, not 50% of
+the reduced `y − x` he actually transferred. "Half of what you paid" is a
+smaller, wrong number. Every version of this copy must get that right.
+
+- The audit fee is **never refunded** once the call is delivered. It returns as
+  the credit, and it stays inside `y` for the refund calculation. Do not
+  describe the audit as refundable.
+- Cancelling **before** the audit is a cancellation, not a refund: 24h notice →
+  full fee back or held as credit.
+- Constants live in `REFUND` in `lib/legal.ts` (share, qualifying period,
+  windows). Never hardcode a percentage or window in JSX.
+- Canonical copy: `/refund`. `/terms` §5 and `/pricing` summarise it and must
+  move in lockstep. Still lawyer-review copy before go-live.
 
 ## Free resources are email-gated
 
@@ -175,7 +191,7 @@ More resources, products, courses, blog posts, assessments and email sequences a
 ## Never
 
 - Never write ₹2,000 or ₹500 — the price is ₹999, and only via `CONSULT_PRICE`
-- Never write or edit refund copy until the amount is confirmed
+- Never write "50% of what you paid" — the refund is 50% of the full quoted program price, and never applies to the audit fee
 - Never invent a testimonial, client name, result, or statistic
 - Never publish a client photo or screenshot without confirmed consent
 - Never use a button label outside the CTA vocabulary above
@@ -186,8 +202,8 @@ More resources, products, courses, blog posts, assessments and email sequences a
 **Blocking:**
 
 1. ~~Consultation price?~~ **Resolved 6 Aug 2026: ₹999.**
-2. Refund amount — is it 50%, and 50% of what? One month's fee? The full program?
-3. Audio 2 removes the consultation refund. Audio 3 asks to rewrite that same line. Which is right?
+2. ~~Refund amount?~~ **Resolved 1 Sep 2026: 50% of the full quoted program price, after one full month of coaching.**
+3. ~~Does the consultation refund still exist?~~ **Resolved 1 Sep 2026: no. The audit fee is credited against the program, never refunded once the call is delivered.**
 
 **Not blocking, but needed:**
 

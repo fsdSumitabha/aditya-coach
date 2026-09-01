@@ -89,3 +89,29 @@ These cannot both stand. If the refund is withdrawn, the line is deleted rather 
 1. Consultation price: ₹500 or ₹1,000?
 2. Refund amount: 50% of what — one month's fee, or the full program?
 3. Does the consultation refund still exist at all?
+---
+
+## Resolution — 1 September 2026
+
+Confirmed by Karthik, relaying Aditya. Closes every open question above.
+
+1. **Consultation price** — ₹999. Resolved 6 Aug 2026. `CONSULT_PRICE`.
+2. **Refund amount** — **50% of the full quoted program price**, after one full
+   month of coaching, if the client does not feel more confident or better about
+   himself. The percentage attaches to the price the program was quoted at (`y`),
+   NOT to the reduced amount transferred after the audit fee was credited
+   (`y − x`). Writing "half of what you paid" understates it and is wrong.
+3. **Does the consultation refund still exist?** — No. The audit fee is not
+   refundable once the call is delivered; it comes back as the credit against
+   the program price instead, and still counts inside `y` for the 50%
+   calculation. A booking cancelled before the call is a cancellation, not a
+   refund.
+
+Refund copy is therefore unfrozen. Terms live in `REFUND` in `lib/legal.ts`;
+canonical copy is `/refund`, summarised on `/terms` §5 and `/pricing`.
+
+**Also superseded:** this document assumes Razorpay processes payments. It does
+not — Razorpay is not integrated. Payment is manual UPI to Aditya's PhonePe
+(`UPI` in `lib/legal.ts`), reconciled by hand against the UTR submitted on
+`/book`. `/pricing` §6, `/refund` §5, `/terms` §5 and `/privacy` all describe
+that flow and must move together if a gateway goes live.

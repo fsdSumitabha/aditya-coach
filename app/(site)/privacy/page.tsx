@@ -167,11 +167,17 @@ export default function PrivacyPage() {
           emails and updates. [Confirm which provider is live &mdash; review]
         </li>
         <li>
-          <strong>Payments &mdash; Razorpay:</strong> to securely process your{" "}
-          {LEGAL.CONSULT_PRICE} consultation payment and any program payments.
-          Razorpay handles your card/UPI/bank details directly under its own
-          privacy policy; I receive only a confirmation and basic transaction
-          record.
+          {/* [review] — no payment gateway is integrated. Payment is manual
+              UPI, so no third party processes it for me; keep this aligned
+              with /pricing §6 and /refund §5. */}
+          <strong>Payments &mdash; UPI:</strong> your {LEGAL.CONSULT_PRICE}{" "}
+          audit payment and any program payment are made over UPI, from your own
+          banking or UPI app directly to my account. No card, PIN or banking
+          credential is entered on this site or seen by me. Your bank and UPI
+          app handle the transfer under their own privacy policies; from it I
+          receive a transaction record &mdash; the reference number, amount and
+          the name on the paying account &mdash; which I keep to match your
+          payment to your booking and for tax records.
         </li>
         <li>
           <strong>
