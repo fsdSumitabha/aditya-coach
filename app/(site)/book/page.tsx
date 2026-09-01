@@ -13,6 +13,16 @@ import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
 import TransformationStage from "@/components/results/TransformationStage";
 
+
+import AuditLandingFlow from "@/components/landing/AuditLandingFlow";
+import WhatYouLeaveWith from "@/components/landing/WhatYouLeaveWith";
+import WhoThisIsFor from "@/components/landing/WhoThisIsFor";
+import WhatWeAssess from "@/components/landing/WhatWeAssess";
+import HowItWorks from "@/components/landing/HowItWorks";
+import LandingFaq from "@/components/landing/LandingFaq";
+import LandingFinalCta from "@/components/landing/LandingFinalCta";
+import { LANDING_FAQS } from "@/components/landing/landing-data";
+import TransformationShowcase from "@/components/landing/TransformationShowcase";
 // ============================================================
 // /book — the single terminal conversion node, and the page ads point at.
 //
@@ -96,23 +106,28 @@ export default function BookPage() {
     <>
       <JsonLd data={[serviceSchema, faqSchema, breadcrumbSchema]} />
 
-      <BookingFlow>
-
-        {/* 1 — the decision, above the fold */}
-        <TransformationStage  showAllResults={true}/>
-
-        {/* 3 — the deliverables, so the price reads as concrete */}
-        <WhatYouGet />
-
-        {/* 6 — qualification, and the disqualifier */}
-        <WhoIsThisFor />
-
-        {/* 7 — objections */}
-        <BookFaq />
-
-        {/* 8 — back up to the decision */}
-        <BookFinalCta />
-      </BookingFlow>
+        <AuditLandingFlow
+            middle={
+            <>
+                {/* 03 — the outputs, so the price reads as concrete */}
+                <TransformationShowcase />
+                {/* 04 — qualification, five lines */}
+                <WhoThisIsFor />
+                {/* 05 — scope, five categories */}
+                <WhatWeAssess />
+                {/* 07 — payment to deliverable, five steps */}
+                <HowItWorks />
+            </>
+            }
+            tail={
+            <>
+                {/* 09 — the five approved questions */}
+                <LandingFaq />
+                {/* 10 — the close */}
+                <LandingFinalCta />
+            </>
+            }
+        />
     </>
   );
 }
