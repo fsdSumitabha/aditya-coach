@@ -68,12 +68,6 @@ export default function CoachingHero() {
               >
                 Start With Your Transformation Audit
               </CtaLink>
-              <a
-                href="#paths"
-                className="link-draw type-small text-secondary hover:text-primary inline-flex min-h-[48px] items-center transition-colors"
-              >
-                Find Your Path ↓
-              </a>
             </div>
           </Reveal>
 

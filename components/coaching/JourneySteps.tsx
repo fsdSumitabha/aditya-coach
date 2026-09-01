@@ -23,13 +23,6 @@ export default function JourneySteps() {
           text="How Coaching Starts"
           className="type-h2 text-primary mx-auto max-w-[18ch] text-center"
         />
-        <Reveal delayMs={120} className="reveal-blur mx-auto mt-5 max-w-[52ch] text-center">
-          <p className="type-body text-secondary">
-            {/* [review] — the point of the whole section */}
-            The three paths are not three separate processes. They are three
-            destinations from one starting point.
-          </p>
-        </Reveal>
 
         <div className="relative mx-auto mt-14 max-w-4xl">
           {/* The thread: vertical down the gutter on mobile, horizontal across

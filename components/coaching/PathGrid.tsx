@@ -35,9 +35,6 @@ export default function PathGrid() {
       </div>
 
       <div className="container-site section relative z-10">
-        <Reveal>
-          <p className="eyebrow text-center">Choose Your Path{/* [review] */}</p>
-        </Reveal>
         <SplitHeading
           as="h2"
           text="The Three Coaching Paths"
