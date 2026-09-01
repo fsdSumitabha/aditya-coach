@@ -34,7 +34,6 @@ export default function LandingLayout({
         {children}
       </main>
       <LandingFooter />
-      <WhatsAppFab />
     </>
   );
 }

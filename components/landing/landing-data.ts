@@ -60,10 +60,6 @@ export const LEAVE_WITH: { title: string; body: string }[] = [
     body: "Know what needs attention first instead of trying to fix everything.",
   },
   {
-    title: "Your next direction",
-    body: "A clear starting point based on your situation.",
-  },
-  {
     title: "The Complete Lifestyle Blueprint",
     body: "My full lifestyle framework, provided after your Audit to help you implement the foundations we discuss.",
   },
@@ -141,13 +137,8 @@ export const HOW_STEPS: { num: string; title: string; body: string }[] = [
   },
   {
     num: "04",
-    title: "You receive your direction",
-    body: "I will send you your key priorities along with the Complete Lifestyle Blueprint.",
-  },
-  {
-    num: "05",
-    title: "Decide your next step",
-    body: "If private coaching makes sense, I can explain what I would recommend. There is no obligation to continue.",
+    title: "Receive your direction",
+    body: "You receive your key priorities and Complete Lifestyle Blueprint, along with a clear recommendation for your next step. There is no obligation to continue.",
   },
 ];
 
@@ -194,11 +185,7 @@ export const LANDING_FAQS: { q: string; a: string }[] = [
   {
     q: "Will I receive a plan?",
     a: "You will receive your key priorities and the Complete Lifestyle Blueprint. The Audit is designed to give you direction; full personalised implementation is part of private coaching.",
-  },
-  {
-    q: "Do I have to join coaching afterwards?",
-    a: "No. The Audit is valuable on its own. If I believe coaching would help and you are a suitable fit, I can explain what working together would look like.",
-  },
+  }
 ];
 
 // ---------------------------------------------------------------------------

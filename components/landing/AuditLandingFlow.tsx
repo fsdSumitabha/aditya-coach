@@ -607,7 +607,7 @@ export default function AuditLandingFlow({
         <section className={`aurora grain relative overflow-hidden ${LP_SECTION}`}>
           <div className="container-site relative z-10">
             <div className="mx-auto max-w-[640px]">
-              <div className="card card-featured">
+              <div className="card mt-24 card-featured">
                 <span
                   aria-hidden="true"
                   className="border-hairline-gold text-gold-300 inline-flex h-11 w-11 items-center justify-center rounded-full border"

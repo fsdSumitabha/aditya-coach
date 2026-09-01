@@ -30,12 +30,6 @@ export default function LandingHeader() {
           />
         </span>
 
-        <Link
-          href="/"
-          className="link-draw type-caption text-muted hover:text-secondary inline-flex min-h-[44px] items-center transition-colors"
-        >
-          Back to website
-        </Link>
       </div>
     </header>
   );
