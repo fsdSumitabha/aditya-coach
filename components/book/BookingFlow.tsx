@@ -67,7 +67,7 @@ import {
 } from "@/lib/config";
 import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
 import { GOAL_CHOICES } from "@/components/book/book-data";
-import GoalSelect from "@/components/book/GoalSelect";
+import GoalSelect from "@/components/GoalSelect";
 import UpiPayPanel from "@/components/book/UpiPayPanel";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
@@ -560,7 +560,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
               <form noValidate onSubmit={handlePaySubmit} className="mt-8">
                 <Reveal index={2}>
                   {/* intake card: gold hairline top edge + cursor spotlight */}
-                  <div className="card spot">
+                  <div className="card spot relative z-20">
                     <div
                       aria-hidden="true"
                       className="gold-line -mx-6 -mt-6 mb-6 md:-mx-8 md:-mt-8 md:mb-8"
@@ -712,7 +712,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
 
                   {/* 5 — Which path he thinks he wants. A custom listbox,
                        because each option carries a second line a native
-                       <select> cannot render (components/book/GoalSelect). */}
+                       <select> cannot render (components/GoalSelect). */}
                   <div>
                     <span id="bk-goal-label" className="field-label">
                       Which path are you here for?{/* [review] */}

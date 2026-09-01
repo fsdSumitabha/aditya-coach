@@ -50,6 +50,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import GoalSelect from "@/components/GoalSelect";
 import Reveal from "@/components/Reveal";
 import SplitHeading from "@/components/SplitHeading";
 import { CheckIcon, WhatsAppIcon } from "@/components/icons";
@@ -59,7 +60,7 @@ import { LEGAL } from "@/lib/legal";
 import {
   BOOKING_ANCHOR,
   CREDIT_LINE,
-  GOAL_OPTIONS,
+  GOAL_CHOICES,
   HERO,
   LANDING_SOURCE,
   PAY_CTA,
@@ -147,9 +148,13 @@ export default function AuditLandingFlow({
     goal: "",
   });
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
-  const fieldRefs = useRef<
-    Record<FieldName, HTMLInputElement | HTMLSelectElement | null>
-  >({ name: null, phone: null, goal: null });
+  // The goal field is a combobox button, not an input — see GoalSelect.
+  const fieldRefs = useRef<Record<FieldName, HTMLInputElement | null>>({
+    name: null,
+    phone: null,
+    goal: null,
+  });
+  const goalButtonRef = useRef<HTMLButtonElement>(null);
 
   // The gateway hand-off: "details" shows the Continue button, "pay" swaps in
   // the UPI panel. Nothing verifies the payment, so "confirming" is only the
@@ -206,7 +211,7 @@ export default function AuditLandingFlow({
   }, [payStep]);
 
   function setValue(field: FieldName) {
-    return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
       const next = e.target.value;
       setValues((v) => ({ ...v, [field]: next }));
       setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
@@ -239,7 +244,9 @@ export default function AuditLandingFlow({
     setErrors(nextErrors);
     const firstBad = FIELD_ORDER.find((f) => nextErrors[f]);
     if (firstBad) {
-      fieldRefs.current[firstBad]?.focus();
+      const target =
+        firstBad === "goal" ? goalButtonRef.current : fieldRefs.current[firstBad];
+      target?.focus();
       return;
     }
 
@@ -426,7 +433,7 @@ export default function AuditLandingFlow({
 
               <form noValidate onSubmit={handleSubmit} className="mt-9">
                 <Reveal delayMs={160}>
-                  <div className="card spot">
+                  <div className="card spot relative z-20">
                     <div
                       aria-hidden="true"
                       className="gold-line -mx-6 -mt-6 mb-6 md:-mx-8 md:-mt-8 md:mb-8"
@@ -497,33 +504,29 @@ export default function AuditLandingFlow({
                         </p>
                       </div>
 
-                      {/* 3 — Main goal */}
+                      {/* 3 — Main goal. A custom listbox, because each option
+                           carries a one-line description a native <select>
+                           cannot render (components/GoalSelect). Same field,
+                           same choices as /book. */}
                       <div>
-                        <label htmlFor="lp-goal" className="field-label">
+                        <span id="lp-goal-label" className="field-label">
                           What would you most like to improve?
-                        </label>
-                        <select
+                        </span>
+                        <GoalSelect
                           id="lp-goal"
-                          ref={(el) => {
-                            fieldRefs.current.goal = el;
-                          }}
-                          name="goal"
-                          className="input-dark"
+                          labelId="lp-goal-label"
+                          describedById="lp-goal-error"
+                          buttonRef={goalButtonRef}
+                          choices={GOAL_CHOICES}
                           value={values.goal}
-                          onChange={setValue("goal")}
-                          onBlur={blurValidate("goal")}
-                          aria-invalid={errors.goal ? true : undefined}
-                          aria-describedby="lp-goal-error"
-                        >
-                          <option value="" disabled>
-                            Select one
-                          </option>
-                          {GOAL_OPTIONS.map((goal) => (
-                            <option key={goal} value={goal}>
-                              {goal}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(goal) => {
+                            setValues((v) => ({ ...v, goal }));
+                            setErrors((prev) =>
+                              prev.goal ? { ...prev, goal: undefined } : prev,
+                            );
+                          }}
+                          invalid={!!errors.goal}
+                        />
                         <p id="lp-goal-error" className="field-error" aria-live="polite">
                           {errors.goal}
                         </p>

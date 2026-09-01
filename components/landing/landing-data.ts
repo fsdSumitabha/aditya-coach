@@ -151,6 +151,27 @@ export const GOAL_OPTIONS = [
   "Complete Transformation Coaching",
 ] as const;
 
+/**
+ * The second line under each option — three coaching paths, not five symptoms.
+ *
+ * /book asks this same question from this same list (GOAL_CHOICES below), so
+ * both forms feed one inbox with one vocabulary. Add an option above without a
+ * hint here and the build fails, which is the point.
+ *
+ * Each hint is capped at 40 characters so the option reads as one line on a
+ * 375px phone. Keep any new one inside that.
+ */
+const GOAL_HINTS: Record<(typeof GOAL_OPTIONS)[number], string> = {
+  "Lifestyle Coaching": "Sleep, energy, habits, food, training." /* [review] */,
+  "Personality & Presence Coaching": "Confidence, communication, presence." /* [review] */,
+  "Complete Transformation Coaching": "Both, rebuilt in the right order." /* [review] */,
+};
+
+export const GOAL_CHOICES = GOAL_OPTIONS.map((value) => ({
+  value,
+  hint: GOAL_HINTS[value],
+}));
+
 export const PAY_CTA = `Book My Transformation Audit — ${PRICE}`;
 
 /**

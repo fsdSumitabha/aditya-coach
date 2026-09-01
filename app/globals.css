@@ -1213,12 +1213,15 @@ h3,
    Opt-in with class "spot"; FxController sets --mx/--my per card. */
 .spot {
   position: relative;
-  overflow: hidden;
 }
+/* The glow is rounded by its own radius, NOT by overflow:hidden on the card —
+   a clipping card also swallows anything a child needs to overhang with (the
+   GoalSelect listbox). Cards that genuinely clip content say so themselves. */
 .spot::before {
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   z-index: 0;
   pointer-events: none;
   opacity: 0;

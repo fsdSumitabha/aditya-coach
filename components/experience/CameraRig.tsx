@@ -62,10 +62,6 @@ const KEYS: { at: number; p: THREE.Vector3; t: THREE.Vector3 }[] = [
 // Same length as KEYS, and it borrows KEYS' progress stops.
 const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   { p: v(0, 1.7, 10.5), t: v(0, 1.6, 0) }, // arrival — seal recentres via chapters.tsx
-  // The old portrait gallery key (p 0, 1.8, -41 → t -52), moved forward by 11
-  // to sit against the promoted gallery at -16. It keeps the 11-unit stand-off
-  // the wider proof panels need; the man key it replaces stood only 9.5 back,
-  // which would clip the pair at x ±2.52 on a 0.45-aspect phone.
   // THE GALLERY COMES IN from 11 units to 6.95, which is the whole of what
   // makes the photographs bigger on a phone. It is not a free choice: the pair
   // has to fit ACROSS, and at the narrowest common phone (aspect 0.44) the
@@ -80,21 +76,53 @@ const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // 2.2 against a bottom slab that reaches ±2.0 — the base was touching both
   // edges of a phone screen. -23.0 gives 2.7 and room to watch it build.
   { p: v(0, 2.9, -23.0), t: v(0, 1.6, -34) }, // the stack — full pyramid in frame
-  // Arrival and push-in, matching the landscape keys — the same +18 shift.
-  // Pinned by arithmetic rather than taste: the cards span x ±2.80 and a
-  // phone's frustum reaches only 0.2446 of the viewing distance either side of
-  // centre, so -44.2 is the CLOSEST this can stop and still leave a third of a
-  // unit between the outer cards and the edge of the screen. That is also why
-  // the push-in here is a fraction of the one on a wide screen — there is
-  // nowhere to push to.
+  // Arrival and push-in. PINNED BY ARITHMETIC, NOT TASTE, and this is the one
+  // beat in the journey where a phone has almost no room to move.
   //
-  // The tall empty band above and below the row on a phone is not a framing
-  // mistake and cannot be tuned away: fitting ±2.80 across a 0.46 aspect forces
-  // a half-height of 6.09 whatever the lens does, because half-height is
-  // half-width over aspect. Only rearranging the row would change it.
+  // The three cards span x ±2.80 and the frame's half-width is
+  // distance * tan(28°) * aspect, so the closest the camera can stop without
+  // an outer card running off the screen is 2.80 / (0.5317 * aspect):
+  //
+  //     aspect 0.45  ->  11.70      aspect 0.50  ->  10.53
+  //     aspect 0.46  ->  11.45      aspect 0.53  ->   9.94
+  //
+  // 12.0 IS THE FLOOR FOR SHOWING ALL THREE WHOLE, and the first of these two
+  // stops holds it: at 13.0 the row still has margin on the narrowest phone,
+  // so the visitor meets the three complete before anything moves. That beat
+  // is the whole reason the crop below is affordable.
+  //
+  // THE FINAL STOP DELIBERATELY CROPS THE OUTER TWO. Going closer than 12.0
+  // cannot be done any other way — see the note below on why the row is
+  // width-locked — so the last beat pushes in to 9.2 and lets the frame cut
+  // the two flanking cards at the edges. That reads as a row continuing past
+  // the screen, which is what it is, and it puts Complete Transformation
+  // alone in the middle: the premium tier, framed as the premium tier.
+  //
+  //     distance   flagship on screen   outer cards visible   (aspect 0.47)
+  //       12.0            35%                  100%
+  //        9.2            46%                   71%
+  //
+  // 9.2 is chosen so the flanking cards keep roughly two thirds of their width
+  // on the narrowest phone (62% at aspect 0.44) and closer to nine tenths on a
+  // short one (88% at 0.53). Push past about 8.6 and they start reading as
+  // slivers rather than as cards. The flagship also goes from 31% to 41% of
+  // the frame HEIGHT, which is most of what makes the shot feel closer.
+  //
+  // WHY CROPPING IS THE ONLY WAY IN. A card's share of the screen is
+  // cardWidth / (2 * frameHalfWidth), and frameHalfWidth is set by the row.
+  // Scale every card by k and the row widens by k and the camera has to
+  // retreat by k — the card ends up exactly the same size. Same trap as the
+  // proof panels (see PROOF_X_PORTRAIT). Three abreast in a portrait frame is
+  // a fixed fraction of the width; only showing fewer of them at once changes
+  // it, which is exactly what the crop does.
+  //
+  // The tall empty band above and below the row is the same fact seen from the
+  // side, and cannot be tuned away either: fitting ±2.80 across a 0.46 aspect
+  // forces a half-height of 6.09 whatever the lens does, because half-height
+  // is half-width over aspect. Only rearranging the row would change it.
   { p: v(0, 1.9, -37.0), t: v(0, 1.4, -52) }, // approach the offers
-  { p: v(0, 2.6, -43.0), t: v(0, 1.9, -57) },
-  { p: v(0, 2.4, -44.2), t: v(0, 1.9, -57) },
+  { p: v(0, 2.6, -44.0), t: v(0, 1.9, -57) }, // all three, in frame
+  { p: v(0, 2.4, -47.8), t: v(0, 1.9, -57) }, // in on the flagship, outer two cropped
 ];
 
 /** 0 on landscape/desktop (path untouched), 1 on narrow portrait. */

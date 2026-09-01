@@ -1,5 +1,4 @@
 import type { AuditGlyphKind } from "@/components/book/AuditGlyph";
-import { GOAL_OPTIONS } from "@/components/landing/landing-data";
 import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
 
 /**
@@ -19,25 +18,12 @@ export const CHECKOUT_ANCHOR = "#checkout";
 /**
  * §3 — the goal question, as three coaching paths rather than five symptoms.
  *
- * The VALUES are imported, not copied: /landing-page asks the same question
- * (landing-data GOAL_OPTIONS, brief §7), and two forms feeding one inbox with
- * different vocabularies makes the replies unsortable. Change the list there
- * and this follows; add an option there without a hint here and the build
- * fails, which is the point.
- *
- * Each hint is capped at 40 characters so the option reads as one line on a
- * 375px phone. Keep any new one inside that.
+ * Re-exported, not copied: /landing-page asks the same question from the same
+ * list (landing-data GOAL_CHOICES, brief §7), and two forms feeding one inbox
+ * with different vocabularies makes the replies unsortable. Options and their
+ * hints are edited there.
  */
-const GOAL_HINTS: Record<(typeof GOAL_OPTIONS)[number], string> = {
-  "Lifestyle Coaching": "Sleep, energy, habits, food, training." /* [review] */,
-  "Personality & Presence Coaching": "Confidence, communication, presence." /* [review] */,
-  "Complete Transformation Coaching": "Both, rebuilt in the right order." /* [review] */,
-};
-
-export const GOAL_CHOICES = GOAL_OPTIONS.map((value) => ({
-  value,
-  hint: GOAL_HINTS[value],
-}));
+export { GOAL_CHOICES } from "@/components/landing/landing-data";
 
 /** §2 — what the audit actually is, in four moves. */
 export const AUDIT_STAGES: {

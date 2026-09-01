@@ -1,26 +1,36 @@
 "use client";
 
 /**
- * /book — the "which path" field: a select that can carry a second line.
+ * The "which path" field: a select that can carry a second line.
+ *
+ * Shared by /book (BookingFlow) and /landing-page (AuditLandingFlow). Both
+ * ask the same question from the same GOAL_CHOICES, so both must render it
+ * the same way.
  *
  * A native <select> cannot show a description under each option, and a radio
  * stack costs three cards of vertical space in the middle of the form. This
  * is the ARIA 1.2 combobox-with-listbox pattern instead: a button that looks
  * like the form's other fields, and a popup where each option is a title plus
- * a one-line hint (capped at 40 characters — see GOAL_CHOICES in book-data).
+ * a one-line hint (capped at 40 characters — see GOAL_CHOICES in
+ * landing-data).
  *
  * Focus never leaves the button; the active option is pointed at with
  * aria-activedescendant, which is what makes the keyboard behaviour match a
  * real select. Keys: Enter/Space/Arrow open, Arrows move, Home/End jump,
  * Enter/Space pick, Escape or Tab or an outside click close.
  *
- * The value lives in the parent's form state (BookingFlow), so there is no
- * hidden input and nothing to keep in sync.
+ * The value lives in the parent's form state, so there is no hidden input and
+ * nothing to keep in sync.
  */
 
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
 
 export type GoalChoice = { value: string; hint: string };
+
+/** Title + hint + padding — the min-h-[56px] option, plus its breathing room. */
+const OPTION_H = 60;
+/** Clearance kept between the popup and the edge of the viewport. */
+const GUTTER = 12;
 
 export default function GoalSelect({
   id,
@@ -46,6 +56,7 @@ export default function GoalSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dropUp, setDropUp] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
@@ -54,7 +65,18 @@ export default function GoalSelect({
   const optionId = (i: number) => `${listId}-opt-${i}`;
 
   // Open on the current selection, not on the top of the list.
+  //
+  // The side is decided BEFORE the popup renders — measuring it afterwards
+  // would paint it downward first and snap it up, which on a phone reads as a
+  // glitch. Options are a fixed height, so an estimate is exact enough.
   function openList(from = selectedIndex >= 0 ? selectedIndex : 0) {
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) {
+      const needed = choices.length * OPTION_H + 8;
+      const below = window.innerHeight - rect.bottom - GUTTER;
+      const above = rect.top - GUTTER;
+      setDropUp(below < needed && above > below);
+    }
     setActiveIndex(from);
     setOpen(true);
   }
@@ -155,7 +177,9 @@ export default function GoalSelect({
           id={listId}
           role="listbox"
           aria-labelledby={labelId}
-          className="border-hairline-gold bg-surface-2 absolute top-[calc(100%+6px)] right-0 left-0 z-30 overflow-hidden rounded-[10px] border shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
+          className={`border-hairline-gold bg-surface-2 absolute right-0 left-0 z-30 overflow-hidden rounded-[10px] border shadow-[0_18px_40px_rgba(0,0,0,0.45)] ${
+            dropUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"
+          }`}
         >
           {choices.map((choice, i) => {
             const isSelected = choice.value === value;
