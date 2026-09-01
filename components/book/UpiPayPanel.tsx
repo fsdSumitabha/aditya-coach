@@ -71,7 +71,7 @@ export default function UpiPayPanel({
   confirming,
   confirmFailed,
   whatsAppFallbackHref,
-  productLabel = `Transformation Audit · 45 minutes with Aditya`,
+  productLabel = `Transformation Audit · Online via WhatsApp`,
   referenceRequired = true,
 }: {
   payerName: string;

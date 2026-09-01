@@ -50,7 +50,7 @@ const PAIRS = [
   },
   {
     before: "/aditya/before/before_transformation_01.png",
-    after: "/aditya/after/after_transformation_01.jpg",
+    after: "/aditya/after/after_transformation_03.jpg",
   }
 ] as const;
 

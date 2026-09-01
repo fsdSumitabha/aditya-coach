@@ -36,7 +36,7 @@ export const metadata: Metadata = pageMetadata({
   // [review] reframed to the Transformation Audit (≤60 chars)
   title: `Book Your ${LEGAL.CONSULT_PRICE} Transformation Audit | Aditya`,
   // [review] description carries the assessment framing + the fee credit
-  description: `45 minutes, one to one on WhatsApp. Aditya assesses where you stand, names the gaps and recommends your path. ${LEGAL.CONSULT_PRICE}, adjusted against your program price if you continue with coaching.`,
+  description: `One to one, online on WhatsApp. Aditya assesses where you stand, names the gaps and recommends your path. ${LEGAL.CONSULT_PRICE}, adjusted against your program price if you continue with coaching.`,
   path: "/book",
   ogType: "website",
 });
@@ -52,7 +52,7 @@ const serviceSchema = {
   name: "Transformation Audit",
   serviceType: "Men's lifestyle transformation audit",
   description:
-    "A 45-minute one-to-one Transformation Audit on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay — a personal assessment of where you stand, the gaps holding you back, and the coaching path he recommends.",
+    "A one-to-one Transformation Audit held online on WhatsApp with men's lifestyle coach Aditya Kumar Upadhyay — a personal assessment of where you stand, the gaps holding you back, and the coaching path he recommends.",
   url: `${SITE_ORIGIN}/book`,
   provider: { "@id": `${SITE_ORIGIN}/#business` },
   areaServed: "Worldwide",

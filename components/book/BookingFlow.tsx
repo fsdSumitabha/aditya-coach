@@ -9,6 +9,12 @@
  * STATE B (post-payment): Success banner (§6) + optional intake (§5).
  * STATE C (finished):     Banner persists + compact "You're all set".
  *
+ * NO DURATION (1 Sep 2026). This page sells the diagnosis, not time with
+ * Aditya, so nothing here — offer card, checkout label, payment panel or FAQ
+ * — states how long the Audit runs. It is not replaced by another number.
+ * /shipping and /terms still specify one; those are the service terms, not
+ * the sales copy. /landing-page follows the same rule (landing-data.ts).
+ *
  * Only one state is visible at a time; the others carry hidden + aria-hidden.
  * The container reserves min-height so state swaps cause no layout shift.
  * Focus moves to the new state's heading on every transition; changes are
@@ -59,14 +65,15 @@ import {
   track,
   waLink,
 } from "@/lib/config";
-import { CONSULT_INCLUDES, LEGAL, UPI } from "@/lib/legal";
+import { CONSULT_INCLUDES, LEGAL } from "@/lib/legal";
+import { GOAL_CHOICES } from "@/components/book/book-data";
+import GoalSelect from "@/components/book/GoalSelect";
 import UpiPayPanel from "@/components/book/UpiPayPanel";
 
 // ==== BOOKING CONFIG (swap in Phase 2) ====
 const BOOKING = {
   PRICE_INR: LEGAL.CONSULT_PRICE_INR, // consultation fee — single source of truth in lib/legal.ts
   CURRENCY: "INR",
-  DURATION_MIN: 45,
   COACH_WHATSAPP, // [review] Aditya's WhatsApp (same number as global FAB — set once in lib/config)
   REDIRECT_ON_FINISH: false, // Phase-1 toggle for the /thank-you redirect (wired in finishIntake) — false ⇒ STATE C stands alone
   THANKYOU_URL: "/thank-you?type=booking",
@@ -84,14 +91,6 @@ const BOOKING = {
 const CHECKOUT_POINTS = [
   "We audit your lifestyle, health, and presence",
   "You leave with exactly what to fix first",
-];
-
-const GOAL_OPTIONS = [
-  "Fat loss",
-  "Muscle gain",
-  "Energy",
-  "Confidence",
-  "Overall lifestyle change",
 ];
 
 // ---------------------------------------------------------------------------
@@ -132,7 +131,7 @@ function validateField(field: FieldName, raw: string): string | null {
       return null;
     }
     case "goal":
-      return v ? null : "Select your main goal.";
+      return v ? null : "Choose the path you want guidance on.";
   }
 }
 
@@ -202,6 +201,8 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
   const fieldRefs = useRef<
     Record<FieldName, HTMLInputElement | HTMLSelectElement | null>
   >({ name: null, phone: null, email: null, age: null, goal: null });
+  // The goal field is a combobox button, not an input — see GoalSelect.
+  const goalButtonRef = useRef<HTMLButtonElement>(null);
 
   // §4 payment state. payStep is the gateway hand-off: "details" shows the
   // form's Continue button, "pay" swaps in the UPI panel. Nothing verifies the
@@ -303,7 +304,15 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     setErrors(nextErrors);
     const firstBad = FIELD_ORDER.find((f) => nextErrors[f]);
     if (firstBad) {
-      fieldRefs.current[firstBad]?.focus(); // focus the FIRST invalid field
+      // focus the FIRST invalid field — goal is a combobox button, the rest
+      // are plain inputs
+      const target =
+        firstBad === "goal" ? goalButtonRef.current : fieldRefs.current[firstBad];
+      target?.focus();
+      target?.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "center",
+      });
       return;
     }
 
@@ -403,17 +412,6 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
     finishIntake();
   }
 
- function upiLink(amount: number) {
-  const params = new URLSearchParams({
-    pa: UPI.ID,
-    pn: UPI.PAYEE_NAME,
-    am: amount.toFixed(2),
-    cu: "INR",
-  });
-
-  return `upi://pay?${params.toString()}`;
-}
-
   const stateA = state === "A";
   // Heading-tree integrity: STATE A's hero owns the page h1; once the B/C
   // wrapper becomes the visible content its banner heading must take over as
@@ -457,8 +455,8 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                 <Reveal delayMs={70}>
                   {/* [review] */}
                   <p className="type-lead text-secondary mt-5 text-center">
-                    Not an appointment. The 45 minutes where you find out what
-                    is actually holding you back — and which path is yours.
+                    Not an appointment. A clear diagnosis of what is holding
+                    you back — and the order to fix it in.
                   </p>
                 </Reveal>
 
@@ -477,7 +475,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       </p>
                     </div>
                     <p className="type-small text-muted mt-1">
-                      45 minutes · one to one on WhatsApp
+                      One to one, online via WhatsApp{/* [review] */}
                     </p>
 
                     <div className="gold-line my-6" aria-hidden="true" />
@@ -497,31 +495,23 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       ))}
                     </ul>
 
-                    {/* The convinced man's exit. WhatsApp first, payment below
-                        — men who want to talk to a person before paying are
-                        the majority of this page's traffic. */}
-                    <a
-                        href={upiLink(LEGAL.CONSULT_PRICE_INR)}
-                        className="btn-gold mt-4 w-full"
-                    >
-                        Pay ₹999 via UPI
-                    </a>
-
                     {/* The most important line on the page. Confirmed copy —
                         lives in lib/legal.ts (CONSULT_INCLUDES), never here. */}
                     <p className="type-small text-gold-300 border-hairline-gold mt-6 border-l pl-4">
                       {CONSULT_INCLUDES.CREDIT}
                     </p>
 
-                    <p className="mt-6 text-center">
-                      <a
-                        href="#intake"
-                        onClick={scrollToIntake}
-                        className="link-draw type-small text-secondary hover:text-primary inline-flex min-h-[48px] items-center transition-colors"
-                      >
-                        Or pay online and book your slot ↓
-                      </a>
-                    </p>
+                    {/* The card's ONE action. A plain anchor with a scripted
+                        smooth-scroll on top, so it still works before
+                        hydration — which is the case on the phones this page
+                        takes its traffic from. */}
+                    <a
+                      href="#intake"
+                      onClick={scrollToIntake}
+                      className="btn-gold shine-loop mt-6 w-full leading-snug"
+                    >
+                      Book Your Transformation Audit
+                    </a>
                   </div>
                 </Reveal>
 
@@ -589,6 +579,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       type="text"
                       name="name"
                       autoComplete="name"
+                      required
                       className="input-dark"
                       value={values.name}
                       onChange={setValue("name")}
@@ -619,6 +610,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       name="phone"
                       inputMode="tel"
                       autoComplete="tel"
+                      required
                       placeholder="+91"
                       className="input-dark"
                       value={values.phone}
@@ -654,6 +646,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       name="email"
                       inputMode="email"
                       autoComplete="email"
+                      required
                       className="input-dark"
                       value={values.email}
                       onChange={setValue("email")}
@@ -700,6 +693,7 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                       inputMode="numeric"
                       min={18}
                       max={99}
+                      required
                       className="input-dark"
                       value={values.age}
                       onChange={setValue("age")}
@@ -716,33 +710,28 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                     </p>
                   </div>
 
-                  {/* 5 — Main goal */}
+                  {/* 5 — Which path he thinks he wants. A custom listbox,
+                       because each option carries a second line a native
+                       <select> cannot render (components/book/GoalSelect). */}
                   <div>
-                    <label htmlFor="bk-goal" className="field-label">
-                      Main goal
-                    </label>
-                    <select
+                    <span id="bk-goal-label" className="field-label">
+                      Which path are you here for?{/* [review] */}
+                    </span>
+                    <GoalSelect
                       id="bk-goal"
-                      ref={(el) => {
-                        fieldRefs.current.goal = el;
-                      }}
-                      name="goal"
-                      className="input-dark"
+                      labelId="bk-goal-label"
+                      describedById="bk-goal-error"
+                      buttonRef={goalButtonRef}
+                      choices={GOAL_CHOICES}
                       value={values.goal}
-                      onChange={setValue("goal")}
-                      onBlur={blurValidate("goal")}
-                      aria-invalid={errors.goal ? true : undefined}
-                      aria-describedby="bk-goal-error"
-                    >
-                      <option value="" disabled>
-                        Select your main goal
-                      </option>
-                      {GOAL_OPTIONS.map((goal) => (
-                        <option key={goal} value={goal}>
-                          {goal}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(goal) => {
+                        setValues((v) => ({ ...v, goal }));
+                        setErrors((prev) =>
+                          prev.goal ? { ...prev, goal: undefined } : prev,
+                        );
+                      }}
+                      invalid={!!errors.goal}
+                    />
                     <p
                       id="bk-goal-error"
                       className="field-error"
@@ -768,27 +757,12 @@ export default function BookingFlow({ children }: { children: ReactNode }) {
                           {LEGAL.CONSULT_PRICE}
                         </p>
                         <p className="type-small text-secondary">
-                          45-minute Transformation Audit
+                          Transformation Audit
                         </p>
                       </div>
-                      {/* Confirmed inclusions 6 Aug 2026 — copy lives in
-                          lib/legal.ts (CONSULT_INCLUDES), not here. */}
-                      <ul className="mt-4 grid gap-2">
-                        <li className="type-small flex gap-2.5 text-secondary">
-                          <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
-                          <span>{CONSULT_INCLUDES.GIFT_CARD}</span>
-                        </li>
-                        <li className="type-small flex gap-2.5 text-secondary">
-                          <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
-                          <span>{CONSULT_INCLUDES.BLUEPRINT}</span>
-                        </li>
-                      </ul>
-                      <p className="type-small text-gold-300 border-hairline-gold mt-4 border-l pl-4">
-                        {CONSULT_INCLUDES.CREDIT}
-                      </p>
                       <button
                         type="submit"
-                        className="btn-gold mt-6 min-h-[52px] w-full"
+                        className="btn-gold mt-6 min-h-[52px] w-full leading-snug"
                       >
                         Continue to Payment
                         <span aria-hidden="true">→</span>

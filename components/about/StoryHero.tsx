@@ -40,11 +40,11 @@ import { PinIcon } from "@/components/icons";
 // work shot (/aditya/aditya_07.jpg) came out with the second spread — the
 // before/after proof now lands entirely in <TransformationSplit /> above.
 const IMG_STORY_PORTRAIT = {
-  src: "/aditya/img_about_hero_cropped.jpg",
-  w: 385,
-  h: 633,
+  src: "/aditya/about_hero_cropped_02.jpg",
+  w: 1279,
+  h: 2082,
   blurDataURL:
-    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAQMEBf/EAB8QAAICAgIDAQAAAAAAAAAAAAECAxEABBIhBRMxcf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAMAwEAAhEDEQA/ADt7EuqF5RtIK7awB+Yldssoa1Fi6JHWWza0cvkTFKOSBAQPneZ8mlH7G4l1FmhfzC7IAv/Z",
+    "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAQAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAwX/xAAhEAABAwQBBQAAAAAAAAAAAAABAgMRAAQSEyEFFUFikf/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAZEQACAwEAAAAAAAAAAAAAAAAAAQIRIUH/2gAMAwEAAhEDEQA/AD6hYrcebdUhRYwCckkeAakizBAOZ+1TuDsf0pW4McQoTwJiDFP2J0cb08eposm+CI1Wn//Z",
 } as const;
 
 /** Framed portrait — 1px gold hairline, inner clip, slow settle-zoom on scroll. */
