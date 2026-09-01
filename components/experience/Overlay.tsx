@@ -106,7 +106,14 @@ export default function Overlay() {
                 ? // arrival: left-composed against the seal on the right (landscape);
                   // centered above the fold on portrait
                   "absolute inset-x-0 bottom-[14svh] flex flex-col items-center px-5 text-center sm:inset-x-auto sm:left-[7vw] sm:bottom-[16svh] sm:max-w-[620px] sm:items-start sm:text-left"
-                : "absolute inset-x-0 bottom-[16svh] flex flex-col items-center px-5 text-center sm:bottom-[12svh]"
+                : // PHONE: pinned as low as the WhatsApp FAB allows, so the
+                  // block eats the bottom edge of the screen instead of the
+                  // middle of the scene. 88px is the clearance CONVENTIONS
+                  // asks for and it is a PIXEL value on purpose — the FAB is
+                  // 60px tall at bottom:20px, also in pixels, so an svh-based
+                  // gap goes under it on a short phone and clears it by miles
+                  // on a tall one. Desktop keeps its 12svh.
+                  "absolute inset-x-0 bottom-[88px] flex flex-col items-center px-5 text-center sm:bottom-[12svh]"
             }
           >
             {/* feathered scrim — guarantees contrast for the text block even
@@ -116,7 +123,7 @@ export default function Overlay() {
             <div
               aria-hidden="true"
               style={copyStyle}
-              className="pointer-events-none absolute -inset-x-10 -inset-y-8 -z-10 bg-[radial-gradient(70%_90%_at_50%_55%,rgba(8,8,10,0.78),rgba(8,8,10,0.35)_60%,transparent_78%)]"
+              className="pointer-events-none absolute -inset-x-10 -inset-y-5 -z-10 bg-[radial-gradient(70%_90%_at_50%_55%,rgba(8,8,10,0.78),rgba(8,8,10,0.35)_60%,transparent_78%)] sm:-inset-y-8"
             />
             {/* Held-back copy keeps its layout box while it is invisible, so
                 the buttons below do not jump when it arrives. */}
@@ -140,10 +147,19 @@ export default function Overlay() {
                  setup, so the title steps down and the line under it steps up. */
               <p
                 style={copyStyle}
-                className={`font-display mt-3 font-medium tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)] ${
+                /* PHONE SIZING IS A LINE-COUNT PROBLEM, NOT A FONT-SIZE ONE.
+                   Both of these ran to THREE lines on a 390px screen, and the
+                   measure is what put them there: at 22ch, "Body. Lifestyle.
+                   Mindset. Personality. Presence." cannot fit in two however
+                   small the type gets, because a ch measure shrinks with the
+                   font. So the phone branch drops a step in size AND opens the
+                   measure — 22ch to 30ch, 26ch to 32ch — which takes both to
+                   two lines and saves ~45px and ~31px of the scene each.
+                   His words are untouched; only the box around them moved. */
+                className={`font-display mt-2 font-medium tracking-[-0.015em] text-[#f4f1ea] [text-shadow:0_2px_24px_rgba(8,8,10,0.9)] sm:mt-3 ${
                   chapter.id === "decision"
-                    ? "max-w-[26ch] text-[clamp(1.25rem,2.6vw,1.95rem)] leading-[1.16]"
-                    : "max-w-[22ch] text-[clamp(1.6rem,3.6vw,2.6rem)] leading-[1.12]"
+                    ? "max-w-[32ch] text-[1.05rem] leading-[1.2] sm:max-w-[26ch] sm:text-[clamp(1.25rem,2.6vw,1.95rem)] sm:leading-[1.16]"
+                    : "max-w-[30ch] text-[1.15rem] leading-[1.18] sm:max-w-[22ch] sm:text-[clamp(1.6rem,3.6vw,2.6rem)] sm:leading-[1.12]"
                 }`}
               >
                 {chapter.title}
@@ -156,10 +172,10 @@ export default function Overlay() {
                 order they appear in the string. */}
             <p
               style={copyStyle}
-              className={`mt-3 [text-shadow:0_1px_12px_rgba(8,8,10,0.9)] ${
+              className={`mt-2 [text-shadow:0_1px_12px_rgba(8,8,10,0.9)] sm:mt-3 ${
                 chapter.id === "decision"
-                  ? "max-w-[38ch] text-[clamp(1.02rem,1.9vw,1.34rem)] leading-[1.5] text-[#d3ccc1]"
-                  : "max-w-md text-[0.9rem] leading-relaxed text-[#a7a199]"
+                  ? "max-w-[38ch] text-[0.88rem] leading-[1.45] text-[#d3ccc1] sm:text-[clamp(1.02rem,1.9vw,1.34rem)] sm:leading-[1.5]"
+                  : "max-w-md text-[0.82rem] leading-snug text-[#a7a199] sm:text-[0.9rem] sm:leading-relaxed"
               }`}
             >
               {chapter.sub}
@@ -185,14 +201,21 @@ export default function Overlay() {
                 for it anyway — a visitor who has just watched the rebuild
                 assemble is being shown what delivers it. */}
             {chapter.id === "order" && (
-              <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
+              <div className="pointer-events-auto mt-4 flex flex-col items-center gap-2 sm:mt-6 sm:gap-3">
                 <Link href={OVERLAY_CTAS.coaching.href} className={BTN_OUTLINE}>
                   {OVERLAY_CTAS.coaching.label}
                 </Link>
                 {/* Says what is on the other side of the button. The label
                     itself stays inside the CTA vocabulary in AGENTS.md rather
-                    than growing into a sentence. */}
-                <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
+                    than growing into a sentence.
+
+                    HIDDEN ON A PHONE. Of everything in this block it is the
+                    only line that can go without losing an action or a word of
+                    his: it is builder [review] copy describing a destination,
+                    the button label already names that destination, and the
+                    page behind it says the same thing at length. Two lines plus
+                    its gap is ~47px of scene back. */}
+                <p className="hidden max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c] sm:block">
                   {OVERLAY_CTAS.coaching.note}
                 </p>
               </div>
@@ -205,8 +228,8 @@ export default function Overlay() {
                 top tenth, leaving no band inside the render where a button
                 clears the flagship column on a phone. */}
             {chapter.id === "decision" && (
-              <div className="pointer-events-auto mt-6 flex flex-col items-center gap-3">
-                <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="pointer-events-auto mt-4 flex flex-col items-center gap-2 sm:mt-6 sm:gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                   <Link href={OVERLAY_CTAS.book.href} className={BTN_GOLD}>
                     {OVERLAY_CTAS.book.label}
                   </Link>
@@ -214,7 +237,9 @@ export default function Overlay() {
                     {OVERLAY_CTAS.blueprint.label}
                   </Link>
                 </div>
-                <p className="max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c]">
+                {/* Hidden on a phone for the same reason as the method
+                    chapter's note above. */}
+                <p className="hidden max-w-[34ch] text-center text-[0.8rem] leading-snug text-[#8f887c] sm:block">
                   {OVERLAY_CTAS.blueprint.note}
                 </p>
               </div>

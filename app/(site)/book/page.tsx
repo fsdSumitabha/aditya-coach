@@ -11,6 +11,7 @@ import BookFinalCta from "@/components/book/BookFinalCta";
 import { BOOK_FAQS } from "@/components/book/book-data";
 import { pageMetadata, SITE_ORIGIN } from "@/lib/site";
 import { LEGAL } from "@/lib/legal";
+import TransformationStage from "@/components/results/TransformationStage";
 
 // ============================================================
 // /book — the single terminal conversion node, and the page ads point at.
@@ -96,17 +97,12 @@ export default function BookPage() {
       <JsonLd data={[serviceSchema, faqSchema, breadcrumbSchema]} />
 
       <BookingFlow>
-        {/* 2 — what the audit actually is */}
-        <AuditExplainer />
+
+        {/* 1 — the decision, above the fold */}
+        <TransformationStage  showAllResults={true}/>
 
         {/* 3 — the deliverables, so the price reads as concrete */}
         <WhatYouGet />
-
-        {/* 4 — audit → assessment → recommendation → one of three paths */}
-        <AfterTheAudit />
-
-        {/* 5 — the argument for being assessed before buying */}
-        <WhyStartWithAudit />
 
         {/* 6 — qualification, and the disqualifier */}
         <WhoIsThisFor />

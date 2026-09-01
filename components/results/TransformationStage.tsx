@@ -294,9 +294,14 @@ function Panel({
 
 export default function TransformationStage({
   intervalMs = STAGE_MS,
+  showAllResults = false,
 }: {
   /** Autoplay frequency in ms. 0 turns autoplay (and the pause control) off. */
   intervalMs?: number;
+  /** On pages that only borrow the stage (/book, /coaching), true adds the
+   *  read-through to the full proof page under the controls. Left off on
+   *  /results itself — the reader is already there. */
+  showAllResults?: boolean;
 } = {}) {
   const [index, setIndex] = useState(0);
   /** +1 travelling forward, -1 back — drives the story block's entrance. */
@@ -592,7 +597,18 @@ export default function TransformationStage({
             </button>
           )}
         </div>
+
+        {/* Read-through to the full proof page, for the pages that borrow this
+            stage rather than own it. */}
+        {showAllResults && (
+          <div className="mt-6 flex justify-center nav:mt-8">
+            <Link href="/results" className="btn-outline btn-compact">
+              See all the results {/* [review] */}
+            </Link>
+          </div>
+        )}
       </div>
+
     </section>
   );
 }

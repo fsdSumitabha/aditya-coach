@@ -95,7 +95,7 @@ export default function CoachingPage() {
       <PathGrid />
 
       {/* 4 — why the audit first */}
-      <TransformationStage />
+      <TransformationStage showAllResults={true} />
 
       {/* 8 — the close */}
       <CoachingFinalCta />

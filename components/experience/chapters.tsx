@@ -414,11 +414,13 @@ export function Arrival() {
 // the panel geometry it introduced, which the proof gallery and the three
 // programme columns all still draw with.
 
-/** Panel size is set by the PORTRAIT frustum, the tight case: the portrait
- *  camera key sits 11 units back at 56° fov, so on the narrowest common phone
- *  (aspect ~0.45) nothing may pass x ≈ ±2.63. The gallery centres its pair at
- *  PROOF_X 1.78, and 1.78 plus 0.74 of half-panel-and-frame lands at 2.52 —
- *  inside it, brackets included. */
+/** Panel size is set by the PORTRAIT frustum, the tight case. The panels
+ *  themselves are the same on every screen — what changes is how far apart
+ *  they stand and how close the camera gets; see PROOF_X_PORTRAIT below for
+ *  why scaling the panel instead would have achieved nothing. Half-panel,
+ *  mat, hairline and bracket come to 0.737 either side of centre, which is the
+ *  number every framing check in this chapter and in CameraRig is written
+ *  against. */
 const PANEL_W = 1.24;
 const PANEL_H = PANEL_W / PORTRAIT_ASPECT; // 1.616 — matches the baked crop
 const MAT = 0.05; // breathing room between the photo edge and the hairline
@@ -508,9 +510,44 @@ function getFrameMaterial(color: string) {
 // every photo plus a solid gold lip) is gone; these use the same single-draw
 // hairline frame as chapter 1.
 
-const PROOF_X = 1.78; // outer edge lands at 2.52 vs the 2.63 a phone can see
+const PROOF_X = 1.78; // landscape: outer edge 2.52 vs the 3.02 the frame holds
 const PROOF_Y = 1.8;
 const PROOF_TOE = 0.28; // the gallery opens a little wider than the diptych
+
+/**
+ * THE PAIR CLOSES UP ON A PHONE, and this is the only lever that makes the
+ * photographs bigger.
+ *
+ * A portrait frame is about aspect 0.45. Two panels side by side make a group
+ * of aspect 2.9. Fitting one inside the other is decided ENTIRELY by width:
+ * the camera has to stand far enough back that PROOF_X + 0.737 fits inside the
+ * half-width, and at PROOF_X 1.78 that is 11 units — where each photograph is
+ * about a quarter of the screen and the frame is nine tenths empty sky. That
+ * emptiness and the small photographs are the same fact.
+ *
+ * SCALING THE PANELS WOULD NOT HAVE HELPED. Multiply the panel by k and the
+ * pair widens by k, so the camera has to retreat by k, and the photograph ends
+ * up exactly the same size on screen. The on-screen fraction is
+ * panelWidth / (2 * (PROOF_X + 0.737)) whatever the panel measures — so the
+ * only way to make it bigger is to make PROOF_X smaller. At 0.78 the pair is
+ * a diptych with a hairline gap rather than two pictures across a room, the
+ * camera comes in from 11 units to 6.95, and each photograph goes from ~27%
+ * of the screen width to ~43%. Roughly two and a half times the area.
+ *
+ * The floor is 0.663 — half a panel with the toe-in foreshortening — where the
+ * two boards touch. 0.78 leaves 0.23 of gap, about 29px on a 390px screen:
+ * enough to read as two frames, which the before/after depends on.
+ *
+ * Ramped, not switched, and against the SAME curve CameraRig blends its two
+ * key tables with, so the spread and the stand-off can never disagree. At
+ * aspect 1.05 and above this is 1.78 and the desktop shot is untouched.
+ */
+const PROOF_X_PORTRAIT = 0.78;
+
+/** The camera's own ramp, duplicated from CameraRig's portraitBlend so the
+ *  scene and the dolly move together. 0 on landscape, 1 on a phone. */
+const portraitAmount = (aspect: number) =>
+  THREE.MathUtils.clamp((1.05 - aspect) / 0.45, 0, 1);
 
 /** How long each man holds the frames. */
 const FLIP_MS = 1000;
@@ -541,6 +578,11 @@ function ProofPanel({
   floating: boolean;
 }) {
   const after = side === "after";
+  // Same ramp the camera uses, so the pair closes exactly as the dolly closes.
+  const portrait = useThree((st) =>
+    portraitAmount(st.size.width / st.size.height),
+  );
+  const spread = THREE.MathUtils.lerp(PROOF_X, PROOF_X_PORTRAIT, portrait);
   const front = useImageTexture(proofSrc(cur, side), 8);
   const back = useImageTexture(proofSrc(prev, side), 8);
   const frontMat = useRef<THREE.MeshBasicMaterial>(null);
@@ -552,7 +594,7 @@ function ProofPanel({
   });
 
   return (
-    <group position={[sign * PROOF_X, 0, 0]}>
+    <group position={[sign * spread, 0, 0]}>
       <Float
         speed={1.1}
         rotationIntensity={0.06}
@@ -609,6 +651,8 @@ export function Proof() {
   // thing past the seal, in the slot "The Man" used to hold.
   const { alive, visible } = useChapterVisibility(-16);
   const gl = useThree((s) => s.gl);
+  // A boolean, so this re-renders on the orientation flip and not on resize.
+  const portrait = useThree((s) => s.size.width <= s.size.height);
   const [pair, setPair] = useState({ cur: 0, prev: 0 });
   const fade = useRef(1);
   const clock = useRef(0);
@@ -695,12 +739,20 @@ export function Proof() {
         />
         <pointLight position={[0, 3.4, 2.2]} intensity={5} color={GOLD_LIGHT} distance={9} />
 
-        {/* In the gap between the frames: who this is, and the one fixed way
-            through to the stories. Out by 0.234 — the dolly crosses this z at
-            progress ≈ 0.256. */}
+        {/* Who this is, and the one fixed way through to the stories. Out by
+            0.234 — the dolly crosses this z at progress ≈ 0.256.
+
+            IT MOVES ABOVE THE PAIR ON A PHONE. It sits in the gap between the
+            frames on a wide screen, where the gap is 2.2 units across. Once
+            PROOF_X_PORTRAIT closes that to 0.23 there is no gap to sit in — it
+            would land straight on the photographs — so it goes to y 3.25,
+            which clears the top of the frames at 2.66 by about a third of a
+            unit and still sits well above the chapter copy at the foot of the
+            screen. Below the pair was the other option and is worse: the copy
+            block owns the bottom of a phone screen. */}
         {mounted && (
           <Html
-            position={[0, PROOF_Y, 0.3]}
+            position={[0, portrait ? 3.25 : PROOF_Y, 0.3]}
             center
             pointerEvents="none"
             zIndexRange={[8, 0]}
@@ -748,6 +800,45 @@ export function Proof() {
 
 // THE COMPLETE REBUILD (Aditya's framework, direction doc §6).
 // Labels, numbers and the taper live in REBUILD_STEPS — facts.ts.
+/**
+ * THE "SEE THE FULL METHOD" BUTTON: WHERE IT SITS AND HOW LONG IT STAYS.
+ *
+ * A PHONE GETS A DIFFERENT ONE. The two paths are not a style choice — the
+ * lens is genuinely different. Landscape runs at fov 42 (half-fov 21°),
+ * portrait at 56 (half-fov 28°), so a phone has seven more degrees of frame
+ * above the view axis to spend. That is the whole reason the phone numbers can
+ * be this much bolder, and the reason the desktop ones cannot follow.
+ *
+ * WHAT LIMITS THIS. The dolly flies at the stack, and the button floats above
+ * it, so as the camera closes the button climbs the frame and eventually goes
+ * out over the TOP — long before the camera actually reaches it (that is not
+ * until ≈0.62). Height and duration therefore trade against each other: every
+ * unit higher is bought with a slightly earlier exit. Measured, at fov 56:
+ *
+ *     0.61 above the apex  ->  leaves frame at 0.612
+ *     1.11                 ->  0.601
+ *     1.61                 ->  0.589      <- the phone setting
+ *     2.11                 ->  0.576
+ *
+ * So on a phone it stands 1.61 clear of the apex (2.6x the desktop gap) and
+ * holds to 0.575, with about 5° of frame still to spare at the worst moment.
+ * Desktop stays where it was: 0.61 clear, out at 0.55, and only 1.8° of spare
+ * — it is the tighter of the two and has no room to be raised.
+ *
+ * Both RAMP on portraitAmount, the same curve CameraRig blends its two key
+ * tables with, rather than switching on an orientation boolean. A boolean
+ * would hand the full phone treatment to a nearly-square window that is still
+ * flying most of the landscape path at close to the landscape lens, and clip
+ * it. Ramped, the height and the window arrive exactly as the wide frame does.
+ *
+ * If either number is ever pushed further, re-check it against the LAST TWO
+ * landscape KEYS in CameraRig — they are what sets the ceiling.
+ */
+const METHOD_BTN_Y = 3.25; // desktop: 0.61 above the finished apex at 2.64
+const METHOD_BTN_Y_PORTRAIT = 4.25; // phone: 1.61 above it
+const METHOD_BTN_WINDOW = [0.45, 0.55] as const;
+const METHOD_BTN_WINDOW_PORTRAIT = [0.42, 0.575] as const; // 55% longer
+
 const SLABS = REBUILD_STEPS;
 const SLAB_H = 0.48;
 
@@ -858,6 +949,28 @@ function Slab({ index }: { index: number }) {
 
 export function TheOrder() {
   const { alive } = useChapterVisibility(-34);
+  // 0 on a wide screen, 1 on a phone — the camera's own curve, so the button
+  // and the frame it lives in can never disagree about which lens is running.
+  const portrait = useThree((st) =>
+    portraitAmount(st.size.width / st.size.height),
+  );
+  const methodY = THREE.MathUtils.lerp(
+    METHOD_BTN_Y,
+    METHOD_BTN_Y_PORTRAIT,
+    portrait,
+  );
+  const methodRange = [
+    THREE.MathUtils.lerp(
+      METHOD_BTN_WINDOW[0],
+      METHOD_BTN_WINDOW_PORTRAIT[0],
+      portrait,
+    ),
+    THREE.MathUtils.lerp(
+      METHOD_BTN_WINDOW[1],
+      METHOD_BTN_WINDOW_PORTRAIT[1],
+      portrait,
+    ),
+  ] as const;
   return (
     <ChapterAlive.Provider value={alive}>
     <group position={[0, 0, -34]}>
@@ -878,13 +991,23 @@ export function TheOrder() {
       </Text>
       {/* Above the apex — the only clear space in this shot. Below the stack
           the anchor projects past the bottom of a phone screen, and beside it
-          the portrait frustum clips at x ±2.7. Out by 0.50: the dolly crosses
-          this z at progress ≈ 0.62 on its way to the programmes. */}
+          the portrait frustum clips at x ±2.7.
+
+          IT ARRIVES WITH THE LAST SLAB, NOT WITH THE CHAPTER. The window used
+          to open at 0.36, before the first slab had even landed, and close at
+          0.50 — BEFORE the top slab arrives at 0.518 — so the one frame where
+          the stack was whole was also the frame with nothing to press. Both
+          windows now bracket the settle instead: the phone opens at 0.42, just
+          as the last layer starts to fall, and holds to 0.575; desktop runs
+          0.45 to 0.55. (Assembly timing is in Slab: layer n runs 0.3 + 0.032n
+          to that plus 0.09, so the top lands at 0.518.)
+
+          Height, duration and why the two differ: see METHOD_BTN_Y above. */}
       <SceneButton
-        position={[0, 3.05, 1.2]}
+        position={[0, methodY, 1.2]}
         label={METHOD_CTA.label}
         href={METHOD_CTA.href}
-        range={[CHAPTERS[2].range[0], 0.5]}
+        range={methodRange}
       />
     </group>
     </ChapterAlive.Provider>

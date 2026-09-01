@@ -66,7 +66,15 @@ const KEYS_PORTRAIT: { p: THREE.Vector3; t: THREE.Vector3 }[] = [
   // to sit against the promoted gallery at -16. It keeps the 11-unit stand-off
   // the wider proof panels need; the man key it replaces stood only 9.5 back,
   // which would clip the pair at x ±2.52 on a 0.45-aspect phone.
-  { p: v(0, 1.8, -5.0), t: v(0, 1.7, -16) }, // proof gallery, both frames visible
+  // THE GALLERY COMES IN from 11 units to 6.95, which is the whole of what
+  // makes the photographs bigger on a phone. It is not a free choice: the pair
+  // has to fit ACROSS, and at the narrowest common phone (aspect 0.44) the
+  // half-width here is 1.63 against a pair reaching 1.52 — 0.11 of margin, and
+  // more on every wider screen. Move this key any closer and the frames clip
+  // the edges; it only moved at all because PROOF_X_PORTRAIT in chapters.tsx
+  // pulled the pair in from ±1.78 to ±0.78 on the same blend curve. The two
+  // numbers are one decision and have to move together.
+  { p: v(0, 1.8, -9.05), t: v(0, 1.7, -16) }, // proof gallery, both frames visible
   { p: v(0, 2.0, -20.5), t: v(0, 1.2, -34) }, // foundation approach, centred
   // Same pull-back as the landscape key. At -25.0 the visible half-width was
   // 2.2 against a bottom slab that reaches ±2.0 — the base was touching both
