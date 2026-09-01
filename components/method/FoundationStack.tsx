@@ -2,16 +2,16 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { METHOD_STEPS as TIERS } from "@/components/method/method-steps";
+import { METHOD_STEPS as STEPS } from "@/components/method/method-steps";
 
 /**
  * The page's showpiece: one full-bleed, sticky-pinned scene where the Complete
- * Rebuild assembles top-down (Lifestyle first → Presence last) as the user
+ * Rebuild assembles bottom-up (Lifestyle first → Presence last) as the user
  * scrolls through the tall wrapper. Scroll-linked scrubbing so the motion feels
  * physical.
  *
  * Single-column composition, no side panel:
- *   caption → full-width layer bands → progress rail → detail band.
+ *   layer bands → foundation caption → progress rail → detail band.
  * The detail band is a FIXED-height slot directly under the pyramid. Resting,
  * it carries the closing line and the scroll guide; hovering (or focusing) a
  * layer crossfades it to that layer's copy. Fixed height means the reveal never
@@ -27,9 +27,16 @@ import { METHOD_STEPS as TIERS } from "@/components/method/method-steps";
  *   scene — see components/method/method-steps.ts.
  */
 
-// Index of the base layer — the tier that is already seated when the scene
-// arrives, and the fallback the detail band holds while it fades out.
-const BASE_INDEX = 0;
+// Rendered as a pyramid: Presence at the top (narrowest) down to Lifestyle at
+// the bottom (widest, the foundation). METHOD_STEPS stays in logical 01 → 05
+// order — the page builds its HowTo schema from it — so the view reverses a
+// copy rather than the source.
+const TIERS = [...STEPS].reverse();
+
+// Index, in RENDERED order, of the base layer — the bottom band, already seated
+// when the scene arrives, and the fallback the detail band holds while it fades
+// out.
+const BASE_INDEX = TIERS.length - 1;
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
@@ -89,7 +96,9 @@ export default function FoundationStack() {
       let seated = 0;
       for (let i = 0; i < N; i++) {
         const el = tiers[i];
-        const k = i; // Lifestyle(i=0) → first; Presence(i=N-1) → last
+        // Rendered top→bottom, so the bottom band is the first to seat:
+        // Lifestyle(i=N-1) → first; Presence(i=0) → last.
+        const k = N - 1 - i;
         // The base layer is never animated away: the scene must never open on
         // an empty screen, and "the foundation is already there" is the point.
         const t = k === 0 ? 1 : easeOut(clamp01((progress - k * step) / dur));
@@ -103,9 +112,10 @@ export default function FoundationStack() {
         // shape of the whole rebuild is legible before a single layer lands.
         const ghost = ghosts[i];
         if (ghost) ghost.style.opacity = String((1 - t) * 0.85);
-        // The connector arrow ABOVE this tier — it draws the eye 01 → 02 → 03
-        // and only appears once the layer it points into has landed.
-        const arrow = arrows[i - 1];
+        // The connector arrow BELOW this tier — it draws the eye upward,
+        // 01 → 02 → 03, and only appears once the layer it points into (this
+        // one, the later of the pair) has landed.
+        const arrow = arrows[i];
         if (arrow) arrow.style.opacity = String(t);
       }
       // Gold thread under the stack fills as the layers seat.
@@ -245,16 +255,9 @@ export default function FoundationStack() {
         {/* full-bleed: the foundation layer runs the width of the screen */}
         <div
           onMouseLeave={() => setActive(null)}
-          className="relative mx-auto w-full max-w-[1320px] px-4 md:px-8"
+          className="relative mx-auto w-full max-w-[1320px] px-4 md:px-8 pt-12"
         >
-          <p
-            aria-hidden="true"
-            className="type-caption mb-3 text-center tracking-[0.16em] text-gold-500 md:mb-4"
-          >
-            EVERYTHING SITS ON THIS ↓
-          </p>{/* [review] */}
-
-          {/* ---- the pyramid: full-width bands, widest layer first ---- */}
+          {/* ---- the pyramid: full-width bands, widest layer last ---- */}
           {/* `sheetOpen` is set only under the md breakpoint, so dimming the
               pyramid behind the raised copy never fires on desktop. */}
           <div
@@ -271,7 +274,8 @@ export default function FoundationStack() {
                     aria-hidden="true"
                     className="my-0.5 block text-gold-500"
                   >
-                    <Chevron />
+                    {/* points up: the rebuild climbs 01 → 05 from the base */}
+                    <Chevron className="rotate-180" />
                   </span>
                 )}
                 <button
@@ -345,6 +349,15 @@ export default function FoundationStack() {
               </Fragment>
             ))}
           </div>
+
+          {/* Sits under the base band now that the widest layer is the bottom
+              one — the caption points back up at the foundation. */}
+          <p
+            aria-hidden="true"
+            className="type-caption mt-3 text-center tracking-[0.16em] text-gold-500 md:mt-4"
+          >
+            EVERYTHING SITS ON THIS ↑
+          </p>{/* [review] */}
 
           {/* ---- assembly progress: gold thread draws + counter climbs ---- */}
           <div

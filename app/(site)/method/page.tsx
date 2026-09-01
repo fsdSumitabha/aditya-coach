@@ -67,7 +67,7 @@ export default function MethodPage() {
     <>
       <JsonLd data={[howToSchema, serviceSchema, breadcrumbSchema]} />
 
-      {/* ============ 3. FOUNDATION-STACK VISUAL (Lifestyle widest on top → Presence narrowest at the bottom) ============ */}
+      {/* ============ 3. FOUNDATION-STACK VISUAL (pyramid: Presence narrowest on top → Lifestyle widest at the bottom) ============ */}
       <section
         id="foundation-stack"
         className="border-y border-hairline-soft bg-alt"
@@ -79,7 +79,7 @@ export default function MethodPage() {
           The Complete Rebuild, in order: Lifestyle first, then Body, then
           Nutrition, then Performance, with Presence last.
         </p>
-        {/* The five layers, widest first — each box carries its own copy */}
+        {/* The five layers, widest last — each box carries its own copy */}
         <FoundationStack />
       </section>
 

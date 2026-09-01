@@ -110,7 +110,7 @@ export default function BookPage() {
             middle={
             <>
                 {/* 03 — the outputs, so the price reads as concrete */}
-                <TransformationShowcase />
+                <TransformationShowcase showAllResults={true} />
                 {/* 04 — qualification, five lines */}
                 <WhoThisIsFor />
                 {/* 05 — scope, five categories */}

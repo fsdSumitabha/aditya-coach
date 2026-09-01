@@ -15,8 +15,10 @@ import {
  * `body` is VERBATIM copy — do not alter. Depth lines are in Aditya's voice
  * and carry [review] tags for the owner's audit.
  *
- * Visual stack order = DOM top→bottom, widest first: Lifestyle at the top
- * (100%) narrowing down to Presence at the bottom (40%).
+ * This array stays in LOGICAL order, 01 Lifestyle → 05 Presence (the HowTo
+ * schema reads it directly). FoundationStack renders a reversed copy as a
+ * pyramid: Presence at the top (40%) widening down to Lifestyle at the bottom
+ * (100%) — the foundation carries everything above it.
  */
 export type MethodStep = {
   id: string;

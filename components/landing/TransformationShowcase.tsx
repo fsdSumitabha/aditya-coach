@@ -32,6 +32,7 @@ import {
 
 import { ArrowRightIcon } from "@/components/icons";
 import { TX_SETS as SETS } from "@/lib/transformations";
+import Link from "next/link";
 
 /** Autoplay frequency. Each set carries a headline to read, so this is slower
  *  than the /about opener. Pass intervalMs={0} to turn autoplay off entirely. */
@@ -230,9 +231,12 @@ function Panel({
 
 export default function TransformationShowcase({
   intervalMs = SHOWCASE_MS,
+  showAllResults = false,
 }: {
   /** Autoplay frequency in ms. 0 turns autoplay (and the pause control) off. */
   intervalMs?: number;
+  /** Whether to show a link to the full results page. */
+  showAllResults?: boolean;
 } = {}) {
   const [index, setIndex] = useState(0);
   /** +1 travelling forward, -1 back — drives the story block's entrance. */
@@ -493,6 +497,16 @@ export default function TransformationShowcase({
             </button>
           )}
         </div>
+
+        {/* Read-through to the full proof page, for the pages that borrow this
+            stage rather than own it. */}
+        {showAllResults && (
+            <div className="mt-6 flex justify-center nav:mt-8">
+            <Link href="/results" className="btn-outline btn-compact">
+                See all the results {/* [review] */}
+            </Link>
+            </div>
+        )}
       </div>
     </section>
   );
