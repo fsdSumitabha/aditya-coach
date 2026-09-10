@@ -108,8 +108,8 @@ export default function PrivacyPage() {
       </h2>
       <ul>
         <li>
-          To deliver the free tools you request (Lifestyle Blueprint, Training
-          Split, calorie estimate).
+          To deliver the free tools you request (Lifestyle Blueprint Starter
+          Edition, Training Split, calorie estimate).
         </li>
         <li>
           To respond to enquiries and run your {LEGAL.CONSULT_PRICE} discovery

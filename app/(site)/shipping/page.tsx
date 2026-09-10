@@ -77,7 +77,9 @@ export default function ShippingPage() {
           you digitally at the end of the call. Nothing is posted.
         </li>
         <li>
-          <strong>The Lifestyle Blueprint and other free resources.</strong>{" "}
+          <strong>
+            The Lifestyle Blueprint Starter Edition and other free resources.
+          </strong>{" "}
           Delivered as a file to the email address you enter on the form,
           straight after you submit it. Check your spam and promotions folders
           if it isn&apos;t in your inbox.
@@ -130,7 +132,9 @@ export default function ShippingPage() {
               <td className={CELL}>At the end of your session</td>
             </tr>
             <tr>
-              <td className={CELL}>Lifestyle Blueprint / free resources</td>
+              <td className={CELL}>
+                Lifestyle Blueprint Starter Edition / free resources
+              </td>
               <td className={CELL}>Email to the address you gave</td>
               <td className={CELL}>Immediately after you submit the form</td>
             </tr>

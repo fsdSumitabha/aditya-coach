@@ -14,7 +14,7 @@ import { Prose, DocImage } from "@/components/tools/blueprint/Blocks";
 import { META, INTRO, PULL_QUOTE, CHANGES, START, FINAL, COLOPHON, } from "@/components/tools/blueprint/content";
 
 // ============================================================
-// /tools/the-lifestyle-blueprint — "The Lifestyle Blueprint"
+// /tools/the-lifestyle-blueprint — "The Lifestyle Blueprint Starter Edition"
 // The Blueprint as a full on-site reading experience: the author's verbatim
 // document, rendered in the site's atelier-at-night language — cover hero,
 // a reading-progress bar + scroll-spy chapter rail, ten changes that draw in
@@ -22,9 +22,10 @@ import { META, INTRO, PULL_QUOTE, CHANGES, START, FINAL, COLOPHON, } from "@/com
 // Body text lives verbatim in ./content.ts — this file is presentation only.
 // ============================================================
 
-const TITLE = "The Lifestyle Blueprint | 10 Changes That Rebuild a Man";
+const TITLE =
+  "The Lifestyle Blueprint Starter Edition | 10 Changes That Rebuild a Man";
 const DESCRIPTION =
-  "The Lifestyle Blueprint by Aditya Kumar Upadhyay — 10 lifestyle changes that rebuild a man completely: mornings, sleep, protein, sugar, movement, water, stress, gut, supplements and identity.";
+  "The Lifestyle Blueprint Starter Edition by Aditya Kumar Upadhyay — 10 lifestyle changes that rebuild a man completely: mornings, sleep, protein, sugar, movement, water, stress, gut, supplements and identity.";
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -39,7 +40,8 @@ const blueprintSchema = [
     "@context": "https://schema.org",
     "@type": "Article",
     "@id": `${SITE_ORIGIN}/tools/the-lifestyle-blueprint#article`,
-    headline: "The Lifestyle Blueprint — 10 Changes That Rebuild a Man",
+    headline:
+      "The Lifestyle Blueprint Starter Edition — 10 Changes That Rebuild a Man",
     description: DESCRIPTION,
     url: `${SITE_ORIGIN}/tools/the-lifestyle-blueprint`,
     isAccessibleForFree: true,

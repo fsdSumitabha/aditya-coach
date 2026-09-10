@@ -33,8 +33,9 @@ const COPY: Record<
   blueprint: {
     h1: "You're in. Check your inbox — and your WhatsApp.",
     subline:
-      "Your free Lifestyle Blueprint is on its way. 10 changes that rebuild a man completely. Start tonight.",
-    waText: "Hi Aditya, I just grabbed the free Lifestyle Blueprint.",
+      "Your free Lifestyle Blueprint Starter Edition is on its way. 10 changes that rebuild a man completely. Start tonight.",
+    waText:
+      "Hi Aditya, I just grabbed the free Lifestyle Blueprint Starter Edition.",
   },
   split: {
     h1: "You're in. Your training split is on its way.",

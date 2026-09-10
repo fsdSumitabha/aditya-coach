@@ -88,7 +88,7 @@ export default function ToolsPage() {
           <Reveal delayMs={200} className="mt-6">
             {/* [review] micro-nav anchor chips */}
             <nav aria-label="Free tools on this page" className="flex flex-wrap justify-center gap-2.5" >
-              <a href="#blueprint" className={chipClass}> Lifestyle Blueprint </a>
+              <a href="#blueprint" className={chipClass}> Lifestyle Blueprint Starter Edition </a>
             </nav>
           </Reveal>
 
@@ -110,7 +110,7 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* ---- 2. LEAD MAGNET 1 — The Lifestyle Blueprint ---- */}
+      {/* ---- 2. LEAD MAGNET 1 — The Lifestyle Blueprint Starter Edition ---- */}
       <section
         id="blueprint"
         className="bg-alt cv-auto border-t border-hairline-soft"
@@ -118,18 +118,18 @@ export default function ToolsPage() {
         <div className="container-site section">
           <Reveal className="max-w-[720px] mx-auto">
             <LeadMagnetCard
-              title="The Lifestyle Blueprint"
+              title="The Lifestyle Blueprint Starter Edition"
               description="10 lifestyle changes that rebuild a man completely — body, mind and hormones. Start tonight."
               imageLabel="IMG-BLUEPRINT"
-              imageAlt="Cover of the free Lifestyle Blueprint PDF"
+              imageAlt="Cover of the free Lifestyle Blueprint Starter Edition PDF"
               source="tools-blueprint"
               resource="lifestyle-blueprint"
-              imageSrc="/aditya/aditya_01.jpg"
+              imageSrc="/aditya/starter_edition.jpg"
               pdfHref={BLUEPRINT_PDF}
               pdfLabel={"Open the Blueprint now" /* [review] */}
               buttonLabel={"Send Me the Blueprint" /* [review] */}
               successBody={
-                "Your Lifestyle Blueprint has been emailed to you." /* [review] */
+                "Your Lifestyle Blueprint Starter Edition has been emailed to you." /* [review] */
               }
             />
           </Reveal>

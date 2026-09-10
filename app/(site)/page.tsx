@@ -111,7 +111,7 @@ export default function Home() {
             <Link href="/results">Real Men. Real Results. — transformations</Link>
           </li>
           <li>
-            <Link href="/tools">Free tools — Lifestyle Blueprint, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
+            <Link href="/tools">Free tools — Lifestyle Blueprint Starter Edition, Fat Loss Training Split, Personality Audit Blueprint, calorie calculator</Link>
           </li>
           <li>
             <Link href="/coaching">Coaching — Transformation Audit {LEGAL.CONSULT_PRICE}, Lifestyle Coaching, Personality &amp; Presence Coaching, Complete Transformation</Link>

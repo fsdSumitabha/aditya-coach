@@ -180,7 +180,10 @@ export default function SleepHabitsDrive() {
           morning makes a stronger day. A week of strong days and the mirror
           starts changing — before you&apos;ve touched a diet or a dumbbell.
           I&apos;ve put the full first layer into{" "}
-          <Link href="/tools#blueprint">the free Lifestyle Blueprint</Link> —
+          <Link href="/tools#blueprint">
+            the free Lifestyle Blueprint Starter Edition
+          </Link>{" "}
+          —
           10 changes, start tonight.
         </p>
       </Reveal>

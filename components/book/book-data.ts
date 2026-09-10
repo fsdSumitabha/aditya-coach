@@ -123,7 +123,7 @@ export const BOOK_FAQS: { q: string; a: string }[] = [
   },
   {
     q: "What do I receive?",
-    a: "The session itself, a personal evaluation, a clear recommendation of your path, the Premium Transformation Blueprint, and the gift card at the end of the call." /* [review] */,
+    a: "The session itself, a personal evaluation, a clear recommendation of your path, the Complete Lifestyle Blueprint, and the gift card at the end of the call." /* [review] */,
   },
   {
     q: "What if I don't continue with coaching?",

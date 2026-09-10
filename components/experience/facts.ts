@@ -186,8 +186,8 @@ export const FACTS: Record<string, Fact> = {
   },
   blueprint: {
     id: "blueprint",
-    eyebrow: "Free download · The Lifestyle Blueprint",
-    title: "The Lifestyle Blueprint",
+    eyebrow: "Free download · The Lifestyle Blueprint Starter Edition",
+    title: "The Lifestyle Blueprint Starter Edition",
     body: "10 lifestyle changes that rebuild a man completely — body, mind and hormones. Start tonight.",
     cta: { label: "Get My Free Blueprint", href: "/tools#blueprint" },
     cam: [-1.2, 1.5, -45.2],
@@ -309,7 +309,7 @@ export const OVERLAY_CTAS = {
     href: "/tools#blueprint",
     // Rendered under the button on the closing chapter, where the free
     // resource is now the second action. [review]
-    note: "The Lifestyle Blueprint. Sent to your inbox, free.",
+    note: "The Lifestyle Blueprint Starter Edition. Sent to your inbox, free.",
   },
   // The label stays inside the CTA vocabulary in AGENTS.md; the note under it
   // is what tells a visitor the page goes into detail, rather than inventing a

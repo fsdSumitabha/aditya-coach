@@ -29,11 +29,12 @@ export type Resource = {
 export const RESOURCES: Record<ResourceId, Resource> = {
   "lifestyle-blueprint": {
     id: "lifestyle-blueprint",
-    title: "The Lifestyle Blueprint",
+    title: "The Lifestyle Blueprint Starter Edition",
     summary:
       "10 lifestyle changes that rebuild a man completely — body, mind and hormones.",
     file: "downloads/lifestyle-blueprint.pdf",
-    downloadName: "The Lifestyle Blueprint — Aditya Kumar Upadhyay.pdf",
+    downloadName:
+      "The Lifestyle Blueprint Starter Edition — Aditya Kumar Upadhyay.pdf",
   },
   "fat-loss-training-split": {
     id: "fat-loss-training-split",

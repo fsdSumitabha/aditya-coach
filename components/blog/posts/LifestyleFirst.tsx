@@ -123,7 +123,10 @@ export default function LifestyleFirst() {
         </h2>
         <p>
           I&apos;ve put the entire first layer into one free download —{" "}
-          <Link href="/tools#blueprint">the Lifestyle Blueprint</Link>: 10
+          <Link href="/tools#blueprint">
+            the Lifestyle Blueprint Starter Edition
+          </Link>
+          : 10
           lifestyle changes that rebuild a man completely — body, mind and
           hormones. Start tonight.
         </p>

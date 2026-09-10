@@ -130,8 +130,8 @@ export default function PricingPage() {
         4. Free resources
       </h2>
       <p>
-        The Lifestyle Blueprint, the Fat Loss Training Split, the Personality
-        Audit Blueprint and the calorie calculator on{" "}
+        The Lifestyle Blueprint Starter Edition, the Fat Loss Training Split,
+        the Personality Audit Blueprint and the calorie calculator on{" "}
         <Link href="/tools">Tools</Link> cost nothing. You give an email
         address, the file is sent to it. No card, no charge, ever.
       </p>

@@ -104,7 +104,7 @@ hardcoded in JSX:
 
 1. The fee credited as an instant discount on the program price
 2. An instant gift card, handed over at the end of the call
-3. The Lifestyle Blueprint, free
+3. The Complete Lifestyle Blueprint, free
 
 The gift card has no stated value or issuer yet — do not invent one.
 
@@ -142,7 +142,15 @@ smaller, wrong number. Every version of this copy must get that right.
 Hard requirement, and a change from the earlier build.
 
 - Email is captured **before** the file is delivered. No direct or instant download links.
-- Resources: Lifestyle Blueprint, Fat Loss Training Split, Personality Audit.
+- Resources: Lifestyle Blueprint Starter Edition, Fat Loss Training Split,
+  Personality Audit.
+- **Naming, confirmed 10 Sep 2026 (Karthik, relaying Aditya).** The free,
+  email-gated download is **The Lifestyle Blueprint Starter Edition**. The full
+  framework handed over after the Transformation Audit is **The Complete
+  Lifestyle Blueprint**. Never write a bare "The Lifestyle Blueprint" for
+  either — it no longer names one thing. The locked CTA labels
+  (`Get the Free Lifestyle Blueprint`, footer `Free Lifestyle Blueprint`,
+  `Get My Free Blueprint`) are the deliberate exception and stay as written.
 - Each resource gets its own landing page with its own capture form.
 - `sendToEmailProvider` in `lib/config.ts` is currently a no-op stub. Emails are collected and discarded. This must be wired to a real provider before launch — the whole lead system depends on it.
 
@@ -150,7 +158,7 @@ Hard requirement, and a change from the earlier build.
 
 A prominent section that routes by goal:
 
-- health & lifestyle → Lifestyle Blueprint
+- health & lifestyle → Lifestyle Blueprint Starter Edition
 - fat loss & physique → Fat Loss Training Split
 - personality & presence → Personality Audit
 - complete guidance → Discovery Consultation

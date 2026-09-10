@@ -1,5 +1,5 @@
 // ============================================================
-// The Lifestyle Blueprint — document content (VERBATIM).
+// The Lifestyle Blueprint Starter Edition — document content (VERBATIM).
 // This is the author's own copy. The body text below must NOT be edited,
 // reworded, or "improved" — it is rendered exactly as written. Design and
 // animation live in the renderer components; the words live here.
@@ -34,7 +34,7 @@ export type Change = {
 };
 
 export const META = {
-  docTitle: "The Lifestyle Blueprint",
+  docTitle: "The Lifestyle Blueprint Starter Edition",
   author: "By Aditya Kumar Upadhyay",
   subtitle: "10 Lifestyle Changes That Rebuild a Man Completely",
   coverTag:
@@ -42,7 +42,7 @@ export const META = {
   coverImage: {
     src: "/the-lifestyle-blueprint/cover-image.png",
     label: "BLUEPRINT COVER",
-    alt: "Cover of The Lifestyle Blueprint — a premium, dark charcoal and gold digital guide for men, with the title 'The Lifestyle Blueprint' and author name Aditya Kumar Upadhyay in an elegant editorial layout",
+    alt: "Cover of The Lifestyle Blueprint Starter Edition — a premium, dark charcoal and gold digital guide for men, with the title 'The Lifestyle Blueprint Starter Edition' and author name Aditya Kumar Upadhyay in an elegant editorial layout",
   },
 };
 
