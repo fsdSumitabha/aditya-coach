@@ -91,8 +91,6 @@ export function sendToEmailProvider(payload: LeadPayload): Promise<{ ok: boolean
 export type LeadMagnetPayload = {
   /** lead's full name — required, stored on the admin notification */
   name: string;
-  /** lead's phone number as typed (E.164 or local) — required, for follow-up */
-  phone: string;
   email: string;
   /** analytics/source tag, e.g. "tools-blueprint" */
   source: string;
@@ -103,9 +101,7 @@ export type LeadMagnetPayload = {
 };
 
 /** Per-field messages from server-side validation (422). */
-export type LeadMagnetErrors = Partial<
-  Record<"name" | "phone" | "email", string>
->;
+export type LeadMagnetErrors = Partial<Record<"name" | "email", string>>;
 
 export type LeadMagnetResult = {
   ok: boolean;
@@ -114,7 +110,7 @@ export type LeadMagnetResult = {
 };
 
 /**
- * POST a lead-magnet capture (name + phone + email) to the route handler, which
+ * POST a lead-magnet capture (name + email) to the route handler, which
  * emails the guide (PDF attached) to the subscriber and notifies the admin with
  * the full contact record so the lead can be followed up and tracked.
  * The API path stays behind this helper so components never hardcode it.

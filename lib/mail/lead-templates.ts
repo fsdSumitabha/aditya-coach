@@ -20,8 +20,6 @@ import type { Resource } from "./resources";
 export type LeadMeta = {
   /** lead's full name, as typed */
   name: string;
-  /** lead's phone number, as typed */
-  phone: string;
   email: string;
   source: string;
   /** ISO timestamp */
@@ -110,7 +108,6 @@ export function leadAdminNotification(opts: {
 }): { subject: string; html: string; text: string } {
   const { resource, meta } = opts;
   const email = escapeHtml(meta.email);
-  const phoneHref = meta.phone.replace(/[^\d+]/g, "");
 
   const status = opts.delivered
     ? `<span style="color:#2e7d32;font-weight:600">Delivered ✓</span>`
@@ -119,10 +116,6 @@ export function leadAdminNotification(opts: {
   const rows: [string, string][] = [
     ["Resource", escapeHtml(resource.title)],
     ["Name", escapeHtml(meta.name)],
-    [
-      "Phone",
-      `<a href="tel:${escapeHtml(phoneHref)}" style="color:#8a6d1f">${escapeHtml(meta.phone)}</a>`,
-    ],
     ["Email", `<a href="mailto:${email}" style="color:#8a6d1f">${email}</a>`],
     ["Source", escapeHtml(meta.source)],
     ["Received", `${escapeHtml(istTimestamp(meta.receivedAt))} IST`],
@@ -141,7 +134,6 @@ export function leadAdminNotification(opts: {
   const text = [
     `New lead — ${resource.title}`,
     `Name: ${meta.name}`,
-    `Phone: ${meta.phone}`,
     `Email: ${meta.email}`,
     `Source: ${meta.source}`,
     `Received: ${istTimestamp(meta.receivedAt)} IST`,
@@ -154,7 +146,7 @@ export function leadAdminNotification(opts: {
     .join("\n");
 
   return {
-    subject: `New lead — ${resource.title} (${meta.name} · ${meta.phone})`,
+    subject: `New lead — ${resource.title} (${meta.name} · ${meta.email})`,
     html: renderEmail({ preheader: `New download: ${resource.title}`, bodyHtml }),
     text,
   };

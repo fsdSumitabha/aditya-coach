@@ -7,16 +7,10 @@ import { sendLeadMagnet, track, type LeadMagnetErrors } from "@/lib/config";
 type FieldErrors = LeadMagnetErrors;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-/** Digits only, after stripping spaces/dashes/brackets — 10 (IN local) to 15 (E.164 max). */
-const PHONE_DIGITS_RE = /^\d{10,15}$/;
-
-function phoneDigits(value: string): string {
-  return value.replace(/[^\d]/g, "").replace(/^0+/, "");
-}
 
 /**
- * Shared lead-magnet capture — name, phone and email (Home #blueprint, /tools
- * guides, /blog index). All three are required so every lead is contactable and
+ * Shared lead-magnet capture — name and email (Home #blueprint, /tools
+ * guides, /blog index). Both are required so every lead is contactable and
  * traceable. Validates client-side, then posts via sendLeadMagnet() →
  * app/api/lead-magnet, which emails the guide (PDF attached) to the subscriber
  * and notifies the admin with the full contact record. Swaps to a success state
@@ -33,7 +27,6 @@ export default function LeadMagnetForm({
   successBody = "Check your inbox — we've also emailed it to you." /* [review] */,
   label = "Email",
   nameLabel = "Name",
-  phoneLabel = "Phone number",
   consent,
   children,
   className,
@@ -52,8 +45,6 @@ export default function LeadMagnetForm({
   label?: string;
   /** visible field label for the name input */
   nameLabel?: string;
-  /** visible field label for the phone input */
-  phoneLabel?: string;
   /** consent line override — defaults to the Home #blueprint verbatim line */
   consent?: ReactNode;
   /** cross-sell links rendered inside the success state */
@@ -62,7 +53,6 @@ export default function LeadMagnetForm({
 }) {
   const id = useId();
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -75,20 +65,13 @@ export default function LeadMagnetForm({
     setSubmitError(null);
 
     const nameValue = name.trim();
-    const phoneValue = phone.trim();
     const emailValue = email.trim();
-    const digits = phoneDigits(phoneValue);
 
     const next: FieldErrors = {};
     if (!nameValue) {
       next.name = "Please enter your name.";
     } else if (nameValue.length < 2) {
       next.name = "Please enter your full name.";
-    }
-    if (!phoneValue) {
-      next.phone = "Please enter your phone number.";
-    } else if (!PHONE_DIGITS_RE.test(digits)) {
-      next.phone = "That doesn't look like a valid phone number.";
     }
     if (!emailValue) {
       next.email = "Please enter your email address.";
@@ -109,7 +92,6 @@ export default function LeadMagnetForm({
     try {
       const result = await sendLeadMagnet({
         name: nameValue,
-        phone: phoneValue,
         email: emailValue,
         source,
         resource,
@@ -176,57 +158,29 @@ export default function LeadMagnetForm({
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label htmlFor={`${id}-name`} className="field-label">
-              {nameLabel}
-            </label>
-            <input
-              id={`${id}-name`}
-              type="text"
-              name="name"
-              autoComplete="name"
-              required
-              placeholder="Your full name"
-              className="input-dark"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              aria-invalid={errors.name ? true : undefined}
-              aria-describedby={errors.name ? `${id}-name-error` : undefined}
-            />
-            <div aria-live="polite">
-              {errors.name && (
-                <p id={`${id}-name-error`} className="field-error">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-          </div>
-          <div>
-            <label htmlFor={`${id}-phone`} className="field-label">
-              {phoneLabel}
-            </label>
-            <input
-              id={`${id}-phone`}
-              type="tel"
-              name="phone"
-              inputMode="tel"
-              autoComplete="tel"
-              required
-              placeholder="10-digit mobile"
-              className="input-dark"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              aria-invalid={errors.phone ? true : undefined}
-              aria-describedby={errors.phone ? `${id}-phone-error` : undefined}
-            />
-            <div aria-live="polite">
-              {errors.phone && (
-                <p id={`${id}-phone-error`} className="field-error">
-                  {errors.phone}
-                </p>
-              )}
-            </div>
+        <div>
+          <label htmlFor={`${id}-name`} className="field-label">
+            {nameLabel}
+          </label>
+          <input
+            id={`${id}-name`}
+            type="text"
+            name="name"
+            autoComplete="name"
+            required
+            placeholder="Your full name"
+            className="input-dark"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? `${id}-name-error` : undefined}
+          />
+          <div aria-live="polite">
+            {errors.name && (
+              <p id={`${id}-name-error`} className="field-error">
+                {errors.name}
+              </p>
+            )}
           </div>
         </div>
 
